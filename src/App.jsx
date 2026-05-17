@@ -10,6 +10,7 @@ import { AuthProvider } from '@/components/auth/AuthContext'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Layout } from '@/components/layout/Layout'
 import { AdminLayout } from '@/components/admin/AdminLayout'
+import { ScrollToTop } from '@/components/ui/ScrollToTop'
 import { ROLES } from '@/types/roles'
 
 // Páginas públicas — lazy loading para mejor performance
@@ -51,6 +52,7 @@ const PageSpinner = () => (
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <Suspense fallback={<PageSpinner />}>
           <Routes>

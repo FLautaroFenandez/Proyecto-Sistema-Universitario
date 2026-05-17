@@ -10,8 +10,8 @@ const supabaseUrl     = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    '❌ Faltan variables de entorno de Supabase.\n' +
+  console.warn(
+    '⚠️ Faltan variables de entorno de Supabase.\n' +
     'Copiá .env.example a .env.local y completá los valores.\n' +
     'Ver docs/GUIA_SUPABASE.md para instrucciones.'
   )
