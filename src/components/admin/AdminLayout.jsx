@@ -67,9 +67,14 @@ function SidebarContent({ onClose }) {
   return (
     <div className="flex flex-col h-full" style={{ background: '#1B3A6B' }}>
       {/* Logo del panel */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">
-        <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center flex-shrink-0">
-          <LayoutDashboard size={16} className="text-white" />
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
+        <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1 flex-shrink-0">
+          <img src="/assets/logo-ept.png" alt="Logo EPT" className="w-full h-full object-contain"
+            onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
+          />
+          <div className="w-full h-full rounded-lg bg-brand-azul items-center justify-center hidden">
+            <LayoutDashboard size={14} className="text-white" />
+          </div>
         </div>
         <div>
           <p className="font-display font-bold text-white text-sm leading-none">Panel Admin</p>

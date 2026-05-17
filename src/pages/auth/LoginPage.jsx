@@ -69,9 +69,15 @@ export default function LoginPage() {
           transition={{ duration: 0.7 }}
           className="relative z-10 text-center max-w-sm"
         >
-          {/* Logo */}
-          <div className="w-20 h-20 rounded-full bg-white/15 border-2 border-white/30 flex items-center justify-center mx-auto mb-6">
-            <span className="font-display font-bold text-white text-2xl">EPT</span>
+          {/* Logo institucional */}
+          <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg p-2">
+            <img src="/assets/logo-ept.png" alt="Logo EPT" width={80} height={80}
+              className="w-full h-full object-contain"
+              onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
+            />
+            <div className="w-full h-full rounded-xl bg-brand-azul items-center justify-center hidden">
+              <span className="font-display font-bold text-white text-2xl">EPT</span>
+            </div>
           </div>
 
           <h1 className="font-display font-bold text-white text-3xl leading-tight mb-3">
@@ -107,8 +113,9 @@ export default function LoginPage() {
         >
           {/* Logo mobile */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-full bg-brand-azul flex items-center justify-center">
-              <span className="text-white font-bold text-xs">EPT</span>
+            <div className="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center p-1">
+              <img src="/assets/logo-ept.png" alt="Logo EPT" className="w-full h-full object-contain"
+                onError={e => { e.currentTarget.style.display='none' }} />
             </div>
             <span className="font-display font-bold text-brand-azul">Educar para Transformar</span>
           </div>

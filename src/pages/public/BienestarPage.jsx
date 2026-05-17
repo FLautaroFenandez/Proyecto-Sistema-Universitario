@@ -1,39 +1,45 @@
 /**
  * @file BienestarPage.jsx
- * @description Bienestar estudiantil: deportes, instalaciones y servicios del centro.
+ * @description Bienestar estudiantil: deportes, instalaciones y servicios.
+ * Iconografía Lucide React, sin emojis.
  */
 
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import {
+  Timer, Waves, CircleDot, Shield, Activity, Music2,
+  Dumbbell, Brain, Building2, FlaskConical, Utensils,
+  Stethoscope, Bus, BookMarked, HeartHandshake,
+} from 'lucide-react'
 import { PageHero } from '@/components/ui/PageHero'
 
 const DEPORTES = [
-  { emoji:'🏃', nombre:'Atletismo',      info:'Pista reglamentaria de 400m · Todos los niveles' },
-  { emoji:'🏊', nombre:'Natación',       info:'Pileta olímpica cubierta 25m × 8 carriles' },
-  { emoji:'⚽', nombre:'Fútbol',         info:'2 canchas de césped sintético con iluminación LED' },
-  { emoji:'🥋', nombre:'Artes Marciales',info:'Dojo cubierto · Karate y Judo para todos los niveles' },
-  { emoji:'🏐', nombre:'Vóleibol',       info:'Canchas internas y externas · Equipos por nivel' },
-  { emoji:'💃', nombre:'Danza',          info:'Salón equipado · Clásica y contemporánea' },
-  { emoji:'🏀', nombre:'Básquet',        info:'2 canchas: cubierta y al aire libre' },
-  { emoji:'♟️', nombre:'Ajedrez',        info:'Club de ajedrez · Torneos internos y externos' },
+  { Icon: Timer,      color: '#E8612C', nombre: 'Atletismo',      info: 'Pista reglamentaria de 400m · Todos los niveles' },
+  { Icon: Waves,      color: '#29ABE2', nombre: 'Natación',       info: 'Pileta olímpica cubierta 25m × 8 carriles' },
+  { Icon: CircleDot,  color: '#4CAF50', nombre: 'Fútbol',         info: '2 canchas de césped sintético con iluminación LED' },
+  { Icon: Shield,     color: '#8B5CF6', nombre: 'Artes Marciales',info: 'Dojo cubierto · Karate y Judo para todos los niveles' },
+  { Icon: Activity,   color: '#F59E0B', nombre: 'Vóleibol',       info: 'Canchas internas y externas · Equipos por nivel' },
+  { Icon: Music2,     color: '#D63384', nombre: 'Danza',          info: 'Salón equipado · Clásica y contemporánea' },
+  { Icon: Dumbbell,   color: '#1B3A6B', nombre: 'Básquet',        info: '2 canchas: cubierta y al aire libre' },
+  { Icon: Brain,      color: '#6B7280', nombre: 'Ajedrez',        info: 'Club semanal · Torneos internos y externos' },
 ]
 
 const INSTALACIONES = [
-  { emoji:'🏊', nombre:'Pileta de Natación', desc:'25 metros × 8 carriles, cubierta, climatizada. Apta para competencia.' },
-  { emoji:'⚽', nombre:'Canchas de Fútbol',  desc:'Césped sintético de última generación, iluminación LED para práctica nocturna.' },
-  { emoji:'🏃', nombre:'Pista de Atletismo', desc:'400 metros reglamentaria con 8 carriles y área de saltos.' },
-  { emoji:'🏋️', nombre:'Gimnasio Cubierto',  desc:'1200 m², equipamiento completo, vestuarios y sanitarios.' },
-  { emoji:'🔬', nombre:'Laboratorio Física', desc:'40 bancos de trabajo, equipamiento moderno para experimentos.' },
-  { emoji:'⚗️', nombre:'Laboratorio Química',desc:'40 bancos, campanas de extracción, materiales de seguridad.' },
-  { emoji:'💻', nombre:'Lab. Computación',   desc:'60 puestos con equipos de última generación y conexión de alta velocidad.' },
-  { emoji:'🍽️', nombre:'Comedor',            desc:'300 cubiertos, menú elaborado por nutricionistas, servicio completo.' },
+  { Icon: Waves,        color: '#29ABE2', nombre: 'Pileta de Natación',  desc: '25 metros × 8 carriles, cubierta, climatizada. Apta para competencia.' },
+  { Icon: CircleDot,    color: '#4CAF50', nombre: 'Canchas de Fútbol',   desc: 'Césped sintético de última generación, iluminación LED para práctica nocturna.' },
+  { Icon: Timer,        color: '#E8612C', nombre: 'Pista de Atletismo',  desc: '400 metros reglamentaria con 8 carriles y área de saltos.' },
+  { Icon: Dumbbell,     color: '#1B3A6B', nombre: 'Gimnasio Cubierto',   desc: '1200 m², equipamiento completo, vestuarios y sanitarios.' },
+  { Icon: FlaskConical, color: '#8B5CF6', nombre: 'Laboratorio Física',  desc: '40 bancos de trabajo, equipamiento moderno para experimentos.' },
+  { Icon: FlaskConical, color: '#F59E0B', nombre: 'Laboratorio Química', desc: '40 bancos, campanas de extracción, materiales de seguridad.' },
+  { Icon: Building2,    color: '#0EA5E9', nombre: 'Lab. Computación',    desc: '60 puestos con equipos de última generación y conexión de alta velocidad.' },
+  { Icon: Utensils,     color: '#D63384', nombre: 'Comedor',             desc: '300 cubiertos, menú elaborado por nutricionistas, servicio completo.' },
 ]
 
 const SERVICIOS = [
-  { emoji:'🧠', nombre:'Servicio de Apoyo Estudiantil', desc:'Equipo de psicólogos y psicopedagogos para orientación, tutorías y acompañamiento.' },
-  { emoji:'🏥', nombre:'Enfermería',                    desc:'2 consultorios con guardia permanente durante el horario escolar.' },
-  { emoji:'🚌', nombre:'Servicio de Transporte',        desc:'Micros con GPS en tiempo real, recorridos por toda Resistencia. Acompañantes capacitados.' },
-  { emoji:'📚', nombre:'Biblioteca',                    desc:'5.000 volúmenes, sala de lectura, recursos digitales y préstamo domiciliario.' },
+  { Icon: HeartHandshake, color: '#D63384', nombre: 'Servicio de Apoyo Estudiantil', desc: 'Equipo de psicólogos y psicopedagogos para orientación, tutorías y acompañamiento.' },
+  { Icon: Stethoscope,    color: '#EF4444', nombre: 'Enfermería',                    desc: '2 consultorios con guardia permanente durante el horario escolar.' },
+  { Icon: Bus,            color: '#1B3A6B', nombre: 'Servicio de Transporte',        desc: 'Micros con GPS en tiempo real, recorridos por toda Resistencia. Acompañantes capacitados.' },
+  { Icon: BookMarked,     color: '#8B5CF6', nombre: 'Biblioteca',                    desc: '5.000 volúmenes, sala de lectura, recursos digitales y préstamo domiciliario.' },
 ]
 
 const fadeUp = (delay = 0) => ({
@@ -62,12 +68,15 @@ export default function BienestarPage() {
             <p className="text-gray-500">8 disciplinas disponibles para todos los niveles educativos.</p>
           </motion.div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {DEPORTES.map((d, i) => (
-              <motion.div key={d.nombre} {...fadeUp(i * 0.07)}
+            {DEPORTES.map(({ Icon, color, nombre, info }, i) => (
+              <motion.div key={nombre} {...fadeUp(i * 0.07)}
                 className="bg-gray-50 rounded-2xl p-5 text-center border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-                <span className="text-4xl block mb-3">{d.emoji}</span>
-                <h3 className="font-display font-bold text-gray-800 text-sm mb-1">{d.nombre}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">{d.info}</p>
+                <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center"
+                  style={{ backgroundColor: `${color}18` }}>
+                  <Icon size={22} style={{ color }} strokeWidth={1.5} />
+                </div>
+                <h3 className="font-display font-bold text-gray-800 text-sm mb-1">{nombre}</h3>
+                <p className="text-gray-500 text-xs leading-relaxed">{info}</p>
               </motion.div>
             ))}
           </div>
@@ -82,13 +91,16 @@ export default function BienestarPage() {
             <p className="text-gray-500">Espacios diseñados para potenciar el aprendizaje y la actividad física.</p>
           </motion.div>
           <div className="grid md:grid-cols-2 gap-5">
-            {INSTALACIONES.map((inst, i) => (
-              <motion.div key={inst.nombre} {...fadeUp(i * 0.07)}
+            {INSTALACIONES.map(({ Icon, color, nombre, desc }, i) => (
+              <motion.div key={nombre} {...fadeUp(i * 0.07)}
                 className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4 shadow-sm hover:shadow-md transition-shadow">
-                <span className="text-3xl flex-shrink-0">{inst.emoji}</span>
+                <div className="w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center"
+                  style={{ backgroundColor: `${color}15` }}>
+                  <Icon size={20} style={{ color }} strokeWidth={1.5} />
+                </div>
                 <div>
-                  <h3 className="font-display font-bold text-gray-800 mb-1">{inst.nombre}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{inst.desc}</p>
+                  <h3 className="font-display font-bold text-gray-800 mb-1">{nombre}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -104,13 +116,16 @@ export default function BienestarPage() {
             <p className="text-gray-500">Acompañamos a cada alumno y familia en cada paso del camino.</p>
           </motion.div>
           <div className="grid md:grid-cols-2 gap-5">
-            {SERVICIOS.map((s, i) => (
-              <motion.div key={s.nombre} {...fadeUp(i * 0.1)}
+            {SERVICIOS.map(({ Icon, color, nombre, desc }, i) => (
+              <motion.div key={nombre} {...fadeUp(i * 0.1)}
                 className="flex gap-5 bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                <span className="text-4xl flex-shrink-0">{s.emoji}</span>
+                <div className="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center"
+                  style={{ backgroundColor: `${color}15` }}>
+                  <Icon size={22} style={{ color }} strokeWidth={1.5} />
+                </div>
                 <div>
-                  <h3 className="font-display font-bold text-gray-800 mb-1">{s.nombre}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{s.desc}</p>
+                  <h3 className="font-display font-bold text-gray-800 mb-1">{nombre}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
                 </div>
               </motion.div>
             ))}

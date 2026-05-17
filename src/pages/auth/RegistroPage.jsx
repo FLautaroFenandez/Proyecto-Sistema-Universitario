@@ -99,8 +99,11 @@ export default function RegistroPage() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}
           className="relative z-10 text-center max-w-xs"
         >
-          <div className="w-20 h-20 rounded-full bg-white/15 border-2 border-white/30 flex items-center justify-center mx-auto mb-6">
-            <span className="font-display font-bold text-white text-2xl">EPT</span>
+          <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg p-2">
+            <img src="/assets/logo-ept.png" alt="Logo EPT" width={80} height={80}
+              className="w-full h-full object-contain"
+              onError={e => { e.currentTarget.style.display='none' }}
+            />
           </div>
           <h1 className="font-display font-bold text-white text-2xl leading-tight mb-3">
             Creá tu cuenta
