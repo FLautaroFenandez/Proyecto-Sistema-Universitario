@@ -1,0 +1,39 @@
+@import '@fontsource/nunito/400.css';
+@import '@fontsource/nunito/500.css';
+@import '@fontsource/nunito/700.css';
+@import '@fontsource/source-sans-3/400.css';
+@import '@fontsource/source-sans-3/600.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-azul:     #1B3A6B;
+  --color-naranja:  #E8612C;
+  --color-verde:    #4CAF50;
+  --color-rosa:     #D63384;
+  --color-celeste:  #29ABE2;
+  --font-display:   'Nunito', sans-serif;
+  --font-body:      'Source Sans 3', sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); }
+h1, h2, h3, h4 { font-family: var(--font-display); }
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
