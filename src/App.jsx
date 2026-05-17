@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/components/auth/AuthContext'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Layout } from '@/components/layout/Layout'
+import { AdminLayout } from '@/components/admin/AdminLayout'
 import { ROLES } from '@/types/roles'
 
 // Páginas públicas — lazy loading para mejor performance
@@ -80,18 +81,21 @@ export default function App() {
               } />
             </Route>
 
-            {/* ── Admin: solo admin y autoridad ── */}
-            <Route path="/admin" element={
+            {/* ── Admin: rutas anidadas bajo AdminLayout (sidebar + header propio) ── */}
+            <Route element={
               <ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}>
-                <AdminPage />
+                <AdminLayout />
               </ProtectedRoute>
-            } />
-            <Route path="/admin/opiniones"     element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}><OpinionesAdminPage /></ProtectedRoute>} />
-            <Route path="/admin/noticias"      element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}><NoticiasAdminPage /></ProtectedRoute>} />
-            <Route path="/admin/galeria"       element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}><GaleriaAdminPage /></ProtectedRoute>} />
-            <Route path="/admin/inscripciones" element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}><InscripcionesAdminPage /></ProtectedRoute>} />
-            <Route path="/admin/empleos"       element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN, ROLES.AUTORIDAD]}><EmpleosAdminPage /></ProtectedRoute>} />
-            <Route path="/admin/usuarios"      element={<ProtectedRoute rolesPermitidos={[ROLES.ADMIN]}><UsuariosAdminPage /></ProtectedRoute>} />
+            }>
+              <Route path="/admin"               element={<AdminPage />} />
+              <Route path="/admin/opiniones"     element={<OpinionesAdminPage />} />
+              <Route path="/admin/noticias"      element={<NoticiasAdminPage />} />
+              <Route path="/admin/galeria"       element={<GaleriaAdminPage />} />
+              <Route path="/admin/inscripciones" element={<InscripcionesAdminPage />} />
+              <Route path="/admin/empleos"       element={<EmpleosAdminPage />} />
+              {/* Usuarios: solo admin, verificado adicionalmente en la página */}
+              <Route path="/admin/usuarios"      element={<UsuariosAdminPage />} />
+            </Route>
 
             {/* ── 404 ── */}
             <Route path="*" element={<NotFoundPage />} />
