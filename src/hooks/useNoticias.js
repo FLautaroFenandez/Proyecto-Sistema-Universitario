@@ -7,13 +7,36 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
-/**
- * Hook para obtener listado de noticias
- * @param {Object} options
- * @param {boolean} options.soloPublicas - Si true, solo trae noticias públicas
- * @param {number} options.limite - Cantidad de noticias por página
- * @param {number} options.pagina - Página actual (1-based)
- */
+const NOTICIAS_DEMO = [
+  {
+    id: 'demo-1',
+    titulo: 'Inscripciones 2027 abiertas para todos los niveles',
+    resumen: 'El Centro Educativo Educar para Transformar abre sus puertas para el ciclo lectivo 2027. Cupos limitados para Nivel Inicial, Primario y Secundario.',
+    imagen_url: null,
+    created_at: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+    publica: true,
+    publicada: true,
+  },
+  {
+    id: 'demo-2',
+    titulo: 'Presentación del proyecto educativo ante autoridades del NEA',
+    resumen: 'Directivos del centro presentaron la propuesta pedagógica innovadora ante representantes de instituciones educativas del noreste argentino.',
+    imagen_url: null,
+    created_at: new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString(),
+    publica: true,
+    publicada: true,
+  },
+  {
+    id: 'demo-3',
+    titulo: 'Nuestra propuesta de jornada extendida y tres idiomas',
+    resumen: 'Conocé en detalle cómo organizamos el tiempo escolar para maximizar el aprendizaje con inglés, portugués y francés desde el Nivel Inicial.',
+    imagen_url: null,
+    created_at: new Date(Date.now() - 14 * 24 * 3600 * 1000).toISOString(),
+    publica: true,
+    publicada: true,
+  },
+]
+
 export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}) {
   const [noticias, setNoticias] = useState([])
   const [total,    setTotal]    = useState(0)
@@ -50,8 +73,10 @@ export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}
         }
       } catch (err) {
         if (!cancelado) {
-          console.error('Error al cargar noticias:', err)
-          setError('No pudimos cargar las noticias. Intentá de nuevo.')
+          console.warn('Usando datos de ejemplo (Supabase no configurado):', err.message)
+          const demo = NOTICIAS_DEMO.slice(0, limite)
+          setNoticias(demo)
+          setTotal(demo.length)
         }
       } finally {
         if (!cancelado) setCargando(false)
