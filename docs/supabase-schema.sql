@@ -1,203 +1,346 @@
 -- ============================================================
 -- ESQUEMA COMPLETO — Centro Educativo "Educar para Transformar"
--- Ejecutar en: Supabase → SQL Editor → New query → Run
+-- Versión: 2.0 (corregida y verificada contra el código)
+--
+-- INSTRUCCIONES:
+-- 1. Ir a supabase.com → tu proyecto → SQL Editor → New query
+-- 2. Pegar TODO este archivo y hacer clic en "Run"
+-- 3. Si hay errores de "already exists", ignorarlos y continuar
 -- ============================================================
 
--- ── 1. EXTENSIONES ──────────────────────────────────────────
-create extension if not exists "uuid-ossp";
 
--- ── 2. TABLA PROFILES (ligada a auth.users de Supabase) ──────
-create table public.profiles (
-  id        uuid primary key references auth.users(id) on delete cascade,
-  nombre    text not null,
-  rol       text not null default 'padre'
-              check (rol in ('admin','autoridad','docente','personal','padre','estudiante')),
-  activo    boolean not null default true,
-  created_at timestamptz default now()
+-- ── 1. EXTENSIONES ──────────────────────────────────────────
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+-- ── 2. TABLA PROFILES ───────────────────────────────────────
+-- Extiende auth.users de Supabase con datos del usuario.
+-- IMPORTANTE: el INSERT lo hace el código (RegistroPage/useAuth),
+-- NO hay trigger automático para evitar conflictos.
+CREATE TABLE IF NOT EXISTS profiles (
+  id          UUID          PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  nombre      VARCHAR(100)  NOT NULL,
+  dni         VARCHAR(20)   NOT NULL UNIQUE,
+  telefono    VARCHAR(20),
+  rol         VARCHAR(20)   NOT NULL DEFAULT 'padre'
+                            CHECK (rol IN ('admin','autoridad','docente','personal','padre','estudiante')),
+  activo      BOOLEAN       NOT NULL DEFAULT TRUE,
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
--- Trigger: crear perfil automáticamente al registrarse
-create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer as $$
-begin
-  insert into public.profiles (id, nombre, rol)
-  values (new.id, coalesce(new.raw_user_meta_data->>'nombre', split_part(new.email,'@',1)), 'padre');
-  return new;
-end;
-$$;
-
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
 
 -- ── 3. TABLA NOTICIAS ────────────────────────────────────────
-create table public.noticias (
-  id          uuid primary key default uuid_generate_v4(),
-  titulo      text not null,
-  resumen     text,
-  cuerpo      text,
-  imagen_url  text,
-  publicada   boolean not null default false,
-  publica     boolean not null default true,
-  autor_id    uuid references public.profiles(id),
-  created_at  timestamptz default now(),
-  updated_at  timestamptz default now()
+CREATE TABLE IF NOT EXISTS noticias (
+  id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo      VARCHAR(200)  NOT NULL,
+  resumen     VARCHAR(500),
+  contenido   TEXT          NOT NULL,
+  imagen_url  TEXT,
+  publica     BOOLEAN       NOT NULL DEFAULT TRUE,
+  publicada   BOOLEAN       NOT NULL DEFAULT FALSE,
+  autor_id    UUID          NOT NULL REFERENCES profiles(id),
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
--- ── 4. TABLA GALERIA_CATEGORIAS ──────────────────────────────
-create table public.galeria_categorias (
-  id          uuid primary key default uuid_generate_v4(),
-  nombre      text not null,
-  descripcion text,
-  orden       int default 0
+
+-- ── 4. TABLA OPINIONES ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS opiniones (
+  id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  autor_nombre  VARCHAR(100)  NOT NULL,
+  texto         VARCHAR(300)  NOT NULL,
+  estado        VARCHAR(20)   NOT NULL DEFAULT 'pendiente'
+                              CHECK (estado IN ('pendiente','aprobada','rechazada')),
+  moderado_por  UUID          REFERENCES profiles(id),
+  moderado_at   TIMESTAMPTZ,
+  created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-insert into public.galeria_categorias (nombre, descripcion, orden) values
-  ('Instalaciones', 'Edificio, aulas y espacios comunes', 1),
-  ('Deportes',      'Canchas, pileta y gimnasio',         2),
-  ('Idiomas',       'Clases y talleres de idiomas',       3),
-  ('Arte y Música', 'Talleres de expresión artística',    4),
-  ('Laboratorios',  'Ciencia y tecnología',               5),
-  ('Eventos',       'Actos y celebraciones',              6);
 
--- ── 5. TABLA GALERIA ─────────────────────────────────────────
-create table public.galeria (
-  id           uuid primary key default uuid_generate_v4(),
-  titulo       text,
-  descripcion  text,
-  imagen_url   text not null,
-  categoria_id uuid references public.galeria_categorias(id),
-  activa       boolean not null default true,
-  created_at   timestamptz default now()
+-- ── 5. TABLA INSCRIPCIONES ───────────────────────────────────
+-- Todos los campos que InscripcionPage.jsx envía a Supabase.
+CREATE TABLE IF NOT EXISTS inscripciones (
+  id                    UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  -- Datos del estudiante
+  estudiante_nombre     VARCHAR(100)  NOT NULL,
+  estudiante_dni        VARCHAR(20)   NOT NULL,
+  estudiante_nacimiento DATE          NOT NULL,
+  nivel                 VARCHAR(20)   NOT NULL CHECK (nivel IN ('inicial','primario','secundario')),
+  turno                 VARCHAR(10)   NOT NULL CHECK (turno IN ('manana','tarde')),
+  -- Datos del tutor/padre
+  tutor_nombre          VARCHAR(100)  NOT NULL,
+  tutor_dni             VARCHAR(20)   NOT NULL,
+  tutor_relacion        VARCHAR(20)   NOT NULL CHECK (tutor_relacion IN ('padre','madre','tutor')),
+  tutor_telefono        VARCHAR(20)   NOT NULL,
+  tutor_email           VARCHAR(150)  NOT NULL,
+  -- Estado y seguimiento
+  estado                VARCHAR(20)   NOT NULL DEFAULT 'pendiente'
+                                      CHECK (estado IN ('pendiente','en_revision','aceptada','rechazada')),
+  observaciones         TEXT,
+  revisado_por          UUID          REFERENCES profiles(id),
+  created_at            TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at            TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
--- ── 6. TABLA OPINIONES ───────────────────────────────────────
-create table public.opiniones (
-  id            uuid primary key default uuid_generate_v4(),
-  autor_nombre  text not null,
-  texto         text not null,
-  estado        text not null default 'pendiente'
-                  check (estado in ('pendiente','aprobada','rechazada')),
-  moderado_por  uuid references public.profiles(id),
-  moderado_at   timestamptz,
-  created_at    timestamptz default now()
+
+-- ── 6. TABLA GALERIA_CATEGORIAS ──────────────────────────────
+-- Usa SERIAL (INTEGER) como PK, no UUID.
+CREATE TABLE IF NOT EXISTS galeria_categorias (
+  id          SERIAL        PRIMARY KEY,
+  nombre      VARCHAR(50)   NOT NULL UNIQUE,
+  descripcion VARCHAR(200),
+  orden       INTEGER       NOT NULL DEFAULT 0
 );
 
--- ── 7. TABLA INSCRIPCIONES ───────────────────────────────────
-create table public.inscripciones (
-  id                uuid primary key default uuid_generate_v4(),
-  estudiante_nombre text not null,
-  estudiante_dni    text,
-  fecha_nacimiento  date,
-  nivel             text not null check (nivel in ('inicial','primario','secundario')),
-  grado_solicitado  text,
-  tutor_nombre      text not null,
-  tutor_email       text not null,
-  tutor_telefono    text,
-  estado            text not null default 'pendiente'
-                      check (estado in ('pendiente','en_revision','aceptada','rechazada')),
-  observaciones     text,
-  created_at        timestamptz default now(),
-  updated_at        timestamptz default now()
+-- Datos iniciales de categorías
+INSERT INTO galeria_categorias (nombre, descripcion, orden) VALUES
+  ('Instalaciones', 'Edificio e instalaciones generales',          1),
+  ('Aulas',         'Aulas y espacios de aprendizaje',             2),
+  ('Deportes',      'Canchas, gimnasio y actividades deportivas',  3),
+  ('Eventos',       'Actos, festejos y eventos institucionales',   4),
+  ('Idiomas',       'Clases y actividades de idiomas',             5)
+ON CONFLICT (nombre) DO NOTHING;
+
+
+-- ── 7. TABLA GALERIA ─────────────────────────────────────────
+-- categoria_id es INTEGER (referencia al SERIAL de galeria_categorias)
+CREATE TABLE IF NOT EXISTS galeria (
+  id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo        VARCHAR(150),
+  descripcion   VARCHAR(300),
+  imagen_url    TEXT          NOT NULL,
+  categoria_id  INTEGER       NOT NULL REFERENCES galeria_categorias(id),
+  subido_por    UUID          NOT NULL REFERENCES profiles(id),
+  activa        BOOLEAN       NOT NULL DEFAULT TRUE,
+  created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
+
 
 -- ── 8. TABLA EMPLEOS ─────────────────────────────────────────
-create table public.empleos (
-  id           uuid primary key default uuid_generate_v4(),
-  titulo       text not null,
-  descripcion  text,
-  requisitos   text,
-  modalidad    text default 'presencial',
-  activo       boolean not null default true,
-  fecha_limite date,
-  created_at   timestamptz default now()
+CREATE TABLE IF NOT EXISTS empleos (
+  id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo          VARCHAR(200)  NOT NULL,
+  descripcion     TEXT          NOT NULL,
+  requisitos      TEXT,
+  contacto_email  VARCHAR(150)  NOT NULL,
+  fecha_limite    DATE          NOT NULL,
+  activo          BOOLEAN       NOT NULL DEFAULT TRUE,
+  publicado_por   UUID          NOT NULL REFERENCES profiles(id),
+  created_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
--- ── 9. TABLA CONTACTO ────────────────────────────────────────
-create table public.contacto (
-  id         uuid primary key default uuid_generate_v4(),
-  nombre     text not null,
-  email      text not null,
-  asunto     text,
-  mensaje    text not null,
-  leido      boolean default false,
-  created_at timestamptz default now()
+
+-- ── 9. TABLA CONTACTO_MENSAJES ───────────────────────────────
+-- El código usa FROM('contacto_mensajes'), no 'contacto'.
+CREATE TABLE IF NOT EXISTS contacto_mensajes (
+  id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre      VARCHAR(100)  NOT NULL,
+  email       VARCHAR(150)  NOT NULL,
+  asunto      VARCHAR(200)  NOT NULL,
+  mensaje     TEXT          NOT NULL,
+  leido       BOOLEAN       NOT NULL DEFAULT FALSE,
+  created_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
--- ── 10. ROW LEVEL SECURITY (RLS) ─────────────────────────────
 
--- Profiles
-alter table public.profiles enable row level security;
-create policy "Perfil propio" on public.profiles for select using (auth.uid() = id);
-create policy "Todos los perfiles (admin)" on public.profiles for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
+-- ── 10. TRIGGER updated_at ───────────────────────────────────
+CREATE OR REPLACE FUNCTION update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- Noticias: públicas visibles para todos; privadas solo autenticados
-alter table public.noticias enable row level security;
-create policy "Noticias publicas" on public.noticias for select
-  using (publicada = true and publica = true);
-create policy "Noticias internas (auth)" on public.noticias for select
-  using (publicada = true and auth.uid() is not null);
-create policy "Admin gestiona noticias" on public.noticias for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
+CREATE TRIGGER trg_profiles_updated
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Galería
-alter table public.galeria enable row level security;
-create policy "Galeria publica" on public.galeria for select using (activa = true);
-create policy "Admin gestiona galeria" on public.galeria for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
+CREATE TRIGGER trg_noticias_updated
+  BEFORE UPDATE ON noticias
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-alter table public.galeria_categorias enable row level security;
-create policy "Categorias publicas" on public.galeria_categorias for select using (true);
+CREATE TRIGGER trg_inscripciones_updated
+  BEFORE UPDATE ON inscripciones
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Opiniones
-alter table public.opiniones enable row level security;
-create policy "Opiniones aprobadas" on public.opiniones for select using (estado = 'aprobada');
-create policy "Insertar opinion (publico)" on public.opiniones for insert with check (true);
-create policy "Admin gestiona opiniones" on public.opiniones for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
+CREATE TRIGGER trg_empleos_updated
+  BEFORE UPDATE ON empleos
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Inscripciones
-alter table public.inscripciones enable row level security;
-create policy "Insertar inscripcion (publico)" on public.inscripciones for insert with check (true);
-create policy "Admin gestiona inscripciones" on public.inscripciones for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
 
--- Empleos
-alter table public.empleos enable row level security;
-create policy "Empleos activos (publico)" on public.empleos for select using (activo = true);
-create policy "Admin gestiona empleos" on public.empleos for all
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
+-- ── 11. ÍNDICES ──────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_noticias_created    ON noticias(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_noticias_publica    ON noticias(publica, publicada);
+CREATE INDEX IF NOT EXISTS idx_galeria_categoria   ON galeria(categoria_id);
+CREATE INDEX IF NOT EXISTS idx_inscripciones_estado ON inscripciones(estado);
+CREATE INDEX IF NOT EXISTS idx_opiniones_estado    ON opiniones(estado);
+CREATE INDEX IF NOT EXISTS idx_empleos_activos     ON empleos(activo, fecha_limite);
 
--- Contacto
-alter table public.contacto enable row level security;
-create policy "Insertar contacto (publico)" on public.contacto for insert with check (true);
-create policy "Admin ve contactos" on public.contacto for select
-  using (exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad')));
 
--- ── 11. STORAGE BUCKET PARA IMÁGENES ────────────────────────
--- Ejecutar en Supabase → Storage → New bucket
--- Nombre: "imagenes" (público)
--- O con SQL:
-insert into storage.buckets (id, name, public) values ('imagenes', 'imagenes', true)
-on conflict (id) do nothing;
+-- ── 12. ROW LEVEL SECURITY (RLS) ─────────────────────────────
 
-create policy "Imagenes publicas" on storage.objects for select
-  using (bucket_id = 'imagenes');
-create policy "Admin sube imagenes" on storage.objects for insert
-  with check (
-    bucket_id = 'imagenes' and
-    exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad'))
-  );
-create policy "Admin elimina imagenes" on storage.objects for delete
-  using (
-    bucket_id = 'imagenes' and
-    exists (select 1 from public.profiles where id = auth.uid() and rol in ('admin','autoridad'))
+ALTER TABLE profiles          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE noticias          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE opiniones         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inscripciones     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE galeria           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE galeria_categorias ENABLE ROW LEVEL SECURITY;
+ALTER TABLE empleos           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contacto_mensajes ENABLE ROW LEVEL SECURITY;
+
+-- ── Profiles ──
+CREATE POLICY "perfil_propio" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "admin_ve_todos_perfiles" ON profiles
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol = 'admin')
   );
 
--- ── 12. CREAR PRIMER USUARIO ADMIN ──────────────────────────
--- Después de correr este script:
--- 1. Registrarse en /registro con tu email
--- 2. Ir a Supabase → Table Editor → profiles
--- 3. Buscar tu fila y cambiar "rol" a "admin"
+CREATE POLICY "admin_gestiona_perfiles" ON profiles
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Noticias ──
+CREATE POLICY "noticias_publicas" ON noticias
+  FOR SELECT USING (publica = TRUE AND publicada = TRUE);
+
+CREATE POLICY "noticias_internas" ON noticias
+  FOR SELECT USING (
+    publica = FALSE AND publicada = TRUE AND auth.uid() IS NOT NULL
+  );
+
+CREATE POLICY "admin_gestiona_noticias" ON noticias
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Opiniones ──
+CREATE POLICY "leer_aprobadas" ON opiniones
+  FOR SELECT USING (estado = 'aprobada');
+
+CREATE POLICY "insertar_opinion" ON opiniones
+  FOR INSERT WITH CHECK (TRUE);
+
+CREATE POLICY "admin_gestiona_opiniones" ON opiniones
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Inscripciones ──
+CREATE POLICY "insertar_inscripcion" ON inscripciones
+  FOR INSERT WITH CHECK (TRUE);
+
+CREATE POLICY "admin_lee_inscripciones" ON inscripciones
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_actualiza_inscripciones" ON inscripciones
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Galería ──
+CREATE POLICY "galeria_publica" ON galeria
+  FOR SELECT USING (activa = TRUE);
+
+CREATE POLICY "admin_gestiona_galeria" ON galeria
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Galería Categorías ──
+CREATE POLICY "categorias_publicas" ON galeria_categorias
+  FOR SELECT USING (TRUE);
+
+CREATE POLICY "admin_gestiona_categorias" ON galeria_categorias
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Empleos ──
+CREATE POLICY "empleos_activos_publico" ON empleos
+  FOR SELECT USING (activo = TRUE);
+
+CREATE POLICY "admin_gestiona_empleos" ON empleos
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- ── Contacto Mensajes ──
+CREATE POLICY "insertar_mensaje_contacto" ON contacto_mensajes
+  FOR INSERT WITH CHECK (TRUE);
+
+CREATE POLICY "admin_lee_mensajes" ON contacto_mensajes
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+
+-- ── 13. STORAGE ──────────────────────────────────────────────
+-- Crear 2 buckets PÚBLICOS desde el dashboard:
+--   Storage → New bucket → nombre: "galeria"  → Public: ON
+--   Storage → New bucket → nombre: "noticias" → Public: ON
+--
+-- Luego ejecutar estas políticas de Storage:
+
+CREATE POLICY "galeria_lectura_publica"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'galeria');
+
+CREATE POLICY "galeria_admin_upload"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'galeria' AND
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "galeria_admin_delete"
+  ON storage.objects FOR DELETE
+  USING (
+    bucket_id = 'galeria' AND
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "noticias_lectura_publica"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'noticias');
+
+CREATE POLICY "noticias_admin_upload"
+  ON storage.objects FOR INSERT
+  WITH CHECK (
+    bucket_id = 'noticias' AND
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "noticias_admin_delete"
+  ON storage.objects FOR DELETE
+  USING (
+    bucket_id = 'noticias' AND
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+
+-- ── 14. CREAR EL PRIMER USUARIO ADMIN ────────────────────────
+--
+-- Paso 1: En Supabase → Authentication → Users → Add user
+--   Email: admin@educarparatransformar.edu.ar
+--   Password: (una contraseña fuerte)
+--
+-- Paso 2: Copiar el UUID del usuario y ejecutar:
+--
+-- INSERT INTO profiles (id, nombre, dni, rol)
+-- VALUES (
+--   'PEGAR-UUID-AQUI',
+--   'Administrador Sistema',
+--   '00000000',
+--   'admin'
+-- );
+--
+-- Paso 3: Verificar en Table Editor → profiles que el rol sea 'admin'
 -- ============================================================
