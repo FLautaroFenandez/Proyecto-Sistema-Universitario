@@ -1,25 +1,31 @@
-/**
- * @file supabase.js
- * @description Inicialización y exportación del cliente de Supabase.
- * Importar `supabase` desde cualquier hook o utilidad que necesite BD o Auth.
- */
-
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl     = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
+const isPlaceholder =
+  !supabaseUrl ||
+  !supabaseAnonKey ||
+  supabaseUrl.includes('placeholder') ||
+  supabaseUrl === 'https://tu-proyecto.supabase.co'
+
+if (isPlaceholder) {
   console.warn(
-    '⚠️ Faltan variables de entorno de Supabase.\n' +
-    'Copiá .env.example a .env.local y completá los valores.\n' +
-    'Ver docs/GUIA_SUPABASE.md para instrucciones.'
+    '⚠️  Supabase no está configurado con credenciales reales.\n' +
+    '   Editá .env.local con tu URL y clave de Supabase.\n' +
+    '   El sitio funcionará con datos de ejemplo hasta entonces.'
   )
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession:     true,
-    detectSessionInUrl: true,
-  },
-})
+export const supabase = createClient(
+  supabaseUrl  ?? 'https://placeholder.supabase.co',
+  supabaseAnonKey ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder',
+  {
+    auth: {
+      persistSession:     true,
+      detectSessionInUrl: true,
+    },
+  }
+)
+
+export const supabaseConfigurado = !isPlaceholder

@@ -47,8 +47,13 @@ export default function LoginPage() {
       )
       const esAdmin = data?.rol === 'admin' || data?.rol === 'autoridad'
       navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
-    } catch {
-      setErrorAuth('Email o contraseña incorrectos. Verificá tus datos.')
+    } catch (err) {
+      const msg = err?.message ?? ''
+      if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
+        setErrorAuth('No se pudo conectar con el servidor. Verificá tu conexión o que Supabase esté configurado en .env.local.')
+      } else {
+        setErrorAuth('Email o contraseña incorrectos. Verificá tus datos.')
+      }
     }
   }
 
