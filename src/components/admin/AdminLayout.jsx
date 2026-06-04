@@ -18,6 +18,12 @@ import { ROLES } from '@/types/roles'
 
 const NAV_SECTIONS = [
   {
+    titulo: 'Panel',
+    items: [
+      { icon: LayoutDashboard, label: 'Inicio',    href: '/admin' },
+    ],
+  },
+  {
     titulo: 'Gestión de Contenido',
     items: [
       { icon: MessageSquare, label: 'Opiniones',   href: '/admin/opiniones' },
