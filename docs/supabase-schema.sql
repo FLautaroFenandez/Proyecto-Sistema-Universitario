@@ -1,11 +1,11 @@
 -- ============================================================
 -- ESQUEMA COMPLETO — Centro Educativo "Educar para Transformar"
--- Versión: 2.0 (corregida y verificada contra el código)
+-- Versión: 3.0 — IDEMPOTENTE (se puede ejecutar múltiples veces)
 --
 -- INSTRUCCIONES:
 -- 1. Ir a supabase.com → tu proyecto → SQL Editor → New query
 -- 2. Pegar TODO este archivo y hacer clic en "Run"
--- 3. Si hay errores de "already exists", ignorarlos y continuar
+-- 3. Listo. Borra y recrea todo de forma segura.
 -- ============================================================
 
 
@@ -13,10 +13,82 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
--- ── 2. TABLA PROFILES ───────────────────────────────────────
--- Extiende auth.users de Supabase con datos del usuario.
--- IMPORTANTE: el INSERT lo hace el código (RegistroPage/useAuth),
--- NO hay trigger automático para evitar conflictos.
+-- ── 2. ELIMINAR POLÍTICAS EXISTENTES (para poder recrearlas) ─
+-- Storage
+DROP POLICY IF EXISTS "galeria_lectura_publica"  ON storage.objects;
+DROP POLICY IF EXISTS "galeria_admin_upload"      ON storage.objects;
+DROP POLICY IF EXISTS "galeria_admin_delete"      ON storage.objects;
+DROP POLICY IF EXISTS "noticias_lectura_publica"  ON storage.objects;
+DROP POLICY IF EXISTS "noticias_admin_upload"     ON storage.objects;
+DROP POLICY IF EXISTS "noticias_admin_delete"     ON storage.objects;
+
+-- Profiles
+DROP POLICY IF EXISTS "perfil_propio"              ON profiles;
+DROP POLICY IF EXISTS "perfil_propio_select"       ON profiles;
+DROP POLICY IF EXISTS "insertar_propio_perfil"     ON profiles;
+DROP POLICY IF EXISTS "admin_ve_todos"             ON profiles;
+DROP POLICY IF EXISTS "admin_ve_todos_perfiles"    ON profiles;
+DROP POLICY IF EXISTS "admin_gestiona_perfiles"    ON profiles;
+DROP POLICY IF EXISTS "admin_actualiza_perfiles"   ON profiles;
+DROP POLICY IF EXISTS "admin_elimina_perfiles"     ON profiles;
+
+-- Noticias
+DROP POLICY IF EXISTS "noticias_publicas"          ON noticias;
+DROP POLICY IF EXISTS "noticias_internas"          ON noticias;
+DROP POLICY IF EXISTS "admin_autoridad_noticias"   ON noticias;
+DROP POLICY IF EXISTS "admin_gestiona_noticias"    ON noticias;
+DROP POLICY IF EXISTS "admin_inserta_noticias"     ON noticias;
+DROP POLICY IF EXISTS "admin_modifica_noticias"    ON noticias;
+DROP POLICY IF EXISTS "admin_elimina_noticias"     ON noticias;
+DROP POLICY IF EXISTS "admin_ve_todas_noticias"    ON noticias;
+
+-- Opiniones
+DROP POLICY IF EXISTS "leer_aprobadas"             ON opiniones;
+DROP POLICY IF EXISTS "insertar_opinion"           ON opiniones;
+DROP POLICY IF EXISTS "admin_gestiona_opiniones"   ON opiniones;
+
+-- Inscripciones
+DROP POLICY IF EXISTS "insertar_inscripcion"       ON inscripciones;
+DROP POLICY IF EXISTS "admin_lee_inscripciones"    ON inscripciones;
+DROP POLICY IF EXISTS "admin_gestiona_inscripciones" ON inscripciones;
+DROP POLICY IF EXISTS "admin_actualiza_inscripciones" ON inscripciones;
+
+-- Galería
+DROP POLICY IF EXISTS "galeria_publica"            ON galeria;
+DROP POLICY IF EXISTS "admin_gestiona_galeria"     ON galeria;
+DROP POLICY IF EXISTS "admin_inserta_galeria"      ON galeria;
+DROP POLICY IF EXISTS "admin_modifica_galeria"     ON galeria;
+DROP POLICY IF EXISTS "admin_elimina_galeria"      ON galeria;
+
+-- Galería Categorías
+DROP POLICY IF EXISTS "categorias_publicas"        ON galeria_categorias;
+DROP POLICY IF EXISTS "admin_gestiona_categorias"  ON galeria_categorias;
+
+-- Empleos
+DROP POLICY IF EXISTS "empleos_activos_publico"    ON empleos;
+DROP POLICY IF EXISTS "admin_gestiona_empleos"     ON empleos;
+DROP POLICY IF EXISTS "admin_inserta_empleos"      ON empleos;
+DROP POLICY IF EXISTS "admin_modifica_empleos"     ON empleos;
+DROP POLICY IF EXISTS "admin_elimina_empleos"      ON empleos;
+DROP POLICY IF EXISTS "admin_ve_todos_empleos"     ON empleos;
+
+-- Contacto
+DROP POLICY IF EXISTS "insertar_mensaje_contacto"  ON contacto_mensajes;
+DROP POLICY IF EXISTS "admin_lee_mensajes"         ON contacto_mensajes;
+DROP POLICY IF EXISTS "insertar_contacto (publico)" ON contacto_mensajes;
+DROP POLICY IF EXISTS "Admin ve contactos"         ON contacto_mensajes;
+
+
+-- ── 3. ELIMINAR TRIGGERS EXISTENTES ─────────────────────────
+DROP TRIGGER IF EXISTS trg_profiles_updated     ON profiles;
+DROP TRIGGER IF EXISTS trg_noticias_updated     ON noticias;
+DROP TRIGGER IF EXISTS trg_inscripciones_updated ON inscripciones;
+DROP TRIGGER IF EXISTS trg_empleos_updated      ON empleos;
+DROP TRIGGER IF EXISTS on_auth_user_created     ON auth.users;
+
+
+-- ── 4. CREAR TABLAS ──────────────────────────────────────────
+
 CREATE TABLE IF NOT EXISTS profiles (
   id          UUID          PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   nombre      VARCHAR(100)  NOT NULL,
@@ -29,8 +101,6 @@ CREATE TABLE IF NOT EXISTS profiles (
   updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 3. TABLA NOTICIAS ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS noticias (
   id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   titulo      VARCHAR(200)  NOT NULL,
@@ -44,8 +114,6 @@ CREATE TABLE IF NOT EXISTS noticias (
   updated_at  TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 4. TABLA OPINIONES ───────────────────────────────────────
 CREATE TABLE IF NOT EXISTS opiniones (
   id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   autor_nombre  VARCHAR(100)  NOT NULL,
@@ -57,24 +125,18 @@ CREATE TABLE IF NOT EXISTS opiniones (
   created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 5. TABLA INSCRIPCIONES ───────────────────────────────────
--- Todos los campos que InscripcionPage.jsx envía a Supabase.
 CREATE TABLE IF NOT EXISTS inscripciones (
   id                    UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
-  -- Datos del estudiante
   estudiante_nombre     VARCHAR(100)  NOT NULL,
   estudiante_dni        VARCHAR(20)   NOT NULL,
   estudiante_nacimiento DATE          NOT NULL,
   nivel                 VARCHAR(20)   NOT NULL CHECK (nivel IN ('inicial','primario','secundario')),
   turno                 VARCHAR(10)   NOT NULL CHECK (turno IN ('manana','tarde')),
-  -- Datos del tutor/padre
   tutor_nombre          VARCHAR(100)  NOT NULL,
   tutor_dni             VARCHAR(20)   NOT NULL,
   tutor_relacion        VARCHAR(20)   NOT NULL CHECK (tutor_relacion IN ('padre','madre','tutor')),
   tutor_telefono        VARCHAR(20)   NOT NULL,
   tutor_email           VARCHAR(150)  NOT NULL,
-  -- Estado y seguimiento
   estado                VARCHAR(20)   NOT NULL DEFAULT 'pendiente'
                                       CHECK (estado IN ('pendiente','en_revision','aceptada','rechazada')),
   observaciones         TEXT,
@@ -83,9 +145,6 @@ CREATE TABLE IF NOT EXISTS inscripciones (
   updated_at            TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 6. TABLA GALERIA_CATEGORIAS ──────────────────────────────
--- Usa SERIAL (INTEGER) como PK, no UUID.
 CREATE TABLE IF NOT EXISTS galeria_categorias (
   id          SERIAL        PRIMARY KEY,
   nombre      VARCHAR(50)   NOT NULL UNIQUE,
@@ -93,7 +152,6 @@ CREATE TABLE IF NOT EXISTS galeria_categorias (
   orden       INTEGER       NOT NULL DEFAULT 0
 );
 
--- Datos iniciales de categorías
 INSERT INTO galeria_categorias (nombre, descripcion, orden) VALUES
   ('Instalaciones', 'Edificio e instalaciones generales',          1),
   ('Aulas',         'Aulas y espacios de aprendizaje',             2),
@@ -102,9 +160,6 @@ INSERT INTO galeria_categorias (nombre, descripcion, orden) VALUES
   ('Idiomas',       'Clases y actividades de idiomas',             5)
 ON CONFLICT (nombre) DO NOTHING;
 
-
--- ── 7. TABLA GALERIA ─────────────────────────────────────────
--- categoria_id es INTEGER (referencia al SERIAL de galeria_categorias)
 CREATE TABLE IF NOT EXISTS galeria (
   id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   titulo        VARCHAR(150),
@@ -116,8 +171,6 @@ CREATE TABLE IF NOT EXISTS galeria (
   created_at    TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 8. TABLA EMPLEOS ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS empleos (
   id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   titulo          VARCHAR(200)  NOT NULL,
@@ -131,9 +184,6 @@ CREATE TABLE IF NOT EXISTS empleos (
   updated_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
 
-
--- ── 9. TABLA CONTACTO_MENSAJES ───────────────────────────────
--- El código usa FROM('contacto_mensajes'), no 'contacto'.
 CREATE TABLE IF NOT EXISTS contacto_mensajes (
   id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre      VARCHAR(100)  NOT NULL,
@@ -145,7 +195,7 @@ CREATE TABLE IF NOT EXISTS contacto_mensajes (
 );
 
 
--- ── 10. TRIGGER updated_at ───────────────────────────────────
+-- ── 5. TRIGGER updated_at ────────────────────────────────────
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -171,17 +221,16 @@ CREATE TRIGGER trg_empleos_updated
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 
--- ── 11. ÍNDICES ──────────────────────────────────────────────
-CREATE INDEX IF NOT EXISTS idx_noticias_created    ON noticias(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_noticias_publica    ON noticias(publica, publicada);
-CREATE INDEX IF NOT EXISTS idx_galeria_categoria   ON galeria(categoria_id);
+-- ── 6. ÍNDICES ───────────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_noticias_created     ON noticias(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_noticias_publica     ON noticias(publica, publicada);
+CREATE INDEX IF NOT EXISTS idx_galeria_categoria    ON galeria(categoria_id);
 CREATE INDEX IF NOT EXISTS idx_inscripciones_estado ON inscripciones(estado);
-CREATE INDEX IF NOT EXISTS idx_opiniones_estado    ON opiniones(estado);
-CREATE INDEX IF NOT EXISTS idx_empleos_activos     ON empleos(activo, fecha_limite);
+CREATE INDEX IF NOT EXISTS idx_opiniones_estado     ON opiniones(estado);
+CREATE INDEX IF NOT EXISTS idx_empleos_activos      ON empleos(activo, fecha_limite);
 
 
--- ── 12. ROW LEVEL SECURITY (RLS) ─────────────────────────────
-
+-- ── 7. ROW LEVEL SECURITY ────────────────────────────────────
 ALTER TABLE profiles          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE noticias          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE opiniones         ENABLE ROW LEVEL SECURITY;
@@ -192,22 +241,18 @@ ALTER TABLE empleos           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contacto_mensajes ENABLE ROW LEVEL SECURITY;
 
 -- ── Profiles ──
--- Cada usuario puede ver su propio perfil
 CREATE POLICY "perfil_propio_select" ON profiles
   FOR SELECT USING (auth.uid() = id);
 
--- CRÍTICO: sin esta política el registro falla.
--- Permite que un usuario recién creado inserte su propio perfil.
+-- SIN ESTA POLÍTICA EL REGISTRO FALLA (INSERT al crear cuenta)
 CREATE POLICY "insertar_propio_perfil" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
--- Admin ve todos los perfiles
 CREATE POLICY "admin_ve_todos_perfiles" ON profiles
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol = 'admin')
   );
 
--- Admin puede actualizar y eliminar cualquier perfil
 CREATE POLICY "admin_actualiza_perfiles" ON profiles
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
@@ -219,23 +264,24 @@ CREATE POLICY "admin_elimina_perfiles" ON profiles
   );
 
 -- ── Noticias ──
--- Visitantes sin cuenta ven noticias públicas y publicadas
 CREATE POLICY "noticias_publicas" ON noticias
   FOR SELECT USING (publica = TRUE AND publicada = TRUE);
 
--- Usuarios autenticados (padres, estudiantes, personal) ven noticias internas
 CREATE POLICY "noticias_internas" ON noticias
   FOR SELECT USING (
     publica = FALSE AND publicada = TRUE AND auth.uid() IS NOT NULL
   );
 
--- Admin puede INSERT (necesita WITH CHECK separado del USING para que funcione)
+CREATE POLICY "admin_ve_todas_noticias" ON noticias
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
 CREATE POLICY "admin_inserta_noticias" ON noticias
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- Admin puede UPDATE y DELETE
 CREATE POLICY "admin_modifica_noticias" ON noticias
   FOR UPDATE USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
@@ -243,12 +289,6 @@ CREATE POLICY "admin_modifica_noticias" ON noticias
 
 CREATE POLICY "admin_elimina_noticias" ON noticias
   FOR DELETE USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
-  );
-
--- Admin ve TODAS las noticias (incluso borradores)
-CREATE POLICY "admin_ve_todas_noticias" ON noticias
-  FOR SELECT USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
@@ -310,6 +350,11 @@ CREATE POLICY "admin_gestiona_categorias" ON galeria_categorias
 CREATE POLICY "empleos_activos_publico" ON empleos
   FOR SELECT USING (activo = TRUE);
 
+CREATE POLICY "admin_ve_todos_empleos" ON empleos
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
 CREATE POLICY "admin_inserta_empleos" ON empleos
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
@@ -325,11 +370,6 @@ CREATE POLICY "admin_elimina_empleos" ON empleos
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
-CREATE POLICY "admin_ve_todos_empleos" ON empleos
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
-  );
-
 -- ── Contacto Mensajes ──
 CREATE POLICY "insertar_mensaje_contacto" ON contacto_mensajes
   FOR INSERT WITH CHECK (TRUE);
@@ -340,65 +380,57 @@ CREATE POLICY "admin_lee_mensajes" ON contacto_mensajes
   );
 
 
--- ── 13. STORAGE ──────────────────────────────────────────────
--- Crear 2 buckets PÚBLICOS desde el dashboard:
---   Storage → New bucket → nombre: "galeria"  → Public: ON
---   Storage → New bucket → nombre: "noticias" → Public: ON
---
--- Luego ejecutar estas políticas de Storage:
+-- ── 8. STORAGE ───────────────────────────────────────────────
+-- ANTES de ejecutar esto:
+-- 1. Ir a Storage → New bucket → nombre: "galeria"  → Public: ON
+-- 2. Ir a Storage → New bucket → nombre: "noticias" → Public: ON
 
-CREATE POLICY "galeria_lectura_publica"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'galeria');
+CREATE POLICY "galeria_lectura_publica" ON storage.objects
+  FOR SELECT USING (bucket_id = 'galeria');
 
-CREATE POLICY "galeria_admin_upload"
-  ON storage.objects FOR INSERT
-  WITH CHECK (
+CREATE POLICY "galeria_admin_upload" ON storage.objects
+  FOR INSERT WITH CHECK (
     bucket_id = 'galeria' AND
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
-CREATE POLICY "galeria_admin_delete"
-  ON storage.objects FOR DELETE
-  USING (
+CREATE POLICY "galeria_admin_delete" ON storage.objects
+  FOR DELETE USING (
     bucket_id = 'galeria' AND
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
-CREATE POLICY "noticias_lectura_publica"
-  ON storage.objects FOR SELECT
-  USING (bucket_id = 'noticias');
+CREATE POLICY "noticias_lectura_publica" ON storage.objects
+  FOR SELECT USING (bucket_id = 'noticias');
 
-CREATE POLICY "noticias_admin_upload"
-  ON storage.objects FOR INSERT
-  WITH CHECK (
+CREATE POLICY "noticias_admin_upload" ON storage.objects
+  FOR INSERT WITH CHECK (
     bucket_id = 'noticias' AND
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
-CREATE POLICY "noticias_admin_delete"
-  ON storage.objects FOR DELETE
-  USING (
+CREATE POLICY "noticias_admin_delete" ON storage.objects
+  FOR DELETE USING (
     bucket_id = 'noticias' AND
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
 
--- ── 14. CREAR EL PRIMER USUARIO ADMIN ────────────────────────
+-- ── 9. CREAR EL PRIMER USUARIO ADMIN ─────────────────────────
+-- Paso 1: Authentication → Users → Add user
+--   Email:    admin@educarparatransformar.edu.ar
+--   Password: una contraseña fuerte
 --
--- Paso 1: En Supabase → Authentication → Users → Add user
---   Email: admin@educarparatransformar.edu.ar
---   Password: (una contraseña fuerte)
---
--- Paso 2: Copiar el UUID del usuario y ejecutar:
+-- Paso 2: Copiar el UUID del usuario creado y ejecutar esto
+--         (reemplazando el UUID y el DNI real):
 --
 -- INSERT INTO profiles (id, nombre, dni, rol)
 -- VALUES (
 --   'PEGAR-UUID-AQUI',
 --   'Administrador Sistema',
---   '00000000',
+--   '12345678',
 --   'admin'
 -- );
 --
--- Paso 3: Verificar en Table Editor → profiles que el rol sea 'admin'
+-- Paso 3: Verificar en Table Editor → profiles que rol = 'admin'
 -- ============================================================
