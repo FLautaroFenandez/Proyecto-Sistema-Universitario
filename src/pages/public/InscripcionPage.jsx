@@ -60,10 +60,14 @@ export default function InscripcionPage() {
 
   const onSubmit = async (data) => {
     setErrorEnvio(null)
+    // Generamos el ID acá para no necesitar SELECT después del INSERT
+    // (RLS no permite SELECT a usuarios anónimos en inscripciones)
+    const solicitudId = crypto.randomUUID()
     try {
-      const { data: result, error } = await supabase
+      const { error } = await supabase
         .from('inscripciones')
         .insert({
+          id:                    solicitudId,
           estudiante_nombre:     data.estudiante_nombre,
           estudiante_nacimiento: data.estudiante_nacimiento,
           estudiante_dni:        data.estudiante_dni,
@@ -77,10 +81,8 @@ export default function InscripcionPage() {
           observaciones:         data.observaciones || null,
           estado:                'pendiente',
         })
-        .select('id')
-        .single()
       if (error) throw error
-      setIdSolicitud(result.id.slice(0, 8).toUpperCase())
+      setIdSolicitud(solicitudId.slice(0, 8).toUpperCase())
       setEnviado(true)
     } catch (err) {
       console.error('Error al enviar inscripción:', err)
