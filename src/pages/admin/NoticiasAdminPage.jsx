@@ -51,7 +51,8 @@ export default function NoticiasAdminPage() {
 
   const fetchNoticias = async () => {
     setCargando(true)
-    let q = supabase.from('noticias').select('id,titulo,publica,publicada,created_at,imagen_url').order('created_at', { ascending: false })
+    // contenido y resumen se necesitan al abrir el modal de edición
+    let q = supabase.from('noticias').select('id,titulo,resumen,contenido,publica,publicada,created_at,imagen_url').order('created_at', { ascending: false })
     if (filtro === 'borrador')  q = q.eq('publicada', false)
     if (filtro === 'publicada') q = q.eq('publicada', true)
     const { data } = await q
