@@ -192,30 +192,63 @@ ALTER TABLE empleos           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contacto_mensajes ENABLE ROW LEVEL SECURITY;
 
 -- ── Profiles ──
-CREATE POLICY "perfil_propio" ON profiles
+-- Cada usuario puede ver su propio perfil
+CREATE POLICY "perfil_propio_select" ON profiles
   FOR SELECT USING (auth.uid() = id);
 
+-- CRÍTICO: sin esta política el registro falla.
+-- Permite que un usuario recién creado inserte su propio perfil.
+CREATE POLICY "insertar_propio_perfil" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Admin ve todos los perfiles
 CREATE POLICY "admin_ve_todos_perfiles" ON profiles
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol = 'admin')
   );
 
-CREATE POLICY "admin_gestiona_perfiles" ON profiles
-  FOR ALL USING (
+-- Admin puede actualizar y eliminar cualquier perfil
+CREATE POLICY "admin_actualiza_perfiles" ON profiles
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_elimina_perfiles" ON profiles
+  FOR DELETE USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
 -- ── Noticias ──
+-- Visitantes sin cuenta ven noticias públicas y publicadas
 CREATE POLICY "noticias_publicas" ON noticias
   FOR SELECT USING (publica = TRUE AND publicada = TRUE);
 
+-- Usuarios autenticados (padres, estudiantes, personal) ven noticias internas
 CREATE POLICY "noticias_internas" ON noticias
   FOR SELECT USING (
     publica = FALSE AND publicada = TRUE AND auth.uid() IS NOT NULL
   );
 
-CREATE POLICY "admin_gestiona_noticias" ON noticias
-  FOR ALL USING (
+-- Admin puede INSERT (necesita WITH CHECK separado del USING para que funcione)
+CREATE POLICY "admin_inserta_noticias" ON noticias
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- Admin puede UPDATE y DELETE
+CREATE POLICY "admin_modifica_noticias" ON noticias
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_elimina_noticias" ON noticias
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+-- Admin ve TODAS las noticias (incluso borradores)
+CREATE POLICY "admin_ve_todas_noticias" ON noticias
+  FOR SELECT USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
@@ -249,8 +282,18 @@ CREATE POLICY "admin_actualiza_inscripciones" ON inscripciones
 CREATE POLICY "galeria_publica" ON galeria
   FOR SELECT USING (activa = TRUE);
 
-CREATE POLICY "admin_gestiona_galeria" ON galeria
-  FOR ALL USING (
+CREATE POLICY "admin_inserta_galeria" ON galeria
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_modifica_galeria" ON galeria
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_elimina_galeria" ON galeria
+  FOR DELETE USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
@@ -267,8 +310,23 @@ CREATE POLICY "admin_gestiona_categorias" ON galeria_categorias
 CREATE POLICY "empleos_activos_publico" ON empleos
   FOR SELECT USING (activo = TRUE);
 
-CREATE POLICY "admin_gestiona_empleos" ON empleos
-  FOR ALL USING (
+CREATE POLICY "admin_inserta_empleos" ON empleos
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_modifica_empleos" ON empleos
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_elimina_empleos" ON empleos
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
+  );
+
+CREATE POLICY "admin_ve_todos_empleos" ON empleos
+  FOR SELECT USING (
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
