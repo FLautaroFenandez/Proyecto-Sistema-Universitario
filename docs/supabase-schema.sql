@@ -1,93 +1,19 @@
 -- ============================================================
 -- ESQUEMA COMPLETO — Centro Educativo "Educar para Transformar"
--- Versión: 3.0 — IDEMPOTENTE (se puede ejecutar múltiples veces)
+-- Versión: 4.0 — Orden correcto: tablas → drop policies → create
 --
 -- INSTRUCCIONES:
--- 1. Ir a supabase.com → tu proyecto → SQL Editor → New query
--- 2. Pegar TODO este archivo y hacer clic en "Run"
--- 3. Listo. Borra y recrea todo de forma segura.
+-- 1. Supabase → Storage → crear bucket "galeria" (Public ON)
+-- 2. Supabase → Storage → crear bucket "noticias" (Public ON)
+-- 3. SQL Editor → New query → pegar esto → Run
 -- ============================================================
 
 
--- ── 1. EXTENSIONES ──────────────────────────────────────────
+-- ── PASO 1: EXTENSIONES ──────────────────────────────────────
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
--- ── 2. ELIMINAR POLÍTICAS EXISTENTES (para poder recrearlas) ─
--- Storage
-DROP POLICY IF EXISTS "galeria_lectura_publica"  ON storage.objects;
-DROP POLICY IF EXISTS "galeria_admin_upload"      ON storage.objects;
-DROP POLICY IF EXISTS "galeria_admin_delete"      ON storage.objects;
-DROP POLICY IF EXISTS "noticias_lectura_publica"  ON storage.objects;
-DROP POLICY IF EXISTS "noticias_admin_upload"     ON storage.objects;
-DROP POLICY IF EXISTS "noticias_admin_delete"     ON storage.objects;
-
--- Profiles
-DROP POLICY IF EXISTS "perfil_propio"              ON profiles;
-DROP POLICY IF EXISTS "perfil_propio_select"       ON profiles;
-DROP POLICY IF EXISTS "insertar_propio_perfil"     ON profiles;
-DROP POLICY IF EXISTS "admin_ve_todos"             ON profiles;
-DROP POLICY IF EXISTS "admin_ve_todos_perfiles"    ON profiles;
-DROP POLICY IF EXISTS "admin_gestiona_perfiles"    ON profiles;
-DROP POLICY IF EXISTS "admin_actualiza_perfiles"   ON profiles;
-DROP POLICY IF EXISTS "admin_elimina_perfiles"     ON profiles;
-
--- Noticias
-DROP POLICY IF EXISTS "noticias_publicas"          ON noticias;
-DROP POLICY IF EXISTS "noticias_internas"          ON noticias;
-DROP POLICY IF EXISTS "admin_autoridad_noticias"   ON noticias;
-DROP POLICY IF EXISTS "admin_gestiona_noticias"    ON noticias;
-DROP POLICY IF EXISTS "admin_inserta_noticias"     ON noticias;
-DROP POLICY IF EXISTS "admin_modifica_noticias"    ON noticias;
-DROP POLICY IF EXISTS "admin_elimina_noticias"     ON noticias;
-DROP POLICY IF EXISTS "admin_ve_todas_noticias"    ON noticias;
-
--- Opiniones
-DROP POLICY IF EXISTS "leer_aprobadas"             ON opiniones;
-DROP POLICY IF EXISTS "insertar_opinion"           ON opiniones;
-DROP POLICY IF EXISTS "admin_gestiona_opiniones"   ON opiniones;
-
--- Inscripciones
-DROP POLICY IF EXISTS "insertar_inscripcion"       ON inscripciones;
-DROP POLICY IF EXISTS "admin_lee_inscripciones"    ON inscripciones;
-DROP POLICY IF EXISTS "admin_gestiona_inscripciones" ON inscripciones;
-DROP POLICY IF EXISTS "admin_actualiza_inscripciones" ON inscripciones;
-
--- Galería
-DROP POLICY IF EXISTS "galeria_publica"            ON galeria;
-DROP POLICY IF EXISTS "admin_gestiona_galeria"     ON galeria;
-DROP POLICY IF EXISTS "admin_inserta_galeria"      ON galeria;
-DROP POLICY IF EXISTS "admin_modifica_galeria"     ON galeria;
-DROP POLICY IF EXISTS "admin_elimina_galeria"      ON galeria;
-
--- Galería Categorías
-DROP POLICY IF EXISTS "categorias_publicas"        ON galeria_categorias;
-DROP POLICY IF EXISTS "admin_gestiona_categorias"  ON galeria_categorias;
-
--- Empleos
-DROP POLICY IF EXISTS "empleos_activos_publico"    ON empleos;
-DROP POLICY IF EXISTS "admin_gestiona_empleos"     ON empleos;
-DROP POLICY IF EXISTS "admin_inserta_empleos"      ON empleos;
-DROP POLICY IF EXISTS "admin_modifica_empleos"     ON empleos;
-DROP POLICY IF EXISTS "admin_elimina_empleos"      ON empleos;
-DROP POLICY IF EXISTS "admin_ve_todos_empleos"     ON empleos;
-
--- Contacto
-DROP POLICY IF EXISTS "insertar_mensaje_contacto"  ON contacto_mensajes;
-DROP POLICY IF EXISTS "admin_lee_mensajes"         ON contacto_mensajes;
-DROP POLICY IF EXISTS "insertar_contacto (publico)" ON contacto_mensajes;
-DROP POLICY IF EXISTS "Admin ve contactos"         ON contacto_mensajes;
-
-
--- ── 3. ELIMINAR TRIGGERS EXISTENTES ─────────────────────────
-DROP TRIGGER IF EXISTS trg_profiles_updated     ON profiles;
-DROP TRIGGER IF EXISTS trg_noticias_updated     ON noticias;
-DROP TRIGGER IF EXISTS trg_inscripciones_updated ON inscripciones;
-DROP TRIGGER IF EXISTS trg_empleos_updated      ON empleos;
-DROP TRIGGER IF EXISTS on_auth_user_created     ON auth.users;
-
-
--- ── 4. CREAR TABLAS ──────────────────────────────────────────
+-- ── PASO 2: CREAR TABLAS (si no existen) ─────────────────────
 
 CREATE TABLE IF NOT EXISTS profiles (
   id          UUID          PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -195,7 +121,7 @@ CREATE TABLE IF NOT EXISTS contacto_mensajes (
 );
 
 
--- ── 5. TRIGGER updated_at ────────────────────────────────────
+-- ── PASO 3: TRIGGER updated_at ───────────────────────────────
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -204,33 +130,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_profiles_updated      ON profiles;
+DROP TRIGGER IF EXISTS trg_noticias_updated      ON noticias;
+DROP TRIGGER IF EXISTS trg_inscripciones_updated ON inscripciones;
+DROP TRIGGER IF EXISTS trg_empleos_updated       ON empleos;
+
 CREATE TRIGGER trg_profiles_updated
-  BEFORE UPDATE ON profiles
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
+  BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER trg_noticias_updated
-  BEFORE UPDATE ON noticias
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
+  BEFORE UPDATE ON noticias FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER trg_inscripciones_updated
-  BEFORE UPDATE ON inscripciones
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
+  BEFORE UPDATE ON inscripciones FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER trg_empleos_updated
-  BEFORE UPDATE ON empleos
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  BEFORE UPDATE ON empleos FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 
--- ── 6. ÍNDICES ───────────────────────────────────────────────
-CREATE INDEX IF NOT EXISTS idx_noticias_created     ON noticias(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_noticias_publica     ON noticias(publica, publicada);
-CREATE INDEX IF NOT EXISTS idx_galeria_categoria    ON galeria(categoria_id);
-CREATE INDEX IF NOT EXISTS idx_inscripciones_estado ON inscripciones(estado);
-CREATE INDEX IF NOT EXISTS idx_opiniones_estado     ON opiniones(estado);
-CREATE INDEX IF NOT EXISTS idx_empleos_activos      ON empleos(activo, fecha_limite);
+-- ── PASO 4: ÍNDICES ──────────────────────────────────────────
+CREATE INDEX IF NOT EXISTS idx_noticias_created      ON noticias(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_noticias_publica      ON noticias(publica, publicada);
+CREATE INDEX IF NOT EXISTS idx_galeria_categoria     ON galeria(categoria_id);
+CREATE INDEX IF NOT EXISTS idx_inscripciones_estado  ON inscripciones(estado);
+CREATE INDEX IF NOT EXISTS idx_opiniones_estado      ON opiniones(estado);
+CREATE INDEX IF NOT EXISTS idx_empleos_activos       ON empleos(activo, fecha_limite);
 
 
--- ── 7. ROW LEVEL SECURITY ────────────────────────────────────
+-- ── PASO 5: HABILITAR RLS ────────────────────────────────────
 ALTER TABLE profiles          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE noticias          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE opiniones         ENABLE ROW LEVEL SECURITY;
@@ -240,11 +164,70 @@ ALTER TABLE galeria_categorias ENABLE ROW LEVEL SECURITY;
 ALTER TABLE empleos           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contacto_mensajes ENABLE ROW LEVEL SECURITY;
 
--- ── Profiles ──
+
+-- ── PASO 6: BORRAR POLÍTICAS VIEJAS (ahora que las tablas existen)
+DROP POLICY IF EXISTS "perfil_propio"               ON profiles;
+DROP POLICY IF EXISTS "perfil_propio_select"        ON profiles;
+DROP POLICY IF EXISTS "insertar_propio_perfil"      ON profiles;
+DROP POLICY IF EXISTS "admin_ve_todos"              ON profiles;
+DROP POLICY IF EXISTS "admin_ve_todos_perfiles"     ON profiles;
+DROP POLICY IF EXISTS "admin_gestiona_perfiles"     ON profiles;
+DROP POLICY IF EXISTS "admin_actualiza_perfiles"    ON profiles;
+DROP POLICY IF EXISTS "admin_elimina_perfiles"      ON profiles;
+
+DROP POLICY IF EXISTS "noticias_publicas"           ON noticias;
+DROP POLICY IF EXISTS "noticias_internas"           ON noticias;
+DROP POLICY IF EXISTS "admin_autoridad_noticias"    ON noticias;
+DROP POLICY IF EXISTS "admin_gestiona_noticias"     ON noticias;
+DROP POLICY IF EXISTS "admin_ve_todas_noticias"     ON noticias;
+DROP POLICY IF EXISTS "admin_inserta_noticias"      ON noticias;
+DROP POLICY IF EXISTS "admin_modifica_noticias"     ON noticias;
+DROP POLICY IF EXISTS "admin_elimina_noticias"      ON noticias;
+
+DROP POLICY IF EXISTS "leer_aprobadas"              ON opiniones;
+DROP POLICY IF EXISTS "insertar_opinion"            ON opiniones;
+DROP POLICY IF EXISTS "admin_gestiona_opiniones"    ON opiniones;
+
+DROP POLICY IF EXISTS "insertar_inscripcion"        ON inscripciones;
+DROP POLICY IF EXISTS "admin_lee_inscripciones"     ON inscripciones;
+DROP POLICY IF EXISTS "admin_gestiona_inscripciones" ON inscripciones;
+DROP POLICY IF EXISTS "admin_actualiza_inscripciones" ON inscripciones;
+
+DROP POLICY IF EXISTS "galeria_publica"             ON galeria;
+DROP POLICY IF EXISTS "admin_gestiona_galeria"      ON galeria;
+DROP POLICY IF EXISTS "admin_inserta_galeria"       ON galeria;
+DROP POLICY IF EXISTS "admin_modifica_galeria"      ON galeria;
+DROP POLICY IF EXISTS "admin_elimina_galeria"       ON galeria;
+
+DROP POLICY IF EXISTS "categorias_publicas"         ON galeria_categorias;
+DROP POLICY IF EXISTS "admin_gestiona_categorias"   ON galeria_categorias;
+
+DROP POLICY IF EXISTS "empleos_activos_publico"     ON empleos;
+DROP POLICY IF EXISTS "admin_gestiona_empleos"      ON empleos;
+DROP POLICY IF EXISTS "admin_ve_todos_empleos"      ON empleos;
+DROP POLICY IF EXISTS "admin_inserta_empleos"       ON empleos;
+DROP POLICY IF EXISTS "admin_modifica_empleos"      ON empleos;
+DROP POLICY IF EXISTS "admin_elimina_empleos"       ON empleos;
+
+DROP POLICY IF EXISTS "insertar_mensaje_contacto"   ON contacto_mensajes;
+DROP POLICY IF EXISTS "admin_lee_mensajes"          ON contacto_mensajes;
+DROP POLICY IF EXISTS "insertar_contacto (publico)" ON contacto_mensajes;
+DROP POLICY IF EXISTS "Admin ve contactos"          ON contacto_mensajes;
+
+DROP POLICY IF EXISTS "galeria_lectura_publica"     ON storage.objects;
+DROP POLICY IF EXISTS "galeria_admin_upload"        ON storage.objects;
+DROP POLICY IF EXISTS "galeria_admin_delete"        ON storage.objects;
+DROP POLICY IF EXISTS "noticias_lectura_publica"    ON storage.objects;
+DROP POLICY IF EXISTS "noticias_admin_upload"       ON storage.objects;
+DROP POLICY IF EXISTS "noticias_admin_delete"       ON storage.objects;
+
+
+-- ── PASO 7: CREAR POLÍTICAS NUEVAS ───────────────────────────
+
+-- Profiles
 CREATE POLICY "perfil_propio_select" ON profiles
   FOR SELECT USING (auth.uid() = id);
 
--- SIN ESTA POLÍTICA EL REGISTRO FALLA (INSERT al crear cuenta)
 CREATE POLICY "insertar_propio_perfil" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
@@ -263,7 +246,7 @@ CREATE POLICY "admin_elimina_perfiles" ON profiles
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Noticias ──
+-- Noticias
 CREATE POLICY "noticias_publicas" ON noticias
   FOR SELECT USING (publica = TRUE AND publicada = TRUE);
 
@@ -292,7 +275,7 @@ CREATE POLICY "admin_elimina_noticias" ON noticias
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Opiniones ──
+-- Opiniones
 CREATE POLICY "leer_aprobadas" ON opiniones
   FOR SELECT USING (estado = 'aprobada');
 
@@ -304,7 +287,7 @@ CREATE POLICY "admin_gestiona_opiniones" ON opiniones
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Inscripciones ──
+-- Inscripciones
 CREATE POLICY "insertar_inscripcion" ON inscripciones
   FOR INSERT WITH CHECK (TRUE);
 
@@ -318,7 +301,7 @@ CREATE POLICY "admin_actualiza_inscripciones" ON inscripciones
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Galería ──
+-- Galería
 CREATE POLICY "galeria_publica" ON galeria
   FOR SELECT USING (activa = TRUE);
 
@@ -337,7 +320,7 @@ CREATE POLICY "admin_elimina_galeria" ON galeria
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Galería Categorías ──
+-- Galería Categorías
 CREATE POLICY "categorias_publicas" ON galeria_categorias
   FOR SELECT USING (TRUE);
 
@@ -346,7 +329,7 @@ CREATE POLICY "admin_gestiona_categorias" ON galeria_categorias
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Empleos ──
+-- Empleos
 CREATE POLICY "empleos_activos_publico" ON empleos
   FOR SELECT USING (activo = TRUE);
 
@@ -370,7 +353,7 @@ CREATE POLICY "admin_elimina_empleos" ON empleos
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
--- ── Contacto Mensajes ──
+-- Contacto Mensajes
 CREATE POLICY "insertar_mensaje_contacto" ON contacto_mensajes
   FOR INSERT WITH CHECK (TRUE);
 
@@ -379,12 +362,7 @@ CREATE POLICY "admin_lee_mensajes" ON contacto_mensajes
     EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND rol IN ('admin','autoridad'))
   );
 
-
--- ── 8. STORAGE ───────────────────────────────────────────────
--- ANTES de ejecutar esto:
--- 1. Ir a Storage → New bucket → nombre: "galeria"  → Public: ON
--- 2. Ir a Storage → New bucket → nombre: "noticias" → Public: ON
-
+-- Storage (los buckets deben existir antes de ejecutar esto)
 CREATE POLICY "galeria_lectura_publica" ON storage.objects
   FOR SELECT USING (bucket_id = 'galeria');
 
@@ -416,13 +394,9 @@ CREATE POLICY "noticias_admin_delete" ON storage.objects
   );
 
 
--- ── 9. CREAR EL PRIMER USUARIO ADMIN ─────────────────────────
--- Paso 1: Authentication → Users → Add user
---   Email:    admin@educarparatransformar.edu.ar
---   Password: una contraseña fuerte
---
--- Paso 2: Copiar el UUID del usuario creado y ejecutar esto
---         (reemplazando el UUID y el DNI real):
+-- ── PASO 8: CREAR PRIMER ADMIN ───────────────────────────────
+-- 1. Authentication → Users → Add user → poné email y contraseña
+-- 2. Copiá el UUID del usuario y ejecutá (con tus datos reales):
 --
 -- INSERT INTO profiles (id, nombre, dni, rol)
 -- VALUES (
@@ -431,6 +405,4 @@ CREATE POLICY "noticias_admin_delete" ON storage.objects
 --   '12345678',
 --   'admin'
 -- );
---
--- Paso 3: Verificar en Table Editor → profiles que rol = 'admin'
 -- ============================================================
