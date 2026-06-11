@@ -74,11 +74,20 @@ export default function RegistroPage() {
       })
       navigate('/dashboard', { replace: true })
     } catch (err) {
-      const msg = err?.message ?? ''
-      if (msg.includes('already registered') || msg.includes('already exists')) {
-        setErrorAuth('Este email ya tiene una cuenta registrada.')
+      const msg  = err?.message ?? ''
+      const code = err?.code ?? ''
+      if (msg.includes('already registered') || msg.includes('already exists') || code === 'user_already_exists') {
+        setErrorAuth('Este email ya tiene una cuenta registrada. Probá iniciar sesión.')
+      } else if (code === 'over_email_send_rate_limit' || msg.includes('rate limit')) {
+        setErrorAuth('Se alcanzó el límite de registros por hora. Esperá unos minutos e intentá de nuevo.')
+      } else if (msg.includes('profiles_dni_key') || msg.includes('duplicate key')) {
+        setErrorAuth('Ese DNI ya está registrado con otra cuenta.')
+      } else if (code === 'weak_password' || msg.includes('Password')) {
+        setErrorAuth('La contraseña es muy débil. Usá al menos 8 caracteres con letras y números.')
+      } else if (msg.includes('fetch') || msg.includes('network')) {
+        setErrorAuth('No se pudo conectar con el servidor. Verificá tu conexión.')
       } else {
-        setErrorAuth('No pudimos crear tu cuenta. Intentá de nuevo.')
+        setErrorAuth(`No pudimos crear tu cuenta: ${msg || 'error desconocido'}`)
       }
     }
   }
