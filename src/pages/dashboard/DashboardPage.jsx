@@ -2,13 +2,13 @@
  * @file DashboardPage.jsx
  * @description Enrutador de dashboard — renderiza el sub-dashboard correcto según el rol
  * del usuario autenticado. Siempre usa el Layout público (Topbar + Navbar + Footer).
+ * Admin y Autoridad no tienen dashboard acá: van directo al panel /admin.
  */
 
 import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { UserX, LogOut, RefreshCw } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
-import { DashboardAdmin }      from '@/components/dashboard/DashboardAdmin'
 import { DashboardPersonal }   from '@/components/dashboard/DashboardPersonal'
 import { DashboardPadre }      from '@/components/dashboard/DashboardPadre'
 import { DashboardEstudiante } from '@/components/dashboard/DashboardEstudiante'
@@ -16,8 +16,6 @@ import { Spinner } from '@/components/ui/Spinner'
 
 /* Mapa rol → componente */
 const DASHBOARDS = {
-  admin:      DashboardAdmin,
-  autoridad:  DashboardAdmin,
   docente:    DashboardPersonal,
   personal:   DashboardPersonal,
   padre:      DashboardPadre,
@@ -60,6 +58,11 @@ export default function DashboardPage() {
       </div>
     </div>
   )
+
+  /* Admin y autoridad tienen su propio panel: redirigir siempre a /admin */
+  if (profile.rol === 'admin' || profile.rol === 'autoridad') {
+    return <Navigate to="/admin" replace />
+  }
 
   const Dashboard = DASHBOARDS[profile.rol] ?? DashboardEstudiante
 
