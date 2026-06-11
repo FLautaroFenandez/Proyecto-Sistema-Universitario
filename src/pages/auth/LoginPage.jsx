@@ -181,7 +181,9 @@ export default function LoginPage() {
             </Button>
 
             <p className="text-center text-xs text-gray-400">
-              <Link to="/" className="hover:text-brand-azul hover:underline">¿Olvidaste tu contraseña?</Link>
+              <Link to="/contacto" className="hover:text-brand-azul hover:underline">
+                ¿Olvidaste tu contraseña? Contactá a la administración
+              </Link>
             </p>
           </form>
 

@@ -43,9 +43,6 @@ export default {
         'slide-in-left': 'slideInLeft 0.4s ease-out forwards',
         blob:            'blob 8s ease-in-out infinite',
       },
-      backgroundImage: {
-        'hero-pattern': "url('/assets/hero-bg.jpg')",
-      },
     },
   },
   plugins: [],
