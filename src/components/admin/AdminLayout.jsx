@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
-  LayoutDashboard, ChevronRight,
+  LayoutDashboard, ChevronRight, Inbox,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
@@ -34,8 +34,9 @@ const NAV_SECTIONS = [
   {
     titulo: 'Gestión Institucional',
     items: [
-      { icon: ClipboardList, label: 'Inscripciones', href: '/admin/inscripciones' },
-      { icon: Briefcase,     label: 'Empleos',        href: '/admin/empleos' },
+      { icon: ClipboardList, label: 'Inscripciones',   href: '/admin/inscripciones' },
+      { icon: Briefcase,     label: 'Empleos',          href: '/admin/empleos' },
+      { icon: Inbox,         label: 'Consultas y CVs',  href: '/admin/mensajes' },
     ],
   },
 ]

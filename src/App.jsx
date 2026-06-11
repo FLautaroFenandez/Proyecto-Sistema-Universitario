@@ -39,6 +39,7 @@ const NoticiasAdminPage      = lazy(() => import('@/pages/admin/NoticiasAdminPag
 const GaleriaAdminPage       = lazy(() => import('@/pages/admin/GaleriaAdminPage'))
 const InscripcionesAdminPage = lazy(() => import('@/pages/admin/InscripcionesAdminPage'))
 const EmpleosAdminPage       = lazy(() => import('@/pages/admin/EmpleosAdminPage'))
+const MensajesAdminPage      = lazy(() => import('@/pages/admin/MensajesAdminPage'))
 const UsuariosAdminPage      = lazy(() => import('@/pages/admin/UsuariosAdminPage'))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
@@ -95,6 +96,7 @@ export default function App() {
               <Route path="/admin/galeria"       element={<GaleriaAdminPage />} />
               <Route path="/admin/inscripciones" element={<InscripcionesAdminPage />} />
               <Route path="/admin/empleos"       element={<EmpleosAdminPage />} />
+              <Route path="/admin/mensajes"      element={<MensajesAdminPage />} />
               {/* Usuarios: solo admin, verificado adicionalmente en la página */}
               <Route path="/admin/usuarios"      element={<UsuariosAdminPage />} />
             </Route>
