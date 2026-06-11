@@ -70,7 +70,7 @@ export default function NivelesPage() {
       />
 
       {/* Tabs */}
-      <section className="bg-white border-b border-gray-100 sticky top-16 z-30">
+      <section className="bg-white border-b border-gray-100 sticky top-[68px] z-30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-1 py-3">
             {NIVELES.map(n => (

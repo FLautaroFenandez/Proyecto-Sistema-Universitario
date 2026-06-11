@@ -50,9 +50,19 @@ export default function EmpleoPage() {
   }, [])
 
   const onCvSubmit = async (data) => {
-    /* Solo logging por ahora — podría guardarse en una tabla futura */
-    console.log('CV recibido:', data)
-    await new Promise(r => setTimeout(r, 800))
+    // Se guarda como mensaje de contacto: el admin lo ve junto a las demás consultas
+    const { error } = await supabase.from('contacto_mensajes').insert({
+      nombre: data.nombre,
+      email:  data.email,
+      asunto: `Empleo — CV (área: ${data.area})`,
+      mensaje: data.cv_link
+        ? `Postulación espontánea.\nÁrea de interés: ${data.area}\nCV: ${data.cv_link}`
+        : `Postulación espontánea.\nÁrea de interés: ${data.area}\n(Sin enlace a CV — contactar por email)`,
+    })
+    if (error) {
+      console.error('Error al enviar CV:', error)
+      return
+    }
     setCvEnviado(true)
   }
 

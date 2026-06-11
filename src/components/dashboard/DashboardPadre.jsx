@@ -15,10 +15,10 @@ import { formatDateShort } from '@/utils/formatDate'
 import { Badge } from '@/components/ui/Badge'
 
 const ESTADO_CONFIG = {
-  pendiente:   { icon: Clock,        color: 'orange', label: 'Pendiente de revisión',  bg: 'bg-orange-50' },
-  en_revision: { icon: Search,       color: 'blue',   label: 'En revisión',             bg: 'bg-blue-50' },
-  aceptada:    { icon: CheckCircle,  color: 'green',  label: '¡Aceptada! 🎉',           bg: 'bg-green-50' },
-  rechazada:   { icon: XCircle,      color: 'red',    label: 'No aceptada',             bg: 'bg-red-50' },
+  pendiente:   { icon: Clock,        color: 'orange', label: 'Pendiente de revisión',  bg: 'bg-orange-50', iconClass: 'text-orange-500' },
+  en_revision: { icon: Search,       color: 'blue',   label: 'En revisión',             bg: 'bg-blue-50',   iconClass: 'text-blue-500' },
+  aceptada:    { icon: CheckCircle,  color: 'green',  label: '¡Aceptada! 🎉',           bg: 'bg-green-50',  iconClass: 'text-green-500' },
+  rechazada:   { icon: XCircle,      color: 'red',    label: 'No aceptada',             bg: 'bg-red-50',    iconClass: 'text-red-500' },
 }
 
 function hora() {
@@ -98,7 +98,7 @@ export function DashboardPadre() {
                   className={`flex items-center gap-4 ${cfg.bg} rounded-2xl border border-gray-100 p-4`}
                 >
                   <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
-                    <Icon size={18} className={`text-${cfg.color === 'orange' ? 'orange' : cfg.color}-500`} />
+                    <Icon size={18} className={cfg.iconClass} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-800 text-sm truncate">{ins.estudiante_nombre}</p>

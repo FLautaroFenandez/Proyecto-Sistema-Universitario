@@ -67,15 +67,19 @@ export function HeroSection() {
         style={{
           minHeight: '520px',
           height: '72vh',
-          backgroundImage: `url('/assets/hero-bg.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundColor: '#1B3A6B',
-          backgroundBlendMode: 'multiply',
+          background: 'linear-gradient(135deg, #0F2040 0%, #1B3A6B 45%, #2B5298 80%, #29ABE2 130%)',
         }}
       >
+        {/* Patrón de puntos decorativo */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.07]"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
+            backgroundSize: '28px 28px',
+          }}
+        />
         {/* Overlay gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-azul/95 via-brand-azul-mid/85 to-brand-celeste/70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-azul/40 via-transparent to-brand-celeste/20 pointer-events-none" />
 
         {/* Blob decorativo 1 */}
         <motion.div
