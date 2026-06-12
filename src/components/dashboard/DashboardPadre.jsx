@@ -29,25 +29,28 @@ function hora() {
 }
 
 export function DashboardPadre() {
-  const { profile } = useContext(AuthContext)
+  const { profile, user } = useContext(AuthContext)
   const [inscripciones, setInscripciones] = useState([])
   const [cargando, setCargando] = useState(true)
   const { noticias } = useNoticias({ limite: 2, soloPublicas: false })
 
   useEffect(() => {
-    /* Las inscripciones no tienen FK al padre, buscamos por email del tutor.
-       Para este TP mostramos todas las del sistema (RLS del padre las filtra en producción). */
+    /* Las solicitudes se vinculan por email: el padre ve las inscripciones
+       cuyo tutor_email coincide con el email de su cuenta (también lo
+       garantiza la política RLS "padre_ve_sus_inscripciones"). */
     async function fetchInscripciones() {
+      if (!user?.email) { setCargando(false); return }
       const { data } = await supabase
         .from('inscripciones')
         .select('id, estudiante_nombre, nivel, estado, created_at')
+        .eq('tutor_email', user.email)
         .order('created_at', { ascending: false })
         .limit(5)
       setInscripciones(data ?? [])
       setCargando(false)
     }
     fetchInscripciones()
-  }, [])
+  }, [user?.email])
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
@@ -82,7 +85,8 @@ export function DashboardPadre() {
         ) : inscripciones.length === 0 ? (
           <div className="bg-gray-50 rounded-2xl border border-dashed border-gray-200 p-8 text-center">
             <ClipboardList size={36} className="text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 text-sm mb-4">Todavía no tenés solicitudes de inscripción.</p>
+            <p className="text-gray-500 text-sm mb-1">Todavía no tenés solicitudes de inscripción.</p>
+            <p className="text-gray-400 text-xs mb-4">Completá el formulario con tu email ({profile?.nombre ? user?.email : 'el de tu cuenta'}) para ver el estado acá.</p>
             <Link to="/inscripcion"
               className="inline-flex items-center gap-2 bg-brand-naranja text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-orange-700 transition-colors">
               <PlusCircle size={15} /> Solicitar inscripción
