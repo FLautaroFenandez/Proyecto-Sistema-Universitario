@@ -1,0 +1,11 @@
+# Configuración de deploy para Netlify
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA: todas las rutas las maneja React Router.
+# Sin esto, refrescar en /admin o /noticias da 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

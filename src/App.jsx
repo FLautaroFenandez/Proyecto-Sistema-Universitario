@@ -50,16 +50,8 @@ const PageSpinner = () => (
   </div>
 )
 
-document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState === 'visible'){
-    document.location.reload()
-  }
-
-
-})
 export default function App() {
   return (
-
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>

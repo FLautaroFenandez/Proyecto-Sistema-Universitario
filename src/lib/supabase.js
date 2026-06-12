@@ -22,8 +22,15 @@ export const supabase = createClient(
   supabaseAnonKey ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder',
   {
     auth: {
-      persistSession:     false,
+      // true: la sesión se guarda en localStorage y el refresh NO desloguea
+      persistSession:     true,
+      autoRefreshToken:   true,
       detectSessionInUrl: true,
+      // supabase-js usa navigator.locks para refrescar el token; al volver
+      // de otra pestaña ese lock puede quedar trabado y TODAS las queries
+      // se cuelgan para siempre ("se caen las conexiones"). Este lock no-op
+      // evita el deadlock ejecutando la operación directamente.
+      lock: async (_name, _acquireTimeout, fn) => await fn(),
     },
   }
 )
