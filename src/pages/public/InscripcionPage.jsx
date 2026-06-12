@@ -15,20 +15,49 @@ import { PageHero } from '@/components/ui/PageHero'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
 
+/* ── Rangos de edad permitidos por nivel educativo ── */
+const RANGOS_NIVEL = {
+  inicial:    { min: 2,  max: 5,  label: 'Inicial',    rango: '3 a 5 años' },
+  primario:   { min: 6,  max: 12, label: 'Primario',   rango: '6 a 12 años' },
+  secundario: { min: 13, max: 18, label: 'Secundario', rango: '13 a 18 años' },
+}
+
+/* Edad cumplida a la fecha de hoy */
+function calcularEdad(fechaNacimiento) {
+  const hoy = new Date()
+  const nac = new Date(fechaNacimiento)
+  let edad = hoy.getFullYear() - nac.getFullYear()
+  const m = hoy.getMonth() - nac.getMonth()
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--
+  return edad
+}
+
 /* ── Esquema Zod ── */
 const inscripcionSchema = z.object({
-  estudiante_nombre:     z.string().min(2, 'Requerido').max(100),
-  estudiante_nacimiento: z.string().min(1, 'Requerido').refine(v => new Date(v) < new Date(), 'La fecha no puede ser futura'),
-  estudiante_dni:        z.string().regex(/^\d{7,8}$/, 'DNI: solo números, 7 u 8 dígitos'),
+  estudiante_nombre:     z.string().min(1, 'El nombre es requerido').min(2, 'Nombre muy corto').max(100),
+  estudiante_nacimiento: z.string().min(1, 'La fecha de nacimiento es requerida').refine(v => new Date(v) < new Date(), 'La fecha no puede ser futura'),
+  estudiante_dni:        z.string().min(1, 'El DNI es requerido').regex(/^\d{7,8}$/, 'El DNI debe ser numérico, de 7 u 8 dígitos'),
   nivel:                 z.enum(['inicial','primario','secundario'], { required_error: 'Seleccioná un nivel' }),
   turno:                 z.enum(['manana','tarde'], { required_error: 'Seleccioná un turno' }),
-  tutor_nombre:          z.string().min(2, 'Requerido').max(100),
-  tutor_dni:             z.string().regex(/^\d{7,8}$/, 'DNI: solo números, 7 u 8 dígitos'),
+  tutor_nombre:          z.string().min(1, 'El nombre del tutor es requerido').min(2, 'Nombre muy corto').max(100),
+  tutor_dni:             z.string().min(1, 'El DNI del tutor es requerido').regex(/^\d{7,8}$/, 'El DNI debe ser numérico, de 7 u 8 dígitos'),
   tutor_relacion:        z.enum(['padre','madre','tutor'], { required_error: 'Requerido' }),
-  tutor_telefono:        z.string().min(6, 'Teléfono requerido'),
-  tutor_email:           z.string().email('Email inválido'),
+  tutor_telefono:        z.string().min(1, 'El teléfono es requerido').min(6, 'Teléfono inválido'),
+  tutor_email:           z.string().min(1, 'El email es requerido').email('Email inválido'),
   como_conocio:          z.string().optional(),
   observaciones:         z.string().max(500).optional(),
+}).superRefine((data, ctx) => {
+  /* Validación cruzada: la edad del estudiante debe ser compatible con el nivel */
+  if (!data.estudiante_nacimiento || !data.nivel) return
+  const edad  = calcularEdad(data.estudiante_nacimiento)
+  const rango = RANGOS_NIVEL[data.nivel]
+  if (rango && (edad < rango.min || edad > rango.max)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['nivel'],
+      message: `La edad del estudiante (${edad} años) no es compatible con el nivel ${rango.label} (${rango.rango}).`,
+    })
+  }
 })
 
 /* Componente de campo de formulario */
