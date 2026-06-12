@@ -67,19 +67,19 @@ export function HeroSection() {
         style={{
           minHeight: '520px',
           height: '72vh',
-          background: 'linear-gradient(135deg, #0F2040 0%, #1B3A6B 45%, #2B5298 80%, #29ABE2 130%)',
+          backgroundImage: `url('/assets/fondo-educar.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#1B3A6B',
         }}
       >
-        {/* Patrón de puntos decorativo */}
+        {/* Overlay azul para legibilidad del texto sobre la foto */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.07]"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
+            background: 'linear-gradient(135deg, rgba(15,32,64,0.90) 0%, rgba(27,58,107,0.72) 45%, rgba(43,82,152,0.55) 75%, rgba(41,171,226,0.35) 110%)',
           }}
         />
-        {/* Overlay gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-azul/40 via-transparent to-brand-celeste/20 pointer-events-none" />
 
         {/* Blob decorativo 1 */}
         <motion.div
