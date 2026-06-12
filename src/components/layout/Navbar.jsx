@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useContext, useCallback } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, LogIn, LogOut, LayoutDashboard, ChevronDown,
@@ -84,7 +84,7 @@ function getInitials(nombre) {
 }
 
 /* ── Dropdown limpio estilo UNCAUS con íconos Lucide ── */
-function NavDropdown({ items }) {
+function NavDropdown({ items, onNavigate }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -101,7 +101,7 @@ function NavDropdown({ items }) {
       {items.map((item, i) => {
         const Icon = item.icon
         return (
-          <Link key={item.label} to={item.href}
+          <Link key={item.label} to={item.href} onClick={onNavigate}
             className="flex items-center gap-3.5 px-5 py-3.5 hover:bg-gray-50 transition-colors group border-b border-gray-100 last:border-0"
           >
             <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-brand-azul/10 flex items-center justify-center flex-shrink-0 transition-colors">
@@ -130,12 +130,21 @@ export function Navbar() {
   const userRef    = useRef(null)
   const { user, profile, signOut } = useContext(AuthContext)
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  /* Cerrar menú mobile y dropdowns en cada navegación
+     (cubre botón atrás/adelante del navegador y clicks en links) */
+  useEffect(() => {
+    setMenuAbierto(false)
+    setDropdownOpen(null)
+    setDropdownUser(false)
+  }, [location.pathname, location.hash])
 
   useEffect(() => {
     document.body.style.overflow = menuAbierto ? 'hidden' : ''
@@ -225,7 +234,7 @@ export function Navbar() {
                   {hasItems && (
                     <AnimatePresence>
                       {dropdownOpen === item.label && (
-                        <NavDropdown items={item.items} />
+                        <NavDropdown items={item.items} onNavigate={() => setDropdownOpen(null)} />
                       )}
                     </AnimatePresence>
                   )}
