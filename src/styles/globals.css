@@ -77,6 +77,14 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
 }
 
 @layer utilities {
+  /* Oculta la barra de scroll manteniendo el scroll funcional (Topbar mobile) */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
