@@ -5,6 +5,7 @@
  */
 
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Timer, Waves, CircleDot, Shield, Activity, Music2,
@@ -50,7 +51,19 @@ const fadeUp = (delay = 0) => ({
 })
 
 export default function BienestarPage() {
-  useEffect(() => { window.scrollTo(0, 0) }, [])
+  const location = useLocation()
+
+  useEffect(() => {
+    const { hash } = location
+    if (!hash) { window.scrollTo(0, 0); return }
+    const timer = setTimeout(() => {
+      const el = document.querySelector(hash)
+      if (!el) { window.scrollTo(0, 0); return }
+      const top = el.getBoundingClientRect().top + window.scrollY - 84
+      window.scrollTo({ top, behavior: 'smooth' })
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [location])
 
   return (
     <>
@@ -61,7 +74,7 @@ export default function BienestarPage() {
       />
 
       {/* Deportes */}
-      <section className="py-16 bg-white">
+      <section id="deportes" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Programa Deportivo</h2>
@@ -84,7 +97,7 @@ export default function BienestarPage() {
       </section>
 
       {/* Instalaciones */}
-      <section className="py-16 bg-gray-50">
+      <section id="instalaciones" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Instalaciones</h2>
@@ -109,7 +122,7 @@ export default function BienestarPage() {
       </section>
 
       {/* Servicios */}
-      <section className="py-16 bg-white">
+      <section id="servicios" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Servicios de Apoyo</h2>

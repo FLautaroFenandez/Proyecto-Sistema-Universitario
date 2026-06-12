@@ -10,9 +10,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, LogIn, LogOut, LayoutDashboard, ChevronDown,
   Target, Star, Users, Clock, BookOpen, GraduationCap, Sprout,
-  Trophy, Building2, Brain, LifeBuoy, Newspaper, Lock,
+  Trophy, Building2, Brain, LifeBuoy,
   ClipboardList, MessageCircle, Briefcase, FileText,
-  Mail, MapPin, Phone, ArrowRight, Globe,
+  ArrowRight,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 
@@ -22,47 +22,38 @@ const NAV_ITEMS = [
     label: 'Quiénes somos',
     href:  '/quienes-somos',
     items: [
-      { icon: Target,       label: 'Misión y Visión',   desc: 'Nuestros propósitos institucionales',           href: '/quienes-somos' },
-      { icon: Star,         label: 'Valores',            desc: 'Los principios que guían nuestra comunidad',    href: '/quienes-somos' },
-      { icon: Users,        label: 'Equipo directivo',   desc: 'Los profesionales que lideran el centro',       href: '/quienes-somos' },
-      { icon: Clock,        label: 'Historia',           desc: 'Del proyecto al inicio de actividades 2027',    href: '/quienes-somos' },
+      { icon: Target,       label: 'Misión y Visión',   desc: 'Nuestros propósitos institucionales',           href: '/quienes-somos#mision-vision' },
+      { icon: Star,         label: 'Valores',            desc: 'Los principios que guían nuestra comunidad',    href: '/quienes-somos#valores' },
+      { icon: Users,        label: 'Equipo directivo',   desc: 'Los profesionales que lideran el centro',       href: '/quienes-somos#equipo' },
+      { icon: Clock,        label: 'Historia',           desc: 'Del proyecto al inicio de actividades 2027',    href: '/quienes-somos#historia' },
     ],
   },
   {
     label: 'Niveles',
     href:  '/niveles-educativos',
     items: [
-      { icon: Sprout,          label: 'Nivel Inicial',    desc: 'Sala 3, 4 y 5 · Jornada extendida · Inglés desde sala 3', href: '/niveles-educativos' },
-      { icon: BookOpen,        label: 'Nivel Primario',   desc: '1° a 6° grado · 3 idiomas · Robótica · Deportes',        href: '/niveles-educativos' },
-      { icon: GraduationCap,   label: 'Nivel Secundario', desc: '1° a 5° año · Orientaciones · Pre-universitario',        href: '/niveles-educativos' },
+      { icon: Sprout,          label: 'Nivel Inicial',    desc: 'Sala 3, 4 y 5 · Jornada extendida · Inglés desde sala 3', href: '/niveles-educativos#inicial' },
+      { icon: BookOpen,        label: 'Nivel Primario',   desc: '1° a 6° grado · 3 idiomas · Robótica · Deportes',        href: '/niveles-educativos#primario' },
+      { icon: GraduationCap,   label: 'Nivel Secundario', desc: '1° a 5° año · Orientaciones · Pre-universitario',        href: '/niveles-educativos#secundario' },
     ],
   },
   {
     label: 'Bienestar',
     href:  '/bienestar',
     items: [
-      { icon: Trophy,     label: '8 disciplinas deportivas', desc: 'Natación, fútbol, básquet, atletismo y más', href: '/bienestar' },
-      { icon: Building2,  label: 'Instalaciones',            desc: 'Pileta olímpica, canchas y gimnasio cubierto', href: '/bienestar' },
-      { icon: Brain,      label: 'Apoyo estudiantil',        desc: 'Psicólogos y psicopedagogos disponibles',    href: '/bienestar' },
-      { icon: LifeBuoy,   label: 'Servicios',                desc: 'Comedor, enfermería y micros con GPS',       href: '/bienestar' },
+      { icon: Trophy,     label: '8 disciplinas deportivas', desc: 'Natación, fútbol, básquet, atletismo y más', href: '/bienestar#deportes' },
+      { icon: Building2,  label: 'Instalaciones',            desc: 'Pileta olímpica, canchas y gimnasio cubierto', href: '/bienestar#instalaciones' },
+      { icon: Brain,      label: 'Apoyo estudiantil',        desc: 'Psicólogos y psicopedagogos disponibles',    href: '/bienestar#servicios' },
+      { icon: LifeBuoy,   label: 'Servicios',                desc: 'Comedor, enfermería y micros con GPS',       href: '/bienestar#servicios' },
     ],
   },
   {
     label: 'Noticias',
     href:  '/noticias',
-    items: [
-      { icon: Newspaper,  label: 'Noticias públicas',  desc: 'Novedades y comunicados institucionales',       href: '/noticias' },
-      { icon: Lock,       label: 'Noticias internas',  desc: 'Exclusivas para familias y personal registrado', href: '/noticias' },
-    ],
   },
   {
     label: 'Galería',
     href:  '/galeria',
-    items: [
-      { icon: Building2,     label: 'Instalaciones', desc: 'Edificio, aulas y espacios generales',  href: '/galeria' },
-      { icon: Trophy,        label: 'Deportes',      desc: 'Canchas, gimnasio y actividades',       href: '/galeria' },
-      { icon: Globe,         label: 'Idiomas',       desc: 'Clases y talleres de idiomas',          href: '/galeria' },
-    ],
   },
   {
     label: 'Inscripción',
@@ -77,18 +68,13 @@ const NAV_ITEMS = [
     label: 'Empleo',
     href:  '/empleo',
     items: [
-      { icon: Briefcase,  label: 'Búsquedas activas', desc: 'Puestos disponibles en el centro',       href: '/empleo' },
-      { icon: FileText,   label: 'Enviá tu CV',       desc: 'Dejá tus datos para futuras oportunidades', href: '/empleo' },
+      { icon: Briefcase,  label: 'Búsquedas activas', desc: 'Puestos disponibles en el centro',           href: '/empleo#empleos' },
+      { icon: FileText,   label: 'Enviá tu CV',        desc: 'Dejá tus datos para futuras oportunidades', href: '/empleo#cv' },
     ],
   },
   {
     label: 'Contacto',
     href:  '/contacto',
-    items: [
-      { icon: Mail,       label: 'Formulario web',  desc: 'Te respondemos en 48 hs hábiles',            href: '/contacto' },
-      { icon: MapPin,     label: 'Ubicación',       desc: 'Av. Lavalle 3500, Resistencia, Chaco',       href: '/contacto' },
-      { icon: Phone,      label: 'Teléfono',        desc: '(0362) 555-0100 · Lun–Vie 8:00 a 17:00',    href: '/contacto' },
-    ],
   },
 ]
 
@@ -207,40 +193,45 @@ export function Navbar() {
 
           {/* ── Links desktop ── */}
           <div className="hidden lg:flex items-center h-full">
-            {NAV_ITEMS.map((item) => (
-              <div
-                key={item.label}
-                className="relative h-full flex items-center"
-                onMouseEnter={() => openDropdown(item.label)}
-                onMouseLeave={closeDropdown}
-              >
-                <NavLink
-                  to={item.href}
-                  className={({ isActive }) =>
-                    `flex items-center gap-0.5 text-[13px] px-3 h-full transition-colors font-body relative ${
-                      isActive ? 'text-brand-azul font-bold' : 'text-gray-600 hover:text-brand-azul'
-                    } ${item.highlight ? 'text-brand-naranja hover:text-orange-700 font-semibold' : ''}`
-                  }
+            {NAV_ITEMS.map((item) => {
+              const hasItems = item.items?.length > 0
+              return (
+                <div
+                  key={item.label}
+                  className="relative h-full flex items-center"
+                  onMouseEnter={hasItems ? () => openDropdown(item.label) : undefined}
+                  onMouseLeave={hasItems ? closeDropdown : undefined}
                 >
-                  {({ isActive }) => (
-                    <>
-                      {item.label}
-                      <ChevronDown size={11} className={`ml-0.5 opacity-60 transition-transform duration-200 ${dropdownOpen === item.label ? 'rotate-180' : ''}`} />
-                      {/* Línea inferior activa */}
-                      {(isActive || dropdownOpen === item.label) && (
-                        <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-naranja" />
-                      )}
-                    </>
-                  )}
-                </NavLink>
+                  <NavLink
+                    to={item.href}
+                    className={({ isActive }) =>
+                      `flex items-center gap-0.5 text-[13px] px-3 h-full transition-colors font-body relative ${
+                        isActive ? 'text-brand-azul font-bold' : 'text-gray-600 hover:text-brand-azul'
+                      } ${item.highlight ? 'text-brand-naranja hover:text-orange-700 font-semibold' : ''}`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {item.label}
+                        {hasItems && <ChevronDown size={11} className={`ml-0.5 opacity-60 transition-transform duration-200 ${dropdownOpen === item.label ? 'rotate-180' : ''}`} />}
+                        {/* Línea inferior activa */}
+                        {(isActive || (hasItems && dropdownOpen === item.label)) && (
+                          <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-naranja" />
+                        )}
+                      </>
+                    )}
+                  </NavLink>
 
-                <AnimatePresence>
-                  {dropdownOpen === item.label && (
-                    <NavDropdown items={item.items} />
+                  {hasItems && (
+                    <AnimatePresence>
+                      {dropdownOpen === item.label && (
+                        <NavDropdown items={item.items} />
+                      )}
+                    </AnimatePresence>
                   )}
-                </AnimatePresence>
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
 
           {/* ── Auth + Hamburguesa ── */}
@@ -379,6 +370,18 @@ export function Navbar() {
 
 function MobileNavItem({ item, onClose }) {
   const [abierto, setAbierto] = useState(false)
+  const hasItems = item.items?.length > 0
+
+  if (!hasItems) {
+    return (
+      <Link to={item.href} onClick={onClose}
+        className="flex items-center px-4 py-2.5 rounded-xl text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-0.5"
+      >
+        <span className={item.highlight ? 'text-brand-naranja font-semibold' : ''}>{item.label}</span>
+      </Link>
+    )
+  }
+
   return (
     <div className="mb-0.5">
       <button

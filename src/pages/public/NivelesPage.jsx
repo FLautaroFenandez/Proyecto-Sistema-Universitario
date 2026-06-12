@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Clock, Globe, Trophy } from 'lucide-react'
 import { PageHero } from '@/components/ui/PageHero'
@@ -56,10 +57,22 @@ const COMPARATIVA = [
   { aspecto: 'Prep. universitaria',inicial:'—',               primario: '—',              secundario: '✓' },
 ]
 
+const VALID_TABS = ['inicial', 'primario', 'secundario']
+
 export default function NivelesPage() {
   const [tab, setTab] = useState('inicial')
   const nivel = NIVELES.find(n => n.id === tab)
-  useEffect(() => { window.scrollTo(0, 0) }, [])
+  const location = useLocation()
+
+  useEffect(() => {
+    const tabId = location.hash?.slice(1)
+    if (VALID_TABS.includes(tabId)) {
+      setTab(tabId)
+      window.scrollTo(0, 0)
+    } else if (!location.hash) {
+      window.scrollTo(0, 0)
+    }
+  }, [location])
 
   return (
     <>

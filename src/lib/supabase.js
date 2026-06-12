@@ -22,7 +22,7 @@ export const supabase = createClient(
   supabaseAnonKey ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder',
   {
     auth: {
-      persistSession:     true,
+      persistSession:     false,
       detectSessionInUrl: true,
     },
   }

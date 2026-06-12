@@ -38,3 +38,7 @@ coverage/
 
 # supabase
 supabase/
+
+images/
+
+*.txt

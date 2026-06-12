@@ -1,10 +1,10 @@
 /**
  * @file EmpleoPage.jsx
- * @description Listado de búsquedas laborales activas (fecha_limite >= hoy Y activo = true).
- * Si no hay avisos, muestra formulario para dejar CV.
+ * @description Listado de búsquedas laborales activas + formulario permanente para dejar CV.
  */
 
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Calendar, Mail, Clock, Send, CheckCircle } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -26,15 +26,22 @@ function diasRestantes(fecha) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
 }
 
+const VENTAJAS = [
+  { emoji:'🎓', texto:'Capacitación continua y desarrollo profesional' },
+  { emoji:'🏋️', texto:'Acceso a las instalaciones deportivas del centro' },
+  { emoji:'👨‍👩‍👧', texto:'Descuentos en aranceles para hijos del personal' },
+  { emoji:'🌟', texto:'Ambiente de trabajo colaborativo e innovador' },
+]
+
 export default function EmpleoPage() {
-  const [empleos, setEmpleos]   = useState([])
-  const [cargando, setCargando] = useState(true)
+  const [empleos, setEmpleos]     = useState([])
+  const [cargando, setCargando]   = useState(true)
   const [cvEnviado, setCvEnviado] = useState(false)
+  const location = useLocation()
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ resolver: zodResolver(cvSchema) })
 
   useEffect(() => {
-    window.scrollTo(0, 0)
     async function fetchEmpleos() {
       const hoy = new Date().toISOString().split('T')[0]
       const { data } = await supabase
@@ -49,8 +56,19 @@ export default function EmpleoPage() {
     fetchEmpleos()
   }, [])
 
+  useEffect(() => {
+    const { hash } = location
+    if (!hash) { window.scrollTo(0, 0); return }
+    const timer = setTimeout(() => {
+      const el = document.querySelector(hash)
+      if (!el) { window.scrollTo(0, 0); return }
+      const top = el.getBoundingClientRect().top + window.scrollY - 84
+      window.scrollTo({ top, behavior: 'smooth' })
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [location])
+
   const onCvSubmit = async (data) => {
-    // Se guarda como mensaje de contacto: el admin lo ve junto a las demás consultas
     const { error } = await supabase.from('contacto_mensajes').insert({
       nombre: data.nombre,
       email:  data.email,
@@ -59,19 +77,9 @@ export default function EmpleoPage() {
         ? `Postulación espontánea.\nÁrea de interés: ${data.area}\nCV: ${data.cv_link}`
         : `Postulación espontánea.\nÁrea de interés: ${data.area}\n(Sin enlace a CV — contactar por email)`,
     })
-    if (error) {
-      console.error('Error al enviar CV:', error)
-      return
-    }
+    if (error) { console.error('Error al enviar CV:', error); return }
     setCvEnviado(true)
   }
-
-  const VENTAJAS = [
-    { emoji:'🎓', texto:'Capacitación continua y desarrollo profesional' },
-    { emoji:'🏋️', texto:'Acceso a las instalaciones deportivas del centro' },
-    { emoji:'👨‍👩‍👧', texto:'Descuentos en aranceles para hijos del personal' },
-    { emoji:'🌟', texto:'Ambiente de trabajo colaborativo e innovador' },
-  ]
 
   return (
     <>
@@ -81,7 +89,8 @@ export default function EmpleoPage() {
         breadcrumb={[{ label: 'Empleo' }]}
       />
 
-      <section className="py-14 bg-white">
+      {/* ── Búsquedas activas ── */}
+      <section id="empleos" className="py-14 bg-white">
         <div className="max-w-5xl mx-auto px-6">
 
           {cargando && (
@@ -90,7 +99,6 @@ export default function EmpleoPage() {
             </div>
           )}
 
-          {/* Avisos activos */}
           {!cargando && empleos.length > 0 && (
             <div className="space-y-5">
               {empleos.map((emp, i) => {
@@ -136,79 +144,76 @@ export default function EmpleoPage() {
             </div>
           )}
 
-          {/* Sin avisos activos */}
           {!cargando && empleos.length === 0 && (
-            <div className="grid md:grid-cols-2 gap-10">
-              <div>
-                <div className="text-center md:text-left mb-8">
-                  <span className="text-5xl block mb-4">💼</span>
-                  <h2 className="font-display font-bold text-gray-800 text-xl mb-2">Sin búsquedas activas</h2>
-                  <p className="text-gray-500">Actualmente no tenemos búsquedas abiertas, pero podés dejarnos tu CV para futuras oportunidades.</p>
-                </div>
-                <div className="space-y-3">
-                  {VENTAJAS.map(v => (
-                    <div key={v.texto} className="flex items-center gap-3 text-sm text-gray-600">
-                      <span className="text-2xl">{v.emoji}</span>{v.texto}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-2xl border border-gray-100 p-6">
-                {cvEnviado ? (
-                  <div className="text-center py-8">
-                    <CheckCircle size={48} className="text-green-500 mx-auto mb-3" />
-                    <p className="font-semibold text-gray-800">¡Gracias por tu interés!</p>
-                    <p className="text-sm text-gray-500 mt-1">Te contactaremos cuando haya una oportunidad.</p>
-                  </div>
-                ) : (
-                  <>
-                    <h3 className="font-display font-bold text-gray-800 mb-5">Dejá tu CV</h3>
-                    <form onSubmit={handleSubmit(onCvSubmit)} noValidate className="space-y-4">
-                      {[
-                        { name:'nombre', label:'Nombre completo', type:'text', placeholder:'Tu nombre' },
-                        { name:'email',  label:'Email',           type:'email',placeholder:'tu@email.com' },
-                        { name:'cv_link',label:'Enlace al CV (opcional)', type:'url', placeholder:'https://...' },
-                      ].map(({ name, label, type, placeholder }) => (
-                        <div key={name}>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                          <input type={type} placeholder={placeholder} {...register(name)}
-                            className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-azul/20 focus:border-brand-azul transition-colors ${errors[name] ? 'border-red-400':'border-gray-300'}`} />
-                          {errors[name] && <p className="text-xs text-red-500 mt-1">{errors[name].message}</p>}
-                        </div>
-                      ))}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Área de interés</label>
-                        <select {...register('area')} className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none ${errors.area?'border-red-400':'border-gray-300'}`}>
-                          <option value="">Seleccioná</option>
-                          <option value="docente">Docente</option>
-                          <option value="administrativo">Administrativo</option>
-                          <option value="servicio">Servicio y mantenimiento</option>
-                        </select>
-                        {errors.area && <p className="text-xs text-red-500 mt-1">{errors.area.message}</p>}
-                      </div>
-                      <Button type="submit" variant="primary" fullWidth loading={isSubmitting}>
-                        <Send size={14} /> Enviar
-                      </Button>
-                    </form>
-                  </>
-                )}
-              </div>
+            <div className="text-center py-12">
+              <p className="text-5xl mb-4">💼</p>
+              <h2 className="font-display font-bold text-gray-800 text-xl mb-2">Sin búsquedas activas</h2>
+              <p className="text-gray-500">Actualmente no tenemos búsquedas abiertas, pero podés dejarnos tu CV más abajo para futuras oportunidades.</p>
             </div>
           )}
+        </div>
+      </section>
 
-          {/* Por qué trabajar con nosotros */}
-          {empleos.length > 0 && (
-            <div className="mt-14 bg-brand-azul/5 rounded-2xl p-8">
-              <h3 className="font-display font-bold text-brand-azul text-lg mb-5">¿Por qué trabajar con nosotros?</h3>
-              <div className="grid md:grid-cols-2 gap-4">
+      {/* ── Dejá tu CV (siempre visible) ── */}
+      <section id="cv" className="py-14 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-10">
+
+            {/* Ventajas */}
+            <div>
+              <h2 className="font-display font-bold text-gray-800 text-xl mb-2">¿Por qué trabajar con nosotros?</h2>
+              <p className="text-gray-500 text-sm mb-6">Dejanos tu CV y te contactamos cuando haya una oportunidad acorde a tu perfil.</p>
+              <div className="space-y-3">
                 {VENTAJAS.map(v => (
-                  <div key={v.texto} className="flex items-center gap-3 text-sm text-gray-700">
+                  <div key={v.texto} className="flex items-center gap-3 text-sm text-gray-600">
                     <span className="text-2xl">{v.emoji}</span>{v.texto}
                   </div>
                 ))}
               </div>
             </div>
-          )}
+
+            {/* Formulario */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+              {cvEnviado ? (
+                <div className="text-center py-8">
+                  <CheckCircle size={48} className="text-green-500 mx-auto mb-3" />
+                  <p className="font-semibold text-gray-800">¡Gracias por tu interés!</p>
+                  <p className="text-sm text-gray-500 mt-1">Te contactaremos cuando haya una oportunidad.</p>
+                </div>
+              ) : (
+                <>
+                  <h3 className="font-display font-bold text-gray-800 mb-5">Dejá tu CV</h3>
+                  <form onSubmit={handleSubmit(onCvSubmit)} noValidate className="space-y-4">
+                    {[
+                      { name:'nombre', label:'Nombre completo', type:'text',  placeholder:'Tu nombre' },
+                      { name:'email',  label:'Email',           type:'email', placeholder:'tu@email.com' },
+                      { name:'cv_link',label:'Enlace al CV (opcional)', type:'url', placeholder:'https://...' },
+                    ].map(({ name, label, type, placeholder }) => (
+                      <div key={name}>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+                        <input type={type} placeholder={placeholder} {...register(name)}
+                          className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-azul/20 focus:border-brand-azul transition-colors ${errors[name] ? 'border-red-400':'border-gray-300'}`} />
+                        {errors[name] && <p className="text-xs text-red-500 mt-1">{errors[name].message}</p>}
+                      </div>
+                    ))}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Área de interés</label>
+                      <select {...register('area')} className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none ${errors.area?'border-red-400':'border-gray-300'}`}>
+                        <option value="">Seleccioná</option>
+                        <option value="docente">Docente</option>
+                        <option value="administrativo">Administrativo</option>
+                        <option value="servicio">Servicio y mantenimiento</option>
+                      </select>
+                      {errors.area && <p className="text-xs text-red-500 mt-1">{errors.area.message}</p>}
+                    </div>
+                    <Button type="submit" variant="primary" fullWidth loading={isSubmitting}>
+                      <Send size={14} /> Enviar
+                    </Button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </>

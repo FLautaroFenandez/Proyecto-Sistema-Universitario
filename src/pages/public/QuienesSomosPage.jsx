@@ -5,6 +5,7 @@
  */
 
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Target, Telescope, Award, Users, Globe, Lightbulb, Scale, Rocket } from 'lucide-react'
 import { PageHero } from '@/components/ui/PageHero'
@@ -40,7 +41,19 @@ const fadeUp = (delay = 0) => ({
 })
 
 export default function QuienesSomosPage() {
-  useEffect(() => { window.scrollTo(0, 0) }, [])
+  const location = useLocation()
+
+  useEffect(() => {
+    const { hash } = location
+    if (!hash) { window.scrollTo(0, 0); return }
+    const timer = setTimeout(() => {
+      const el = document.querySelector(hash)
+      if (!el) { window.scrollTo(0, 0); return }
+      const top = el.getBoundingClientRect().top + window.scrollY - 84
+      window.scrollTo({ top, behavior: 'smooth' })
+    }, 50)
+    return () => clearTimeout(timer)
+  }, [location])
 
   return (
     <>
@@ -51,7 +64,7 @@ export default function QuienesSomosPage() {
       />
 
       {/* Misión y Visión */}
-      <section className="py-16 bg-white">
+      <section id="mision-vision" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-10">
             {[
@@ -78,7 +91,7 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Valores */}
-      <section className="py-16 bg-gray-50">
+      <section id="valores" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Nuestros Valores</h2>
@@ -100,7 +113,7 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Equipo directivo */}
-      <section className="py-16 bg-white">
+      <section id="equipo" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Equipo Directivo</h2>
@@ -121,7 +134,7 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Historia */}
-      <section className="py-16 bg-gray-50">
+      <section id="historia" className="py-16 bg-gray-50">
         <div className="max-w-3xl mx-auto px-6">
           <motion.div {...fadeUp()} className="text-center mb-12">
             <h2 className="font-display font-bold text-gray-800 text-2xl md:text-3xl mb-2">Nuestra Historia</h2>
