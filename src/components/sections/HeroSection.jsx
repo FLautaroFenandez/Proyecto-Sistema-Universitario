@@ -73,23 +73,13 @@ export function HeroSection() {
           backgroundColor: '#1B3A6B',
         }}
       >
-        {/* Overlay azul para legibilidad del texto sobre la foto */}
+        {/* Velo neutro muy suave: solo lo justo para que el texto blanco se lea,
+            sin teñir los colores de la foto */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(135deg, rgba(15,32,64,0.90) 0%, rgba(27,58,107,0.72) 45%, rgba(43,82,152,0.55) 75%, rgba(41,171,226,0.35) 110%)',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.22) 45%, rgba(0,0,0,0.30) 100%)',
           }}
-        />
-
-        {/* Blob decorativo 1 */}
-        <motion.div
-          className="absolute top-10 right-10 w-80 h-80 rounded-full bg-brand-celeste/15 animate-blob pointer-events-none"
-          style={{ filter: 'blur(50px)' }}
-        />
-        {/* Blob decorativo 2 */}
-        <motion.div
-          className="absolute bottom-20 left-20 w-96 h-96 rounded-full bg-brand-naranja/10 animate-blob animation-delay-3000 pointer-events-none"
-          style={{ filter: 'blur(70px)' }}
         />
 
         {/* Partículas */}
@@ -134,7 +124,8 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.75 }}
-            className="text-white/75 text-base md:text-xl mt-4 max-w-2xl mx-auto leading-relaxed"
+            className="text-white text-base md:text-xl mt-4 max-w-2xl mx-auto leading-relaxed"
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.65)' }}
           >
             Centro Educativo · Resistencia, Chaco · Inicio de actividades Marzo 2027
           </motion.p>
