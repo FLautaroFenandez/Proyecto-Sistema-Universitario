@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useContext, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -145,6 +146,14 @@ export function Navbar() {
     setDropdownOpen(null)
     setDropdownUser(false)
   }, [location.pathname, location.hash])
+
+  /* Cerrar menú mobile con Escape */
+  useEffect(() => {
+    if (!menuAbierto) return
+    const h = (e) => { if (e.key === 'Escape') setMenuAbierto(false) }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [menuAbierto])
 
   useEffect(() => {
     document.body.style.overflow = menuAbierto ? 'hidden' : ''
@@ -302,19 +311,20 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* ── Menú mobile ── */}
+      {/* ── Menú mobile (portal al body: el cierre funciona en cualquier página) ── */}
+      {createPortal(
       <AnimatePresence>
         {menuAbierto && (
           <>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-              onClick={() => setMenuAbierto(false)}
+              className="fixed inset-0 bg-black/40 z-[60] lg:hidden"
+              onPointerDown={() => setMenuAbierto(false)}
             />
             <motion.div
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-              className="fixed top-0 left-0 w-[300px] max-w-[85vw] bg-white z-50 lg:hidden flex flex-col shadow-2xl"
+              className="fixed top-0 left-0 w-[300px] max-w-[85vw] bg-white z-[70] lg:hidden flex flex-col shadow-2xl"
               style={{ height: '100dvh' }}
             >
               {/* Header fijo del panel */}
@@ -331,6 +341,7 @@ export function Navbar() {
                 </Link>
                 <button
                   type="button"
+                  onPointerDown={(e) => { e.stopPropagation(); setMenuAbierto(false) }}
                   onClick={(e) => { e.stopPropagation(); setMenuAbierto(false) }}
                   className="w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-gray-700 active:scale-95 transition-all flex-shrink-0 ml-2"
                   aria-label="Cerrar menú"
@@ -379,7 +390,9 @@ export function Navbar() {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body
+      )}
     </>
   )
 }

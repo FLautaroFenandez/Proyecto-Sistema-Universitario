@@ -85,8 +85,8 @@ export function HeroSection() {
         {/* Partículas */}
         {PARTICLES.map((p, i) => <Particle key={i} {...p} />)}
 
-        {/* Badge pulsante */}
-        <div className="absolute top-8 left-6 md:left-12 z-10">
+        {/* Badge pulsante — esquina solo en desktop (en mobile tapaba el título) */}
+        <div className="hidden md:block absolute top-8 left-12 z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.8, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -103,8 +103,19 @@ export function HeroSection() {
         {/* Contenido central con parallax */}
         <motion.div
           style={{ y: textY, opacity }}
-          className="relative z-10 w-full text-center px-4 pb-32 md:pb-40"
+          className="relative z-10 w-full text-center px-4 pb-24 md:pb-40"
         >
+          {/* Badge en flujo — solo mobile, arriba del título sin tapar nada */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="md:hidden inline-flex items-center gap-2 bg-brand-naranja text-white text-[11px] font-bold px-4 py-2 rounded-full shadow-lg mb-5"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+            Inscripciones 2027 abiertas
+          </motion.div>
+
           {/* Palabras del título con stagger */}
           <div className="mb-4 overflow-hidden">
             {WORDS.map((word, i) => (
@@ -162,8 +173,8 @@ export function HeroSection() {
       </div>
 
       {/* ── Cards flotantes ── */}
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:-mt-32 relative z-10">
+      <div className="max-w-6xl mx-auto px-5 md:px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-0 -mt-12 md:-mt-32 relative z-10">
           {NIVELES.map(({ id, titulo, descripcion, color, gradient, Icon, href }, i) => (
             <motion.div
               key={id}
@@ -171,7 +182,7 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.3 + i * 0.15, ease: [0.22, 1, 0.36, 1] }}
               whileHover={{ y: -8, scale: 1.02, zIndex: 10 }}
-              className="bg-white flex flex-col relative"
+              className="bg-white flex flex-col relative rounded-2xl md:rounded-none overflow-hidden"
               style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.18)', transition: 'box-shadow 0.3s ease' }}
             >
               {/* Cabecera gradiente con ícono */}
