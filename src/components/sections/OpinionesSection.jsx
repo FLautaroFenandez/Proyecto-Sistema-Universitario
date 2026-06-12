@@ -164,7 +164,6 @@ export function OpinionesSection() {
                 <textarea
                   id="texto"
                   rows={4}
-                  maxLength={300}
                   placeholder="Compartí tu experiencia con nuestra institución..."
                   {...register('texto')}
                   className={`w-full border rounded-lg px-4 py-2.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-brand-azul/20 focus:border-brand-azul resize-none ${
@@ -174,7 +173,7 @@ export function OpinionesSection() {
                 {/* Contador de caracteres */}
                 <div className="flex justify-between mt-1">
                   <p className="text-xs text-red-500">{errors.texto?.message}</p>
-                  <p className={`text-xs ml-auto ${textoActual.length >= 280 ? 'text-red-500' : 'text-gray-400'}`}>
+                  <p className={`text-xs ml-auto ${textoActual.length > 300 ? 'text-red-500 font-semibold' : textoActual.length >= 280 ? 'text-orange-500' : 'text-gray-400'}`}>
                     {textoActual.length}/300
                   </p>
                 </div>
