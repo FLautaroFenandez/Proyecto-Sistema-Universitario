@@ -5,7 +5,7 @@
  * En mobile solo muestra el formulario.
  */
 
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,10 +23,19 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const [mostrarPass, setMostrarPass] = useState(false)
   const [errorAuth,   setErrorAuth]   = useState(null)
-  const { signIn }   = useContext(AuthContext)
+  const { signIn, user, profile, loading } = useContext(AuthContext)
   const navigate     = useNavigate()
   const location     = useLocation()
   const from         = location.state?.from?.pathname || null
+
+  /* Si ya hay sesión activa (o el login acaba de completarse), salir de /login.
+     La redirección por rol vive acá: una sola fuente de verdad, sin timeouts. */
+  useEffect(() => {
+    if (loading || !user) return
+    if (from) { navigate(from, { replace: true }); return }
+    const esAdmin = profile?.rol === 'admin' || profile?.rol === 'autoridad'
+    navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
+  }, [user, profile, loading, from, navigate])
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(loginSchema),
@@ -35,24 +44,21 @@ export default function LoginPage() {
   const onSubmit = async ({ email, password }) => {
     setErrorAuth(null)
     try {
-      const { user } = await signIn(email, password)
-      /* Esperar un tick para que el perfil se cargue en el contexto */
-      await new Promise(r => setTimeout(r, 300))
-
-      if (from) return navigate(from, { replace: true })
-
-      /* Redirigir según rol (lo leemos del contexto después del signIn) */
-      const { data } = await import('@/lib/supabase').then(m =>
-        m.supabase.from('profiles').select('rol').eq('id', user.id).single()
-      )
-      const esAdmin = data?.rol === 'admin' || data?.rol === 'autoridad'
-      navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
+      await signIn(email, password)
+      /* La redirección la hace el useEffect cuando el contexto detecta la sesión */
     } catch (err) {
-      const msg = err?.message ?? ''
-      if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
-        setErrorAuth('No se pudo conectar con el servidor. Verificá tu conexión o que Supabase esté configurado en .env.local.')
-      } else {
+      const code = err?.code ?? ''
+      const msg  = err?.message ?? ''
+      if (code === 'invalid_credentials' || msg.includes('Invalid login credentials')) {
         setErrorAuth('Email o contraseña incorrectos. Verificá tus datos.')
+      } else if (code === 'email_not_confirmed' || msg.includes('Email not confirmed')) {
+        setErrorAuth('Tu email todavía no fue confirmado. Revisá tu casilla de correo o contactá a la administración para activar tu cuenta.')
+      } else if (msg.includes('rate limit')) {
+        setErrorAuth('Demasiados intentos seguidos. Esperá unos minutos y volvé a intentar.')
+      } else if (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed')) {
+        setErrorAuth('No se pudo conectar con el servidor. Verificá tu conexión a internet.')
+      } else {
+        setErrorAuth(`No pudimos iniciar sesión: ${msg || 'error desconocido'}`)
       }
     }
   }

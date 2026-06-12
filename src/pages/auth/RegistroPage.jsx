@@ -4,7 +4,7 @@
  * Mismo layout split que LoginPage. Indicador de fortaleza de contraseña en tiempo real.
  */
 
-import { useState, useContext } from 'react'
+import { useState, useContext, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -50,8 +50,15 @@ export default function RegistroPage() {
   const [mostrarPass,    setMostrarPass]    = useState(false)
   const [mostrarConfirm, setMostrarConfirm] = useState(false)
   const [errorAuth,      setErrorAuth]      = useState(null)
-  const { signUp }  = useContext(AuthContext)
+  const { signUp, user, profile, loading } = useContext(AuthContext)
   const navigate    = useNavigate()
+
+  /* Si ya hay sesión activa, no tiene sentido estar en /registro */
+  useEffect(() => {
+    if (loading || !user) return
+    const esAdmin = profile?.rol === 'admin' || profile?.rol === 'autoridad'
+    navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
+  }, [user, profile, loading, navigate])
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(registroSchema),
