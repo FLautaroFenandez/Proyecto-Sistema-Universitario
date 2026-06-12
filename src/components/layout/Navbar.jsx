@@ -314,34 +314,41 @@ export function Navbar() {
             <motion.div
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-              className="fixed top-0 left-0 h-full w-[300px] bg-white z-50 lg:hidden flex flex-col shadow-2xl overflow-y-auto"
+              className="fixed top-0 left-0 w-[300px] max-w-[85vw] bg-white z-50 lg:hidden flex flex-col shadow-2xl"
+              style={{ height: '100dvh' }}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50">
-                <Link to="/" onClick={() => setMenuAbierto(false)} className="flex items-center gap-2.5">
+              {/* Header fijo del panel */}
+              <div className="flex items-center justify-between pl-5 pr-3 py-3.5 border-b border-gray-100 bg-gray-50 flex-shrink-0">
+                <Link to="/" onClick={() => setMenuAbierto(false)} className="flex items-center gap-2.5 min-w-0">
                   <img src="/assets/logo-ept.png" alt="Logo EPT" width={38} height={38}
-                    className="w-9 h-9 object-contain" style={{ mixBlendMode: 'multiply' }}
+                    className="w-9 h-9 object-contain flex-shrink-0" style={{ mixBlendMode: 'multiply' }}
                     onError={e => { e.currentTarget.style.display = 'none' }}
                   />
-                  <div>
-                    <p className="font-display font-bold text-brand-azul text-sm leading-none">Educar para Transformar</p>
+                  <div className="min-w-0">
+                    <p className="font-display font-bold text-brand-azul text-sm leading-none truncate">Educar para Transformar</p>
                     <p className="text-[10px] text-gray-400 mt-0.5">Centro Educativo</p>
                   </div>
                 </Link>
-                <button onClick={() => setMenuAbierto(false)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-200">
-                  <X size={18} />
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setMenuAbierto(false) }}
+                  className="w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-gray-700 active:scale-95 transition-all flex-shrink-0 ml-2"
+                  aria-label="Cerrar menú"
+                >
+                  <X size={22} />
                 </button>
               </div>
 
-              {/* Links */}
-              <nav className="flex-1 px-3 py-4">
+              {/* Links (única zona que scrollea) */}
+              <nav className="flex-1 overflow-y-auto px-3 py-4">
                 {NAV_ITEMS.map(item => (
                   <MobileNavItem key={item.label} item={item} onClose={() => setMenuAbierto(false)} />
                 ))}
               </nav>
 
-              {/* Footer auth */}
-              <div className="px-4 pb-6 pt-3 border-t border-gray-100">
+              {/* Footer auth fijo, con margen para la barra inferior del celular */}
+              <div className="px-4 pt-3 border-t border-gray-100 flex-shrink-0 bg-white"
+                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
                 {user && profile ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
