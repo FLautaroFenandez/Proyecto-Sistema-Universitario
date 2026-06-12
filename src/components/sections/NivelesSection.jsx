@@ -124,7 +124,7 @@ export function NivelesSection() {
                 </div>
 
                 {/* Botón */}
-                <Link to="/niveles-educativos"
+                <Link to={`/niveles-educativos#${id}`}
                   className={`w-full text-center border-2 py-2.5 rounded-xl text-sm font-bold transition-all hover:shadow-sm ${btnBorder} ${btnText} ${btnHover}`}>
                   Más información
                 </Link>

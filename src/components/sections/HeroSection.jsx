@@ -13,17 +13,17 @@ const NIVELES = [
   {
     id: 'inicial', titulo: 'NIVEL INICIAL',
     descripcion: 'Sala de 3, 4 y 5 años. Jornada extendida con estimulación temprana, juego, arte y música. Inglés desde sala de 3.',
-    color: '#4CAF50', gradient: 'from-green-500 to-green-700', Icon: Sprout, href: '/niveles-educativos',
+    color: '#4CAF50', gradient: 'from-green-500 to-green-700', Icon: Sprout, href: '/niveles-educativos#inicial',
   },
   {
     id: 'primario', titulo: 'NIVEL PRIMARIO',
     descripcion: '1° a 6° grado. Jornada extendida con tres idiomas, robótica, deportes y talleres de teatro y danza.',
-    color: '#E8612C', gradient: 'from-orange-500 to-orange-700', Icon: BookOpen, href: '/niveles-educativos',
+    color: '#E8612C', gradient: 'from-orange-500 to-orange-700', Icon: BookOpen, href: '/niveles-educativos#primario',
   },
   {
     id: 'secundario', titulo: 'NIVEL SECUNDARIO',
     descripcion: '1° a 5° año. Orientaciones en Ciencias y Humanidades. Preparación universitaria incluida.',
-    color: '#1B3A6B', gradient: 'from-blue-600 to-blue-900', Icon: GraduationCap, href: '/niveles-educativos',
+    color: '#1B3A6B', gradient: 'from-blue-600 to-blue-900', Icon: GraduationCap, href: '/niveles-educativos#secundario',
   },
 ]
 
