@@ -157,6 +157,13 @@ CREATE POLICY "noticias_admin_upload" ON storage.objects
 CREATE POLICY "noticias_admin_delete" ON storage.objects
   FOR DELETE USING (bucket_id = 'noticias' AND is_admin());
 
+-- ── 6. REQ-04: el padre/estudiante logueado ve SUS solicitudes ──
+-- La solicitud se vincula por email: si el tutor_email coincide con
+-- el email de la cuenta, puede consultar el estado de su inscripción.
+DROP POLICY IF EXISTS "padre_ve_sus_inscripciones" ON inscripciones;
+CREATE POLICY "padre_ve_sus_inscripciones" ON inscripciones
+  FOR SELECT USING (tutor_email = auth.email());
+
 -- ============================================================
 -- LISTO. Verificá que tu usuario tenga rol 'admin' en
 -- Table Editor → profiles antes de probar el panel.
