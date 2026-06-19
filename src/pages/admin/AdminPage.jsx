@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { MessageSquare, ClipboardList, Newspaper, Briefcase, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
+import { MessageSquare, ClipboardList, Newspaper, Briefcase, CheckCircle, XCircle, ArrowRight, Inbox } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { StatsCard } from '@/components/admin/StatsCard'
@@ -20,7 +20,7 @@ const ESTADO_COLOR = { pendiente:'orange', en_revision:'blue', aceptada:'green',
 
 export default function AdminPage() {
   const { profile } = useContext(AuthContext)
-  const [stats, setStats]   = useState({ opiniones:0, inscripciones:0, noticias:0, empleos:0 })
+  const [stats, setStats]   = useState({ opiniones:0, inscripciones:0, noticias:0, empleos:0, mensajes:0 })
   const [inscripciones, setInscripciones] = useState([])
   const [opiniones, setOpiniones]         = useState([])
   const [cargando, setCargando]           = useState(true)
@@ -29,15 +29,16 @@ export default function AdminPage() {
   const fetchData = async () => {
     setCargando(true)
     const hoy = new Date().toISOString().split('T')[0]
-    const [op, insc, not, emp, ultInsc, ultOp] = await Promise.all([
+    const [op, insc, not, emp, msg, ultInsc, ultOp] = await Promise.all([
       supabase.from('opiniones').select('id', { count:'exact', head:true }).eq('estado','pendiente'),
       supabase.from('inscripciones').select('id', { count:'exact', head:true }).eq('estado','pendiente'),
       supabase.from('noticias').select('id', { count:'exact', head:true }).eq('publicada',true),
       supabase.from('empleos').select('id', { count:'exact', head:true }).eq('activo',true).gte('fecha_limite',hoy),
+      supabase.from('contacto_mensajes').select('id', { count:'exact', head:true }).eq('leido',false),
       supabase.from('inscripciones').select('id,estudiante_nombre,nivel,tutor_email,estado,created_at').order('created_at',{ascending:false}).limit(5),
       supabase.from('opiniones').select('id,autor_nombre,texto,estado,created_at').eq('estado','pendiente').order('created_at',{ascending:false}).limit(3),
     ])
-    setStats({ opiniones: op.count??0, inscripciones: insc.count??0, noticias: not.count??0, empleos: emp.count??0 })
+    setStats({ opiniones: op.count??0, inscripciones: insc.count??0, noticias: not.count??0, empleos: emp.count??0, mensajes: msg.count??0 })
     setInscripciones(ultInsc.data??[])
     setOpiniones(ultOp.data??[])
     setCargando(false)
@@ -53,6 +54,7 @@ export default function AdminPage() {
   }
 
   const METRICAS = [
+    { titulo:'Mensajes sin leer',        valor:stats.mensajes,      icono:Inbox,         color:'red',    linkTo:'/admin/mensajes' },
     { titulo:'Opiniones pendientes',     valor:stats.opiniones,     icono:MessageSquare, color:'purple', linkTo:'/admin/opiniones' },
     { titulo:'Inscripciones pendientes', valor:stats.inscripciones, icono:ClipboardList, color:'orange', linkTo:'/admin/inscripciones' },
     { titulo:'Noticias publicadas',      valor:stats.noticias,      icono:Newspaper,     color:'blue',   linkTo:'/admin/noticias' },
@@ -78,7 +80,7 @@ export default function AdminPage() {
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {METRICAS.map(m => <StatsCard key={m.titulo} {...m} cargando={cargando} />)}
       </div>
 

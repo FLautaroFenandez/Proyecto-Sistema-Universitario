@@ -5,8 +5,8 @@
  * NO usa Topbar/Navbar/Footer del sitio público. Usa <Outlet /> de React Router.
  */
 
-import { useState, useContext } from 'react'
-import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom'
+import { useState, useEffect, useContext } from 'react'
+import { NavLink, Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageSquare, Newspaper, Image, ClipboardList,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
+import { supabase } from '@/lib/supabase'
 
 const NAV_SECTIONS = [
   {
@@ -55,7 +56,17 @@ function getInitials(nombre) {
 function SidebarContent({ onClose }) {
   const { profile, signOut } = useContext(AuthContext)
   const navigate = useNavigate()
+  const location = useLocation()
   const esAdmin = profile?.rol === ROLES.ADMIN
+  const [mensajesSinLeer, setMensajesSinLeer] = useState(0)
+
+  useEffect(() => {
+    supabase
+      .from('contacto_mensajes')
+      .select('id', { count: 'exact', head: true })
+      .eq('leido', false)
+      .then(({ count }) => setMensajesSinLeer(count ?? 0))
+  }, [location.pathname])
 
   const handleSignOut = async () => {
     await signOut()
@@ -108,7 +119,12 @@ function SidebarContent({ onClose }) {
                     className={linkClass}
                   >
                     <Icon size={16} className="flex-shrink-0" />
-                    {label}
+                    <span className="flex-1">{label}</span>
+                    {href === '/admin/mensajes' && mensajesSinLeer > 0 && (
+                      <span className="ml-1 bg-brand-naranja text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 leading-none">
+                        {mensajesSinLeer > 99 ? '99+' : mensajesSinLeer}
+                      </span>
+                    )}
                   </NavLink>
                 </li>
               ))}
