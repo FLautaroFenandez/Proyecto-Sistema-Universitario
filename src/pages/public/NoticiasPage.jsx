@@ -8,11 +8,12 @@
 import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Clock, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Clock, ArrowRight, ChevronLeft, ChevronRight, Lock } from 'lucide-react'
 import { PageHero } from '@/components/ui/PageHero'
 import { SkeletonCard } from '@/components/ui/Skeleton'
 import { useNoticias } from '@/hooks/useNoticias'
 import { AuthContext } from '@/components/auth/AuthContext'
+import { tienePermiso, PERMISOS } from '@/types/roles'
 import { formatDateShort } from '@/utils/formatDate'
 import { truncateText } from '@/utils/truncateText'
 
@@ -20,13 +21,18 @@ const LIMITE = 9
 
 export default function NoticiasPage() {
   const [pagina, setPagina] = useState(1)
-  const { user } = useContext(AuthContext)
-  const soloPublicas = !user
+  const [tab, setTab] = useState('publicas')
+  const { user, profile } = useContext(AuthContext)
 
-  const { noticias, total, cargando, error } = useNoticias({ pagina, limite: LIMITE, soloPublicas })
+  const puedeVerInternas = Boolean(user && tienePermiso(profile?.rol, PERMISOS.VER_NOTICIAS_INTERNAS))
+  const soloInternas = tab === 'internas'
+  const soloPublicas = !soloInternas
+
+  const { noticias, total, cargando, error } = useNoticias({ pagina, limite: LIMITE, soloPublicas, soloInternas })
   const totalPaginas = Math.ceil(total / LIMITE)
 
-  useEffect(() => { window.scrollTo(0, 0) }, [pagina])
+  useEffect(() => { window.scrollTo(0, 0) }, [pagina, tab])
+  useEffect(() => { setPagina(1) }, [tab])
 
   return (
     <>
@@ -38,6 +44,24 @@ export default function NoticiasPage() {
 
       <section className="py-12 bg-white min-h-[60vh]">
         <div className="max-w-7xl mx-auto px-6">
+
+          {/* Tabs: solo visibles para usuarios con acceso a noticias internas */}
+          {puedeVerInternas && (
+            <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-8">
+              <button
+                onClick={() => setTab('publicas')}
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'publicas' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Noticias
+              </button>
+              <button
+                onClick={() => setTab('internas')}
+                className={`flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium transition-all ${tab === 'internas' ? 'bg-white shadow-sm text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                <Lock size={12} /> Noticias Internas
+              </button>
+            </div>
+          )}
 
           {/* Error */}
           {error && (
@@ -95,8 +119,10 @@ export default function NoticiasPage() {
           {/* Vacío */}
           {!cargando && !error && noticias.length === 0 && (
             <div className="text-center py-20 text-gray-400">
-              <span className="text-6xl block mb-4">📰</span>
-              <p className="text-lg font-medium">Próximamente publicaremos novedades.</p>
+              <span className="text-6xl block mb-4">{soloInternas ? '🔒' : '📰'}</span>
+              <p className="text-lg font-medium">
+                {soloInternas ? 'No hay noticias internas publicadas todavía.' : 'Próximamente publicaremos novedades.'}
+              </p>
             </div>
           )}
 

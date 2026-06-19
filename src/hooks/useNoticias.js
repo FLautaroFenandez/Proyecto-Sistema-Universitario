@@ -37,7 +37,7 @@ const NOTICIAS_DEMO = [
   },
 ]
 
-export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}) {
+export function useNoticias({ soloPublicas = true, soloInternas = false, limite = 9, pagina = 1 } = {}) {
   const [noticias, setNoticias] = useState([])
   const [total,    setTotal]    = useState(0)
   const [cargando, setCargando] = useState(true)
@@ -60,7 +60,9 @@ export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}
           .order('created_at', { ascending: false })
           .range(offset, offset + limite - 1)
 
-        if (soloPublicas) {
+        if (soloInternas) {
+          query = query.eq('publica', false)
+        } else if (soloPublicas) {
           query = query.eq('publica', true)
         }
 
@@ -74,7 +76,7 @@ export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}
       } catch (err) {
         if (!cancelado) {
           console.warn('Usando datos de ejemplo (Supabase no configurado):', err.message)
-          const demo = NOTICIAS_DEMO.slice(0, limite)
+          const demo = soloInternas ? [] : NOTICIAS_DEMO.slice(0, limite)
           setNoticias(demo)
           setTotal(demo.length)
         }
@@ -85,7 +87,7 @@ export function useNoticias({ soloPublicas = true, limite = 9, pagina = 1 } = {}
 
     fetchNoticias()
     return () => { cancelado = true }
-  }, [soloPublicas, limite, pagina])
+  }, [soloPublicas, soloInternas, limite, pagina])
 
   return { noticias, total, cargando, error }
 }

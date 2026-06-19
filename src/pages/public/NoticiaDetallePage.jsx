@@ -4,16 +4,18 @@
  * de noticias relacionadas. Obtiene el id de los params de React Router.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Clock, User } from 'lucide-react'
 import { useNoticiaById, useNoticias } from '@/hooks/useNoticias'
+import { AuthContext } from '@/components/auth/AuthContext'
 import { formatDate, formatDateShort } from '@/utils/formatDate'
 import { SkeletonLine } from '@/components/ui/Skeleton'
 
 export default function NoticiaDetallePage() {
   const { id } = useParams()
+  const { user } = useContext(AuthContext)
   const { noticia, cargando, error } = useNoticiaById(id)
   const { noticias: relacionadas } = useNoticias({ limite: 3, soloPublicas: true })
 
@@ -32,6 +34,19 @@ export default function NoticiaDetallePage() {
       <span className="text-6xl block mb-4">😕</span>
       <h2 className="font-display font-bold text-gray-800 text-xl mb-2">Noticia no encontrada</h2>
       <Link to="/noticias" className="text-brand-naranja hover:underline text-sm">← Volver a noticias</Link>
+    </div>
+  )
+
+  if (!noticia.publica && !user) return (
+    <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+      <span className="text-6xl block mb-4">🔒</span>
+      <h2 className="font-display font-bold text-gray-800 text-xl mb-2">Contenido exclusivo para la comunidad</h2>
+      <p className="text-gray-500 text-sm mb-6">Esta noticia es interna. Iniciá sesión para leerla.</p>
+      <Link to="/login"
+        className="inline-flex items-center gap-2 bg-brand-azul text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium"
+      >
+        Iniciar sesión
+      </Link>
     </div>
   )
 
