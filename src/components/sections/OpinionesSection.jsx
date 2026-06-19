@@ -21,6 +21,7 @@ import { SkeletonAvatar, SkeletonLine } from '@/components/ui/Skeleton'
 const opinionSchema = z.object({
   autor_nombre: z.string().min(2, 'Ingresá tu nombre').max(100, 'Máximo 100 caracteres'),
   texto:        z.string().min(5, 'La opinión es muy corta').max(300, 'Máximo 300 caracteres'),
+  puntaje:      z.number({ required_error: 'Seleccioná un puntaje' }).min(1, 'Seleccioná un puntaje').max(5),
 })
 
 /* Colores del avatar según posición, usando la paleta del logo */
@@ -37,6 +38,37 @@ function getInitials(nombre) {
   return nombre?.trim().split(' ').slice(0, 2).map(p => p[0].toUpperCase()).join('') ?? '?'
 }
 
+function StarPicker({ value, onChange, error }) {
+  const [hover, setHover] = useState(0)
+  return (
+    <div>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map(s => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => onChange(s)}
+            onMouseEnter={() => setHover(s)}
+            onMouseLeave={() => setHover(0)}
+            className="p-0.5 focus:outline-none"
+            aria-label={`${s} estrella${s > 1 ? 's' : ''}`}
+          >
+            <Star
+              size={28}
+              className={`transition-colors cursor-pointer ${
+                s <= (hover || value)
+                  ? 'fill-yellow-400 text-yellow-400'
+                  : 'fill-gray-200 text-gray-200'
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+    </div>
+  )
+}
+
 export function OpinionesSection() {
   const { opiniones, cargando } = useOpiniones()
   const [enviado, setEnviado]   = useState(false)
@@ -47,11 +79,13 @@ export function OpinionesSection() {
     register,
     handleSubmit,
     watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm({ resolver: zodResolver(opinionSchema) })
 
-  const textoActual = watch('texto') ?? ''
+  const textoActual   = watch('texto') ?? ''
+  const puntajeActual = watch('puntaje') ?? 0
 
   const onSubmit = async (data) => {
     setEnviando(true)
@@ -59,7 +93,7 @@ export function OpinionesSection() {
     try {
       const { error } = await supabase
         .from('opiniones')
-        .insert({ autor_nombre: data.autor_nombre, texto: data.texto, estado: 'pendiente' })
+        .insert({ autor_nombre: data.autor_nombre, texto: data.texto, puntaje: data.puntaje, estado: 'pendiente' })
       if (error) throw error
       setEnviado(true)
       reset()
@@ -179,6 +213,18 @@ export function OpinionesSection() {
                 </div>
               </div>
 
+              {/* Puntaje */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Puntaje <span className="text-red-500">*</span>
+                </label>
+                <StarPicker
+                  value={puntajeActual}
+                  onChange={v => setValue('puntaje', v, { shouldValidate: true })}
+                  error={errors.puntaje?.message}
+                />
+              </div>
+
               {/* Error de envío */}
               {errorEnvio && (
                 <p className="text-sm text-red-500 bg-red-50 rounded-lg px-4 py-2.5">{errorEnvio}</p>
@@ -203,6 +249,7 @@ export function OpinionesSection() {
 
 function OpinionCard({ opinion, colorIndex, delay }) {
   const avatarColor = AVATAR_COLORS[colorIndex % AVATAR_COLORS.length]
+  const puntaje = opinion.puntaje ?? 5
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -211,10 +258,10 @@ function OpinionCard({ opinion, colorIndex, delay }) {
       transition={{ duration: 0.5, delay }}
       className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col"
     >
-      {/* Estrellas decorativas */}
+      {/* Estrellas */}
       <div className="flex gap-0.5 mb-4">
         {[1, 2, 3, 4, 5].map(s => (
-          <Star key={s} size={14} className="fill-yellow-400 text-yellow-400" />
+          <Star key={s} size={14} className={s <= puntaje ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-200 text-gray-200'} />
         ))}
       </div>
 
