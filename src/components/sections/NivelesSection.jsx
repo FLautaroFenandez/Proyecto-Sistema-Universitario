@@ -46,14 +46,14 @@ export function NivelesSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             transition={{ duration: 0.4 }}
             className="inline-block bg-brand-azul/10 text-brand-azul text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4"
           >
@@ -72,7 +72,7 @@ export function NivelesSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          viewport={{ once: false, margin: '-60px' }}
         >
           {NIVELES.map(({ id, Icon, nombre, hex, badgeBg, badgeText, btnBorder, btnText, btnHover, items }) => (
             <motion.div
@@ -106,7 +106,7 @@ export function NivelesSection() {
                       key={item}
                       initial={{ opacity: 0, x: -10 }}
                       whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       transition={{ delay: i * 0.05 }}
                       className="flex items-start gap-2.5 text-sm text-gray-600"
                     >

@@ -4,8 +4,9 @@
  * transiciones de imagen con zoom.
  */
 
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { Clock, ArrowRight, Newspaper } from 'lucide-react'
 import { useNoticias } from '@/hooks/useNoticias'
 import { formatDateShort } from '@/utils/formatDate'
@@ -23,6 +24,8 @@ const cardVariants = {
 
 export function NoticiasSection() {
   const { noticias, cargando, error } = useNoticias({ limite: 3, soloPublicas: true })
+  const gridRef = useRef(null)
+  const isInView = useInView(gridRef, { once: false, margin: '-60px' })
 
   return (
     <section className="py-20 bg-white overflow-hidden">
@@ -32,7 +35,7 @@ export function NoticiasSection() {
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between mb-12 flex-wrap gap-4"
         >
@@ -63,11 +66,11 @@ export function NoticiasSection() {
 
         {/* Grid con stagger */}
         <motion.div
+          ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
+          animate={!cargando && isInView ? 'visible' : 'hidden'}
         >
           {cargando
             ? [1, 2, 3].map(i => <SkeletonCard key={i} />)
@@ -82,7 +85,7 @@ export function NoticiasSection() {
                   {/* Imagen con zoom en hover */}
                   <Link to={`/noticias/${noticia.id}`} className="block relative h-48 overflow-hidden bg-gray-100">
                     {noticia.imagen_url ? (
-                      <img src={noticia.imagen_url} alt={noticia.titulo} loading="lazy"
+                      <img src={noticia.imagen_url} alt={noticia.titulo} loading="eager"
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center">
@@ -131,7 +134,7 @@ export function NoticiasSection() {
         {/* Botón mobile */}
         <motion.div
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-          viewport={{ once: true }} className="mt-8 text-center md:hidden"
+          viewport={{ once: false }} className="mt-8 text-center md:hidden"
         >
           <Link to="/noticias"
             className="inline-flex items-center gap-2 border border-brand-naranja text-brand-naranja px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-orange-50 transition-colors">

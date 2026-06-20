@@ -18,7 +18,7 @@ const STATS = [
 function AnimatedCounter({ target, duration = 1800 }) {
   const [current, setCurrent] = useState(0)
   const ref      = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const isInView = useInView(ref, { once: false, margin: '-80px' })
 
   useEffect(() => {
     if (!isInView) return
@@ -41,7 +41,7 @@ function AnimatedCounter({ target, duration = 1800 }) {
 
 export function EstadisticasSection() {
   const ref      = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: '-60px' })
+  const isInView = useInView(ref, { once: false, margin: '-60px' })
 
   return (
     <section

@@ -49,7 +49,7 @@ export function GaleriaSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6 }}
           className="flex items-center justify-between mb-12 flex-wrap gap-4"
         >
@@ -93,7 +93,7 @@ export function GaleriaSection() {
                   key={cat.id}
                   initial={{ opacity: 0, scale: 0.92 }}
                   whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: '-40px' }}
+                  viewport={{ once: false, margin: '-40px' }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   className={`relative rounded-2xl overflow-hidden cursor-pointer group ${span}`}
                 >
@@ -157,7 +157,7 @@ export function GaleriaSection() {
         {/* Botón mobile */}
         <motion.div
           initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-          viewport={{ once: true }} className="mt-8 text-center md:hidden"
+          viewport={{ once: false }} className="mt-8 text-center md:hidden"
         >
           <Link to="/galeria"
             className="inline-flex items-center gap-2 border border-brand-celeste text-brand-celeste px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-sky-50 transition-colors">

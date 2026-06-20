@@ -26,14 +26,14 @@ export function ServiciosSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: false }}
             className="inline-block bg-brand-naranja/10 text-brand-naranja text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4"
           >
             Bienestar estudiantil
@@ -52,7 +52,7 @@ export function ServiciosSection() {
               key={nombre}
               initial={{ opacity: 0, y: 40, x: i % 2 === 0 ? -20 : 20 }}
               whileInView={{ opacity: 1, y: 0, x: 0 }}
-              viewport={{ once: true, margin: '-40px' }}
+              viewport={{ once: false, margin: '-40px' }}
               transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
               whileHover={{
                 y: -10,

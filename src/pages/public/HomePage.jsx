@@ -4,7 +4,6 @@
  * Hero → Noticias → Niveles → Servicios → Opiniones → CTA
  */
 
-import { useEffect } from 'react'
 import { HeroSection }          from '@/components/sections/HeroSection'
 import { NoticiasSection }      from '@/components/sections/NoticiasSection'
 import { EstadisticasSection }  from '@/components/sections/EstadisticasSection'
@@ -15,8 +14,6 @@ import { OpinionesSection }     from '@/components/sections/OpinionesSection'
 import { CTASection }           from '@/components/sections/CTASection'
 
 export default function HomePage() {
-  useEffect(() => { window.scrollTo(0, 0) }, [])
-
   return (
     <>
       <HeroSection />

@@ -38,7 +38,7 @@ export function CTASection() {
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6, type: 'spring' }}
           className="flex items-center justify-center mb-6"
         >
@@ -55,7 +55,7 @@ export function CTASection() {
         <motion.span
           initial={{ opacity: 0, y: -10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ delay: 0.1 }}
           className="inline-block bg-brand-naranja/20 text-brand-naranja border border-brand-naranja/30 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest"
         >
@@ -66,7 +66,7 @@ export function CTASection() {
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className="font-display font-bold text-white text-3xl md:text-5xl leading-tight mb-5"
         >
@@ -76,7 +76,7 @@ export function CTASection() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6, delay: 0.35 }}
           className="text-white/65 text-base md:text-lg mb-10 leading-relaxed"
         >
@@ -88,7 +88,7 @@ export function CTASection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           transition={{ duration: 0.6, delay: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
