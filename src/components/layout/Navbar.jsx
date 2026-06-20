@@ -171,6 +171,8 @@ export function Navbar() {
   const openDropdown  = useCallback((label) => { clearTimeout(timeoutRef.current); setDropdownOpen(label) }, [])
   const closeDropdown = useCallback(() => { timeoutRef.current = setTimeout(() => setDropdownOpen(null), 100) }, [])
 
+  const cerrarMenu = useCallback(() => setMenuAbierto(false), [])
+
   const handleSignOut = async () => {
     setDropdownUser(false); setMenuAbierto(false)
     await signOut(); navigate('/')
@@ -311,84 +313,78 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* ── Menú mobile (portal al body: el cierre funciona en cualquier página) ── */}
+      {/* ── Menú mobile a pantalla completa (portal al body) ── */}
       {createPortal(
       <AnimatePresence>
         {menuAbierto && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-[60] lg:hidden"
-              onPointerDown={() => setMenuAbierto(false)}
-            />
-            <motion.div
-              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-              className="fixed top-0 left-0 w-[300px] max-w-[85vw] bg-white z-[70] lg:hidden flex flex-col shadow-2xl"
-              style={{ height: '100dvh' }}
-            >
-              {/* Header fijo del panel */}
-              <div className="flex items-center justify-between pl-5 pr-3 py-3.5 border-b border-gray-100 bg-gray-50 flex-shrink-0">
-                <Link to="/" onClick={() => setMenuAbierto(false)} className="flex items-center gap-2.5 min-w-0">
-                  <img src="/assets/logo-ept.png" alt="Logo EPT" width={38} height={38}
-                    className="w-9 h-9 object-contain flex-shrink-0" style={{ mixBlendMode: 'multiply' }}
-                    onError={e => { e.currentTarget.style.display = 'none' }}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-display font-bold text-brand-azul text-sm leading-none truncate">Educar para Transformar</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">Centro Educativo</p>
-                  </div>
-                </Link>
-                <button
-                  type="button"
-                  onPointerDown={(e) => { e.stopPropagation(); setMenuAbierto(false) }}
-                  onClick={(e) => { e.stopPropagation(); setMenuAbierto(false) }}
-                  className="w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-gray-700 active:scale-95 transition-all flex-shrink-0 ml-2"
-                  aria-label="Cerrar menú"
-                >
-                  <X size={22} />
-                </button>
-              </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] lg:hidden bg-white flex flex-col"
+            style={{ height: '100dvh' }}
+          >
+            {/* Header fijo */}
+            <div className="flex items-center justify-between pl-5 pr-3 h-[68px] border-b border-gray-100 flex-shrink-0">
+              <Link to="/" onClick={cerrarMenu} className="flex items-center gap-2.5 min-w-0">
+                <img src="/assets/logo-ept.png" alt="Logo EPT" width={40} height={40}
+                  className="w-10 h-10 object-contain flex-shrink-0" style={{ mixBlendMode: 'multiply' }}
+                  onError={e => { e.currentTarget.style.display = 'none' }}
+                />
+                <div className="min-w-0">
+                  <p className="font-display font-bold text-brand-azul text-[15px] leading-none truncate">Educar para Transformar</p>
+                  <p className="text-[11px] text-gray-400 mt-0.5">Centro Educativo</p>
+                </div>
+              </Link>
+              <button
+                type="button"
+                onClick={cerrarMenu}
+                className="w-12 h-12 flex items-center justify-center rounded-xl text-gray-600 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex-shrink-0 ml-2"
+                aria-label="Cerrar menú"
+              >
+                <X size={24} />
+              </button>
+            </div>
 
-              {/* Links (única zona que scrollea) */}
-              <nav className="flex-1 overflow-y-auto px-3 py-4">
-                {NAV_ITEMS.map(item => (
-                  <MobileNavItem key={item.label} item={item} onClose={() => setMenuAbierto(false)} />
-                ))}
-              </nav>
+            {/* Links (zona scrolleable) */}
+            <nav className="flex-1 overflow-y-auto px-4 py-5">
+              {NAV_ITEMS.map(item => (
+                <MobileNavItem key={item.label} item={item} onClose={cerrarMenu} />
+              ))}
+            </nav>
 
-              {/* Footer auth fijo, con margen para la barra inferior del celular */}
-              <div className="px-4 pt-3 border-t border-gray-100 flex-shrink-0 bg-white"
-                style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
-                {user && profile ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
-                      <div className="w-9 h-9 rounded-lg bg-brand-naranja flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                        {getInitials(profile.nombre)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-800">{profile.nombre}</p>
-                        <p className="text-[11px] text-gray-400 capitalize">{profile.rol}</p>
-                      </div>
+            {/* Footer auth fijo */}
+            <div className="px-4 pt-3 border-t border-gray-100 flex-shrink-0 bg-white"
+              style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
+              {user && profile ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+                    <div className="w-9 h-9 rounded-lg bg-brand-naranja flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                      {getInitials(profile.nombre)}
                     </div>
-                    <Link to={panelLink} onClick={() => setMenuAbierto(false)}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-brand-azul bg-blue-50 rounded-xl font-medium">
-                      <LayoutDashboard size={14} /> Mi panel
-                    </Link>
-                    <button onClick={handleSignOut}
-                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                      <LogOut size={14} /> Cerrar sesión
-                    </button>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">{profile.nombre}</p>
+                      <p className="text-[11px] text-gray-400 capitalize">{profile.rol}</p>
+                    </div>
                   </div>
-                ) : (
-                  <Link to="/login" onClick={() => setMenuAbierto(false)}
-                    className="flex items-center justify-center gap-2 w-full bg-brand-naranja text-white py-3 rounded-xl font-semibold text-sm hover:bg-orange-700 transition-colors">
-                    <LogIn size={16} /> Ingresar
+                  <Link to={panelLink} onClick={cerrarMenu}
+                    className="flex items-center gap-2 w-full px-4 py-3 text-sm text-brand-azul bg-blue-50 rounded-xl font-medium">
+                    <LayoutDashboard size={15} /> Mi panel
                   </Link>
-                )}
-              </div>
-            </motion.div>
-          </>
+                  <button onClick={handleSignOut}
+                    className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                    <LogOut size={15} /> Cerrar sesión
+                  </button>
+                </div>
+              ) : (
+                <Link to="/login" onClick={cerrarMenu}
+                  className="flex items-center justify-center gap-2 w-full bg-brand-naranja text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-orange-700 transition-colors">
+                  <LogIn size={16} /> Ingresar
+                </Link>
+              )}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>,
       document.body
@@ -401,25 +397,35 @@ function MobileNavItem({ item, onClose }) {
   const [abierto, setAbierto] = useState(false)
   const hasItems = item.items?.length > 0
 
+  /* Sin submenú: link directo grande */
   if (!hasItems) {
     return (
       <Link to={item.href} onClick={onClose}
-        className="flex items-center px-4 py-2.5 rounded-xl text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-0.5"
+        className="flex items-center px-4 py-3.5 rounded-xl text-base font-semibold text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors mb-1"
       >
-        <span className={item.highlight ? 'text-brand-naranja font-semibold' : ''}>{item.label}</span>
+        <span className={item.highlight ? 'text-brand-naranja' : ''}>{item.label}</span>
       </Link>
     )
   }
 
+  /* Con submenú: la etiqueta navega; el chevron (botón aparte) expande */
   return (
-    <div className="mb-0.5">
-      <button
-        onClick={() => setAbierto(p => !p)}
-        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-      >
-        <span className={item.highlight ? 'text-brand-naranja font-semibold' : ''}>{item.label}</span>
-        <ChevronDown size={13} className={`text-gray-400 transition-transform duration-200 ${abierto ? 'rotate-180' : ''}`} />
-      </button>
+    <div className="mb-1">
+      <div className="flex items-center rounded-xl hover:bg-gray-50 transition-colors">
+        <Link to={item.href} onClick={onClose}
+          className="flex-1 px-4 py-3.5 text-base font-semibold text-gray-700 active:bg-gray-100 rounded-l-xl"
+        >
+          <span className={item.highlight ? 'text-brand-naranja' : ''}>{item.label}</span>
+        </Link>
+        <button
+          type="button"
+          onClick={() => setAbierto(p => !p)}
+          className="w-12 h-12 flex items-center justify-center text-gray-400 active:bg-gray-100 rounded-r-xl flex-shrink-0"
+          aria-label={abierto ? `Contraer ${item.label}` : `Expandir ${item.label}`}
+        >
+          <ChevronDown size={18} className={`transition-transform duration-200 ${abierto ? 'rotate-180' : ''}`} />
+        </button>
+      </div>
       <AnimatePresence initial={false}>
         {abierto && (
           <motion.div
@@ -427,18 +433,18 @@ function MobileNavItem({ item, onClose }) {
             exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.18 }}
             className="overflow-hidden"
           >
-            <div className="pl-3 pb-1 space-y-0.5">
+            <div className="pl-3 py-1 space-y-0.5">
               {item.items.map(sub => {
                 const Icon = sub.icon
                 return (
                   <Link key={sub.label} to={sub.href} onClick={onClose}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 transition-colors group"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 active:bg-gray-100 transition-colors group"
                   >
-                    <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <Icon size={13} className="text-gray-500 group-hover:text-brand-azul transition-colors" />
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Icon size={15} className="text-gray-500 group-hover:text-brand-azul transition-colors" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[13px] font-medium text-gray-700">{sub.label}</p>
+                      <p className="text-sm font-medium text-gray-700">{sub.label}</p>
                       <p className="text-[11px] text-gray-400 truncate">{sub.desc}</p>
                     </div>
                   </Link>
