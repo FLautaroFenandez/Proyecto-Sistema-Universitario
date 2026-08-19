@@ -42,3 +42,8 @@ supabase/
 images/
 
 *.txt
+# Documentos de trabajo de la cursada (se versiona la conversión a Markdown en docs/)
+*.docx
+*.pdf
+*.html
+!index.html

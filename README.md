@@ -1,26 +1,48 @@
-# 🏫 Educar para Transformar — Sitio Web Institucional
+# 🏫 Educar para Transformar — Sistema Institucional
 
 > Centro Educativo Privado · Resistencia, Chaco · Argentina  
-> Proyecto académico — Metodología de Sistemas I · UTN FRRe TUP 2026  
-> Grupo 8: Zonura
+> Proyecto académico — UTN FRRe · TUP 2026  
+> Metodología de Sistemas I (Parte 1) → **Metodología de Sistemas II (Parte 2, en curso)**
 
 ---
 
 ## 📋 Descripción del Proyecto
 
-Diseño e implementación de la página web institucional del Centro Educativo **"Educar para Transformar"**, una institución privada de alta calidad educativa ubicada en las afueras de Resistencia que iniciará actividades en marzo de 2027.
+Automatización de la gestión del Centro Educativo **"Educar para Transformar"**, una institución privada de alta calidad educativa ubicada en las afueras de Resistencia que iniciará actividades en marzo de 2027.
 
-Esta es la **Etapa 1 / Parte 1** del proyecto integrador que continuará en Metodología de Sistemas II con el sistema de gestión y la app móvil.
+El proyecto integrador se desarrolla en tres partes:
+
+| Parte | Qué es | Materia | Estado |
+|---|---|---|---|
+| **Parte 1** — Página Web | Sitio institucional público, autenticación por roles y panel de administración de contenido | Metodología I | ✅ Terminada |
+| **Parte 2** — Sistema de Gestión | Matrícula, cursos y materias, calificaciones, asistencia, legajos de personal, comunicados y reportes | Metodología II | 🔨 En desarrollo |
+| **Parte 3** — App móvil | — | Metodología II | ⏳ No iniciada |
+
+---
+
+## 📚 Portafolio digital
+
+La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/PORTAFOLIO.md`](docs/PORTAFOLIO.md)**.
+
+| Etapa | Documento |
+|---|---|
+| Equipo | [Integrantes y roles](docs/00-equipo/integrantes.md) · [Plan de trabajo](docs/00-equipo/plan-de-trabajo.md) |
+| Unidad 1 — Parte 1 | [Requerimientos, arquitecturas, HU, casos de uso y diagramas](docs/01-unidad-1/01-parte-1-requerimientos/README.md) |
+| Unidad 1 — Parte 2 | [Repositorios de software](docs/01-unidad-1/02-parte-2-repositorios/README.md) |
+| Unidad 1 — Backlog | [Backlog del producto y sprints](docs/01-unidad-1/03-backlog-y-sprints/README.md) |
 
 ---
 
 ## 👥 Equipo
 
-| Nombre | Rol principal |
+**Metodología de Sistemas II** — equipo de dos integrantes, con el trabajo repartido por Historia de Usuario:
+
+| Nombre | Historias de Usuario |
 |---|---|
-| Ian Hakanson | Frontend · Arquitectura · Supabase |
-| Gonzalo Cerqueiro | Base de datos · Backend (Supabase) · Testing |
-| Lautaro Fernández | UI/UX · Maquetado · Frontend |
+| Gonzalo Cerqueiro | HU1 · Matrícula — HU2 · Calificaciones — HU3 · Reportes institucionales |
+| Lautaro Fernández | HU4 · Asistencia — HU5 · Comunicados — HU6 · Legajos de personal |
+
+En Metodología de Sistemas I el equipo fue el **Grupo 8 — Zonura**, de tres integrantes: Gonzalo Cerqueiro (base de datos, backend y testing), Lautaro Fernández (UI/UX, maquetado y frontend) e Ian Hakanson (arquitectura, autenticación y Supabase), que no continúa en esta etapa.
 
 ---
 
@@ -31,7 +53,7 @@ Esta es la **Etapa 1 / Parte 1** del proyecto integrador que continuará en Meto
 | Frontend | React 18 + Vite | SPA moderna, rápida, con HMR |
 | Estilos | Tailwind CSS v3 | Utilidades, responsive, consistente |
 | Auth + BD + API | Supabase | PostgreSQL gestionado + Auth con roles + Storage + API REST automática |
-| Deploy | Vercel | Gratis, un comando, preview por PR |
+| Deploy | Netlify | Gratis, despliegue continuo desde `main`, redirects para SPA |
 | Control de versiones | Git + GitHub | Estándar de la industria |
 | Gestión de proyecto | Trello | Kanban colaborativo |
 | Routing | React Router v6 | SPA con rutas protegidas por rol |
@@ -51,7 +73,7 @@ Esta es la **Etapa 1 / Parte 1** del proyecto integrador que continuará en Meto
                         │ HTTPS
 ┌───────────────────────▼─────────────────────────────┐
 │              CAPA DE PRESENTACIÓN                   │
-│                  React SPA (Vercel)                 │
+│                  React SPA (Netlify)                │
 │                                                     │
 │  ┌────────────┐  ┌──────────────┐  ┌─────────────┐ │
 │  │  Páginas   │  │  Componentes │  │   Rutas     │ │
