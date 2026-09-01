@@ -16,11 +16,11 @@ requerimientos.
 | ID | Historia de Usuario | Rol / Usuario | Req. | Responsable | Prioridad | Riesgo | Puntos | Sprint | Estado |
 |---|---|---|---|---|---|---|---|---|---|
 | HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | To Do |
-| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 1 | To Do |
 | HU4 | Registrar asistencia diaria | Docente | REQ-16 | L. Fernández | Alta | Bajo | 3 | Sprint 1 | To Do |
-| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 2 | To Do |
+| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | To Do |
 | HU6 | Gestionar legajo de personal | Administrador | REQ-19 | L. Fernández | Media | Medio | 5 | Sprint 2 | To Do |
-| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | L. Fernández | Media | Bajo | 2 | Sprint 2 | To Do |
+| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | To Do |
+| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | L. Fernández | Media | Bajo | 2 | Sprint 3 | To Do |
 
 ---
 
@@ -130,62 +130,90 @@ requerimientos.
   matricular alumnos, cargar notas y registrar asistencia, es decir, un incremento operativo
   utilizable.
 
-El equipo está formado por dos integrantes y los sprints son de **una semana (5 días hábiles)**.
-Se estima una **velocidad de aproximadamente 21 puntos por sprint**. De esa capacidad se reserva
-alrededor del **25 % (5 a 6 puntos)** para los requerimientos extra que no forman parte del
-cuadro del backlog.
+El equipo está formado por dos integrantes y los sprints son de **dos semanas (10 días
+hábiles)**, y corren de martes a lunes. Se estima una **velocidad de aproximadamente 15 puntos
+por sprint**. De esa capacidad se reserva alrededor del **25 % (3 a 5 puntos)** para los
+requerimientos extra que no forman parte del cuadro del backlog.
+
+Cada sprint incorpora **una Historia de Usuario de cada integrante**, de modo que ambos
+entreguen valor en todas las iteraciones y que la revisión cruzada por Pull Request tenga
+siempre trabajo del otro para revisar.
 
 ---
 
-## 4. Sprint 1 — Matrícula, calificaciones y asistencia (semana 1)
+## 4. Sprint 1 — Base académica: matrícula, cursos y asistencia (15/09 al 28/09)
 
-**Objetivo del Sprint:** lograr que el Administrador pueda matricular alumnos y que el Docente
-pueda cargar calificaciones y registrar la asistencia diaria de su curso, dejando disponible la
-información base del sistema.
+**Objetivo del Sprint:** dejar operativa la base del sistema: el Administrador matricula alumnos
+desde las solicitudes aprobadas y el Docente registra la asistencia diaria de su curso. Sin
+estos datos ninguna de las historias siguientes tiene sobre qué trabajar.
 
 | ID | Historia de Usuario | Prioridad | Puntos | Responsable | Motivo de inclusión / Dependencia |
 |---|---|---|---|---|---|
-| HU1 | Matricular alumno desde solicitud aprobada | Alta | 8 | G. Cerqueiro | Es la base del sistema: sin alumnos matriculados no existen datos para notas, asistencia ni reportes. |
-| HU2 | Cargar calificaciones de alumnos | Alta | 5 | G. Cerqueiro | Depende de HU1 (alumnos matriculados) y de REQ-14 (materia y docente asignados). |
-| HU4 | Registrar asistencia diaria | Alta | 3 | L. Fernández | Depende de HU1. Bajo riesgo, permite entregar valor visible a Padres y Estudiantes en la primera semana. |
+| HU1 | Matricular alumno desde solicitud aprobada | Alta | 8 | G. Cerqueiro | Es la base del sistema: sin alumnos matriculados no existen datos para calificaciones, asistencia ni reportes. |
+| HU4 | Registrar asistencia diaria | Alta | 3 | L. Fernández | Depende de HU1 y de REQ-14, que se cierran en la primera semana del sprint. Bajo riesgo y entrega valor visible a Padres y Estudiantes desde la primera iteración. |
+
+**Patrón de diseño de este sprint: Facade.** Se construye la capa de servicios sobre la que se
+apoyan todas las historias siguientes. Se migran los catorce archivos que hoy consultan la base
+directamente y se fija la regla de que ningún componente vuelve a hacerlo.
 
 ### Plan del Sprint 1
 
-| Día | Actividades |
-|---|---|
-| Día 1 | Configuración del entorno y de la base de datos. Modelado de matrícula, legajo, cursos y materias (base de REQ-14). |
-| Día 2 | HU1: listado de solicitudes aprobadas, visualización de datos del solicitante y asignación de curso/división. |
-| Día 3 | HU1: validaciones, generación del legajo digital y cambio de estado a "matriculado". Inicio de HU4. |
-| Día 4 | HU4: carga y edición de asistencia + vista para Padre y Estudiante. HU2: pantalla de carga de notas por curso y materia. |
-| Día 5 | HU2: validación de rango y cálculo del promedio. Pruebas de integración. |
+| Semana | Fechas | Actividades |
+|---|---|---|
+| Semana 1 | 15/09 al 21/09 | Sprint Planning. Modelado de matrícula, legajo, cursos y materias (REQ-14). Creación de la capa de servicios (patrón Facade) y migración de los accesos existentes. HU1: listado de solicitudes aprobadas y asignación de curso. |
+| Semana 2 | 22/09 al 28/09 | HU1: validaciones, generación del legajo digital y cambio de estado a "matriculado". HU4: carga y edición de asistencia, y vista de consulta para Padre y Estudiante. Pruebas de integración. Sprint Review y Retrospectiva. |
 
 ---
 
-## 5. Sprint 2 — Gestión de personal, comunicación y reportes (semana 2)
+## 5. Sprint 2 — Calificaciones, personal y trazabilidad (29/09 al 13/10)
 
-**Objetivo del Sprint:** incorporar la gestión del legajo de personal, la comunicación entre
-Docente y familias, y los reportes institucionales que consumen los datos generados en el
-Sprint 1.
+**Objetivo del Sprint:** incorporar la carga de calificaciones con cálculo automático del
+promedio y la gestión del legajo del personal, dejando registrada toda acción crítica sobre los
+datos.
 
 | ID | Historia de Usuario | Prioridad | Puntos | Responsable | Motivo de inclusión / Dependencia |
 |---|---|---|---|---|---|
-| HU6 | Gestionar legajo de personal | Media | 5 | L. Fernández | Independiente de las HU del Sprint 1; se agrupa con REQ-20 (postulaciones) por afinidad de módulo. |
-| HU5 | Enviar comunicado a padres del curso | Media | 2 | L. Fernández | Requiere cursos con padres asociados (REQ-14 y HU1, cerrados en el Sprint 1). |
-| HU3 | Consultar indicadores institucionales | Media | 8 | G. Cerqueiro | Depende de HU1, HU2 y HU4: sin matrícula, notas y asistencia cargadas no hay datos que agregar. |
+| HU2 | Cargar calificaciones de alumnos | Alta | 5 | G. Cerqueiro | Depende de HU1 (alumnos matriculados) y de REQ-14 (materia y docente asignados), ambos cerrados en el Sprint 1. |
+| HU6 | Gestionar legajo de personal | Media | 5 | L. Fernández | Independiente de las historias anteriores. Se agrupa con REQ-20 (postulaciones laborales) por afinidad de módulo. |
+
+**Patrón de diseño de este sprint: State.** Se modela el ciclo de vida de la matrícula y el de
+las postulaciones laborales como máquinas de estado. Cada estado declara a qué estados puede
+pasar, lo que hace verificable el criterio de aceptación de HU1 —una solicitud matriculada no
+puede volver a matricularse— y ordena el flujo de REQ-20.
 
 ### Plan del Sprint 2
 
-| Día | Actividades |
-|---|---|
-| Día 6 | HU6: modelo y ABM de legajos de personal, validación de DNI único. Avance de REQ-20. |
-| Día 7 | HU6: estado activo/inactivo vinculado al acceso, búsqueda y filtros. HU5: modelo de comunicados y envío por curso. |
-| Día 8 | HU5: validaciones y bandeja de padres (cierre). HU3: consultas agregadas de matrícula, asistencia y rendimiento. |
-| Día 9 | HU3: panel de reportes, filtro por período y exportación a PDF. Avance de REQ-17 (boletines y constancias, reserva). |
-| Día 10 | Pruebas de integración y de permisos por rol, registro de auditoría (REQ-22). |
+| Semana | Fechas | Actividades |
+|---|---|---|
+| Semana 1 | 29/09 al 05/10 | Sprint Planning. HU2: modelo de notas por alumno, materia y período; pantalla de carga por curso. HU6: modelo y ABM de legajos con validación de DNI único. Implementación de la máquina de estados (patrón State). |
+| Semana 2 | 06/10 al 13/10 | HU2: validación de rango y cálculo del promedio del período. HU6: estado activo/inactivo vinculado al acceso, búsqueda y filtros. REQ-20: postulaciones sobre la máquina de estados. REQ-22: registro de auditoría. Sprint Review y Retrospectiva. |
 
 ---
 
-## 6. Requerimientos extra considerados en la capacidad
+## 6. Sprint 3 — Comunicación, reportes e integración final (14/10 al 27/10)
+
+**Objetivo del Sprint:** cerrar la comunicación con las familias y los reportes institucionales,
+y verificar que el Sistema de Gestión se integra con la página web ya desplegada sin romper su
+funcionamiento, de cara a la entrega conjunta del 27 de octubre de 2026.
+
+| ID | Historia de Usuario | Prioridad | Puntos | Responsable | Motivo de inclusión / Dependencia |
+|---|---|---|---|---|---|
+| HU3 | Consultar indicadores institucionales | Media | 8 | G. Cerqueiro | Depende de HU1, HU2 y HU4: sin matrícula, calificaciones y asistencia cargadas no hay datos que agregar. Por eso se ubica en la última iteración. |
+| HU5 | Enviar comunicado a padres del curso | Media | 2 | L. Fernández | Requiere cursos con padres asociados (REQ-14 y HU1). Bajo esfuerzo, lo que libera capacidad para la integración y las pruebas de regresión. |
+
+**Patrones de diseño.** No se incorporan patrones nuevos. Se verifica que los tres aplicados
+estén efectivamente en uso en todos los módulos, como parte de la Definition of Done.
+
+### Plan del Sprint 3
+
+| Semana | Fechas | Actividades |
+|---|---|---|
+| Semana 1 | 14/10 al 20/10 | Sprint Planning. HU3: consultas agregadas de matrícula, asistencia y rendimiento; filtro por período. HU5: modelo de comunicados, envío por curso y bandeja de los padres. REQ-17: boletines y constancias en PDF. |
+| Semana 2 | 21/10 al 27/10 | HU3: panel de reportes y exportación a PDF. Integración con la web institucional y pruebas de regresión sobre la Parte 1. Pruebas de permisos por rol. Despliegue final y entrega. Sprint Review y Retrospectiva. |
+
+---
+
+## 7. Requerimientos extra considerados en la capacidad
 
 Los siguientes requerimientos no integran el cuadro del backlog porque no corresponden a las
 seis Historias de Usuario seleccionadas, pero sí ocupan tiempo del equipo dentro de cada sprint
@@ -197,22 +225,22 @@ funcionalidad que genere valor y que no esté contemplada inicialmente.
 | Requerimiento extra | Sprint en que se atiende | Motivo por el que consume tiempo del sprint |
 |---|---|---|
 | **REQ-14** — Cursos, materias y asignación docente | Sprint 1 (≈ 5 pts) | Es precondición técnica de HU2 y HU4: sin cursos, materias y docente asignado no se pueden cargar notas ni asistencia. |
-| **REQ-17** — Boletines y constancias | Sprint 2 (≈ 2 pts) | Se apoya en las calificaciones de HU2; se avanza en paralelo sin comprometerse como entregable del sprint. |
+| **REQ-17** — Boletines y constancias | Sprint 3 (≈ 3 pts) | Se apoya en las calificaciones de HU2; se avanza en paralelo sin comprometerse como entregable del sprint. |
 | **REQ-20** — Postulaciones laborales | Sprint 2 (≈ 2 pts) | Comparte el módulo de personal con HU6, por lo que se aprovecha el mismo contexto de desarrollo. |
-| **REQ-22** — Auditoría y trazabilidad de acciones | Sprint 2 (≈ 2 pts) | Requerimiento transversal: cada acción crítica de Administrador y Autoridad debe quedar registrada con usuario, fecha y acción. |
+| **REQ-22** — Auditoría y trazabilidad de acciones | Sprint 2 (≈ 3 pts) | Requerimiento transversal: cada acción crítica de Administrador y Autoridad debe quedar registrada con usuario, fecha y acción. |
 
 ---
 
-## 7. Eventos de Scrum y Definition of Done
+## 8. Eventos de Scrum y Definition of Done
 
 ### Eventos
 
-| Evento | Duración (sprint de 1 semana) | Objetivo |
+| Evento | Duración (sprint de 2 semanas) | Objetivo |
 |---|---|---|
-| Sprint Planning (al comienzo del Sprint) | Máx. 2 h | Seleccionar las HU del sprint y definir el Sprint Backlog. |
+| Sprint Planning (al comienzo del Sprint) | Máx. 3 h | Seleccionar las HU del sprint y definir el Sprint Backlog. |
 | Daily Scrum | 15 min por día | Sincronizar a los dos integrantes y detectar impedimentos. |
-| Sprint Review (al final del Sprint) | Máx. 1 h | Presentar el incremento y ajustar el Backlog del producto. |
-| Sprint Retrospective (al final del Sprint) | Máx. 45 min | Analizar el proceso y definir mejoras para el sprint siguiente. |
+| Sprint Review (al final del Sprint) | Máx. 1,5 h | Presentar el incremento y ajustar el Backlog del producto. |
+| Sprint Retrospective (al final del Sprint) | Máx. 1 h | Analizar el proceso y definir mejoras para el sprint siguiente. |
 
 ### Definition of Done — aplicable a ambos sprints
 

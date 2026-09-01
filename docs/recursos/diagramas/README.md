@@ -17,9 +17,19 @@ Flechas continuas: solicitudes. Flechas punteadas: respuestas.
 Se referencian desde
 [01-unidad-1/01-parte-1-requerimientos](../../01-unidad-1/01-parte-1-requerimientos/README.md#7-diagramas-de-secuencia).
 
+## Arquitecturas y planificación — Plan de Trabajo
+
+| Archivo | Diagrama | Dónde se usa |
+|---|---|---|
+| `arq-informacion.png` | Arquitectura de la información: pirámide de sistemas (ESS / MIS / KWS-OAS / TPS) con los requerimientos de cada capa | Plan de trabajo §1.4 · TP1-P1 §4 |
+| `arq-software.png` | Arquitectura de software cliente-servidor en capas (*three-tier*), con componentes y conectores | Plan de trabajo §1.7 · TP1-P1 §5 |
+| `pert-red.png` | Red PERT del proyecto con ES/EF por actividad y ruta crítica destacada | Plan de trabajo §6.2 |
+
+Generados con `matplotlib`. El diagrama de Gantt no se exporta como imagen: vive como bloque
+`mermaid` en el [plan de trabajo](../../00-equipo/plan-de-trabajo.md#diagrama-de-gantt), que
+GitHub renderiza, y como tabla de celdas coloreadas en el `.docx` entregado a la cátedra.
+
 ## Pendientes
 
 - DER del Sistema de Gestión (matrícula, cursos, materias, notas, asistencia, personal,
   deportes, transporte y comedor).
-- Gráfico de la arquitectura de software.
-- Diagrama de Gantt y diagrama de PERT del plan de trabajo.

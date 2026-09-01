@@ -198,6 +198,8 @@ Esta organización en capas asegura que la información se genera una sola vez e
 operativo (matrícula, notas, asistencia) y se reutiliza —filtrada, condensada y analizada— en
 los niveles superiores, evitando la doble carga de datos.
 
+![Arquitectura de la información](../../recursos/diagramas/arq-informacion.png)
+
 ---
 
 ## 5. Arquitectura de Software
@@ -211,6 +213,12 @@ seguridad por roles ya definido (REQ-05, REQ-12):
 | Aplicación / lógica de negocio | Reglas de negocio, autenticación y autorización por rol. | API / Backend as a Service (Supabase) |
 | Datos | Almacenamiento persistente con políticas de seguridad a nivel de fila para que cada rol acceda solo a lo que le corresponde. | Base de datos relacional con Row Level Security (Supabase) |
 | Infraestructura | Hosting, redes y seguridad de transporte (HTTPS). | Servicios cloud |
+
+![Arquitectura de software](../../recursos/diagramas/arq-software.png)
+
+El detalle de los principios aplicados, los componentes funcionales, las restricciones y los
+conectores está desarrollado en el
+[plan de trabajo, apartado 1.5](../../00-equipo/plan-de-trabajo.md).
 
 ---
 

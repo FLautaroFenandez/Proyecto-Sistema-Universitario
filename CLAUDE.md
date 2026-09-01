@@ -264,8 +264,11 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
 
 ## NOTAS ABIERTAS
 
-- **Objetivos SMART y diagramas de Gantt / PERT** del plan de trabajo todavía están pendientes
-  (ver `docs/00-equipo/plan-de-trabajo.md`).
+- El **plan de trabajo está completo**: objetivos SMART, cronograma con duraciones, Gantt y PERT
+  con ruta crítica (ver `docs/00-equipo/plan-de-trabajo.md`). La versión entregada a la cátedra
+  es `Metodología de Sistemas II/PlanDeTrabajo_Metodología2_Grupo4.docx`.
+- **El equipo es el Grupo 4** en Metodología II. En Metodología I fue el Grupo 8 — Zonura; las
+  referencias históricas a ese nombre no se tocan.
 - **Falta el DER del Sistema de Gestión** — matrícula, cursos, materias, notas, asistencia,
   personal, deportes, transporte y comedor.
 - `docs/GUIA_DEPLOY.md` quedó desactualizada: describe un deploy en Vercel, pero el proyecto se
