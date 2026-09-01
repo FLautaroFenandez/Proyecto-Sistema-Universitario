@@ -152,6 +152,7 @@ educar-para-transformar/
 │   ├── hooks/                     # Custom hooks
 │   │   ├── useAuth.js             # Hook de autenticación y sesión
 │   │   ├── useRole.js             # Hook para verificar rol del usuario
+│   │   ├── useUI.js               # Efectos de UI reutilizables (scroll, Escape, click afuera)
 │   │   ├── useNoticias.js         # Hook para fetch de noticias
 │   │   ├── useGaleria.js          # Hook para galería de imágenes
 │   │   └── useOpiniones.js        # Hook para opiniones moderadas
