@@ -8,9 +8,9 @@
  * @param {'sm'|'md'|'lg'} size
  */
 
-import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTeclaEscape, useBloqueoDeScroll } from '@/hooks/useUI'
 
 const SIZES = {
   sm: 'max-w-sm',
@@ -19,19 +19,8 @@ const SIZES = {
 }
 
 export function Modal({ open, onClose, title, size = 'md', children }) {
-  /* Cerrar con Escape */
-  useEffect(() => {
-    if (!open) return
-    const handler = (e) => { if (e.key === 'Escape') onClose?.() }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [open, onClose])
-
-  /* Bloquear scroll del body */
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
+  useTeclaEscape(open, onClose)
+  useBloqueoDeScroll(open)
 
   return (
     <AnimatePresence>

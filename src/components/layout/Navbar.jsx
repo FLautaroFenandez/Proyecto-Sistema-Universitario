@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { tienePermiso, PERMISOS } from '@/types/roles'
+import { useScrollPasado, useTeclaEscape, useBloqueoDeScroll, useClickAfuera } from '@/hooks/useUI'
 
 /* ── Definición de secciones con íconos Lucide ── */
 const NAV_ITEMS = [
@@ -125,7 +126,6 @@ function NavDropdown({ items, onNavigate }) {
 
 export function Navbar() {
   const [menuAbierto,  setMenuAbierto]  = useState(false)
-  const [scrolled,     setScrolled]     = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(null)
   const [dropdownUser, setDropdownUser] = useState(false)
   const timeoutRef = useRef(null)
@@ -134,11 +134,14 @@ export function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const scrolled = useScrollPasado(8)
+
+  const cerrarMenuMobile = useCallback(() => setMenuAbierto(false), [])
+  const cerrarDropdownUsuario = useCallback(() => setDropdownUser(false), [])
+
+  useTeclaEscape(menuAbierto, cerrarMenuMobile)
+  useBloqueoDeScroll(menuAbierto)
+  useClickAfuera(userRef, cerrarDropdownUsuario)
 
   /* Cerrar menú mobile y dropdowns en cada navegación
      (cubre botón atrás/adelante del navegador y clicks en links) */
@@ -148,31 +151,8 @@ export function Navbar() {
     setDropdownUser(false)
   }, [location.pathname, location.hash])
 
-  /* Cerrar menú mobile con Escape */
-  useEffect(() => {
-    if (!menuAbierto) return
-    const h = (e) => { if (e.key === 'Escape') setMenuAbierto(false) }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [menuAbierto])
-
-  useEffect(() => {
-    document.body.style.overflow = menuAbierto ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [menuAbierto])
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (userRef.current && !userRef.current.contains(e.target)) setDropdownUser(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [])
-
   const openDropdown  = useCallback((label) => { clearTimeout(timeoutRef.current); setDropdownOpen(label) }, [])
   const closeDropdown = useCallback(() => { timeoutRef.current = setTimeout(() => setDropdownOpen(null), 100) }, [])
-
-  const cerrarMenu = useCallback(() => setMenuAbierto(false), [])
 
   const handleSignOut = async () => {
     setDropdownUser(false); setMenuAbierto(false)
@@ -328,7 +308,7 @@ export function Navbar() {
           >
             {/* Header fijo */}
             <div className="flex items-center justify-between pl-5 pr-3 h-[68px] border-b border-gray-100 flex-shrink-0">
-              <Link to="/" onClick={cerrarMenu} className="flex items-center gap-2.5 min-w-0">
+              <Link to="/" onClick={cerrarMenuMobile} className="flex items-center gap-2.5 min-w-0">
                 <img src="/assets/logo-ept.png" alt="Logo EPT" width={40} height={40}
                   className="w-10 h-10 object-contain flex-shrink-0" style={{ mixBlendMode: 'multiply' }}
                   onError={e => { e.currentTarget.style.display = 'none' }}
@@ -340,7 +320,7 @@ export function Navbar() {
               </Link>
               <button
                 type="button"
-                onClick={cerrarMenu}
+                onClick={cerrarMenuMobile}
                 className="w-12 h-12 flex items-center justify-center rounded-xl text-gray-600 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex-shrink-0 ml-2"
                 aria-label="Cerrar menú"
               >
@@ -351,7 +331,7 @@ export function Navbar() {
             {/* Links (zona scrolleable) */}
             <nav className="flex-1 overflow-y-auto px-4 py-5">
               {NAV_ITEMS.map(item => (
-                <MobileNavItem key={item.label} item={item} onClose={cerrarMenu} />
+                <MobileNavItem key={item.label} item={item} onClose={cerrarMenuMobile} />
               ))}
             </nav>
 
@@ -369,7 +349,7 @@ export function Navbar() {
                       <p className="text-[11px] text-gray-400 capitalize">{profile.rol}</p>
                     </div>
                   </div>
-                  <Link to={panelLink} onClick={cerrarMenu}
+                  <Link to={panelLink} onClick={cerrarMenuMobile}
                     className="flex items-center gap-2 w-full px-4 py-3 text-sm text-brand-azul bg-blue-50 rounded-xl font-medium">
                     <LayoutDashboard size={15} /> Mi panel
                   </Link>
@@ -379,7 +359,7 @@ export function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link to="/login" onClick={cerrarMenu}
+                <Link to="/login" onClick={cerrarMenuMobile}
                   className="flex items-center justify-center gap-2 w-full bg-brand-naranja text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-orange-700 transition-colors">
                   <LogIn size={16} /> Ingresar
                 </Link>
