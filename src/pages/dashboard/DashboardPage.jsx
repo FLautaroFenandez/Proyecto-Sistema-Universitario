@@ -13,6 +13,7 @@ import { DashboardPersonal }   from '@/components/dashboard/DashboardPersonal'
 import { DashboardPadre }      from '@/components/dashboard/DashboardPadre'
 import { DashboardEstudiante } from '@/components/dashboard/DashboardEstudiante'
 import { Spinner } from '@/components/ui/Spinner'
+import { tienePermiso, PERMISOS } from '@/types/roles'
 
 /* Mapa rol → componente */
 const DASHBOARDS = {
@@ -60,7 +61,7 @@ export default function DashboardPage() {
   )
 
   /* Admin y autoridad tienen su propio panel: redirigir siempre a /admin */
-  if (profile.rol === 'admin' || profile.rol === 'autoridad') {
+  if (tienePermiso(profile.rol, PERMISOS.VER_PANEL_ADMIN)) {
     return <Navigate to="/admin" replace />
   }
 

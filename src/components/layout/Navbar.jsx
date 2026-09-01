@@ -16,6 +16,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
+import { tienePermiso, PERMISOS } from '@/types/roles'
 
 /* ── Definición de secciones con íconos Lucide ── */
 const NAV_ITEMS = [
@@ -178,7 +179,7 @@ export function Navbar() {
     await signOut(); navigate('/')
   }
 
-  const panelLink = (profile?.rol === 'admin' || profile?.rol === 'autoridad') ? '/admin' : '/dashboard'
+  const panelLink = tienePermiso(profile?.rol, PERMISOS.VER_PANEL_ADMIN) ? '/admin' : '/dashboard'
 
   return (
     <>
