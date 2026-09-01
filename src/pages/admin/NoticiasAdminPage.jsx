@@ -82,7 +82,14 @@ export default function NoticiasAdminPage() {
     let imagen_url = editando?.imagen_url ?? null
     if (imagenFile) {
       setSubiendo(true)
-      try { imagen_url = await uploadImage(imagenFile, 'noticias') } catch { /* continúa sin imagen */ }
+      try {
+        imagen_url = await uploadImage(imagenFile, 'noticias')
+      } catch (error) {
+        /* Decisión deliberada: si falla la subida se guarda igual la noticia sin
+           portada, porque el contenido vale más que la imagen. Antes el error se
+           descartaba en silencio y no quedaba ningún rastro para diagnosticarlo. */
+        console.error('No se pudo subir la imagen de la noticia:', error)
+      }
       setSubiendo(false)
     }
 
