@@ -30,6 +30,7 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 1 — Parte 1 | [Requerimientos, arquitecturas, HU, casos de uso y diagramas](docs/01-unidad-1/01-parte-1-requerimientos/README.md) |
 | Unidad 1 — Parte 2 | [Repositorios de software](docs/01-unidad-1/02-parte-2-repositorios/README.md) |
 | Unidad 1 — Backlog | [Backlog del producto y sprints](docs/01-unidad-1/03-backlog-y-sprints/README.md) |
+| Unidad 2 — Modelado | [Modelado del Sistema de Gestión (DER, reglas y RLS)](docs/02-unidad-2/01-modelado/README.md) |
 
 ---
 

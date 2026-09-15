@@ -269,8 +269,11 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   es `Metodología de Sistemas II/PlanDeTrabajo_Metodología2_Grupo4.docx`.
 - **El equipo es el Grupo 4** en Metodología II. En Metodología I fue el Grupo 8 — Zonura; las
   referencias históricas a ese nombre no se tocan.
-- **Falta el DER del Sistema de Gestión** — matrícula, cursos, materias, notas, asistencia,
-  personal, deportes, transporte y comedor.
+- **El DER del Sistema de Gestión está hecho para el Sprint 1** (cursos, materias, matrícula,
+  legajo y asistencia): ver `docs/02-unidad-2/01-modelado/README.md` y el script
+  `docs/supabase-gestion.sql`. **Falta ejecutarlo en Supabase.** Quedan sin modelar
+  calificaciones, personal, deportes, transporte y comedor: entran con las HU de los
+  sprints 2 y 3.
 - `docs/GUIA_DEPLOY.md` quedó desactualizada: describe un deploy en Vercel, pero el proyecto se
   publica en **Netlify** (hay `netlify.toml` y `public/_redirects`).
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el
