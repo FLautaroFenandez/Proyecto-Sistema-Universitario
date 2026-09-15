@@ -47,3 +47,9 @@ images/
 *.pdf
 *.html
 !index.html
+
+# Capturas de pantalla y evidencia de las actividades (se entregan en el .docx,
+# no hace falta versionarlas). Los diagramas del portafolio viven en
+# docs/recursos/diagramas/ y SI se versionan.
+docs/recursos/imagenes/*.png
+docs/recursos/imagenes/*.jpg

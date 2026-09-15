@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, LogIn, Mail, Lock, AlertCircle } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
+import { tienePermiso, PERMISOS } from '@/types/roles'
 import { Button } from '@/components/ui/Button'
 
 const loginSchema = z.object({
@@ -33,8 +34,8 @@ export default function LoginPage() {
   useEffect(() => {
     if (loading || !user) return
     if (from) { navigate(from, { replace: true }); return }
-    const esAdmin = profile?.rol === 'admin' || profile?.rol === 'autoridad'
-    navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
+    const accedeAlPanel = tienePermiso(profile?.rol, PERMISOS.VER_PANEL_ADMIN)
+    navigate(accedeAlPanel ? '/admin' : '/dashboard', { replace: true })
   }, [user, profile, loading, from, navigate])
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
