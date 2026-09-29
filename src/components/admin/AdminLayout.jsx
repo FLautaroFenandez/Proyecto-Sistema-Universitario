@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
-  LayoutDashboard, ChevronRight, Inbox,
+  LayoutDashboard, ChevronRight, Inbox, UserPlus, GraduationCap,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
@@ -22,6 +22,14 @@ const NAV_SECTIONS = [
     titulo: 'Panel',
     items: [
       { icon: LayoutDashboard, label: 'Inicio',    href: '/admin' },
+    ],
+  },
+  {
+    titulo: 'Sistema de Gestión',
+    items: [
+      { icon: UserPlus,      label: 'Matriculación',    href: '/admin/matriculacion' },
+      { icon: Users,         label: 'Alumnos',          href: '/admin/alumnos' },
+      { icon: GraduationCap, label: 'Cursos y materias', href: '/admin/cursos' },
     ],
   },
   {
