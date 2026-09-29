@@ -15,8 +15,8 @@ requerimientos.
 
 | ID | Historia de Usuario | Rol / Usuario | Req. | Responsable | Prioridad | Riesgo | Puntos | Sprint | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | To Do |
-| HU4 | Registrar asistencia diaria | Docente | REQ-16 | L. Fernández | Alta | Bajo | 3 | Sprint 1 | To Do |
+| HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | ✅ Done |
+| HU4 | Registrar asistencia diaria | Docente | REQ-16 | L. Fernández | Alta | Bajo | 3 | Sprint 1 → 2 | 🔄 Trasladada |
 | HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | To Do |
 | HU6 | Gestionar legajo de personal | Administrador | REQ-19 | L. Fernández | Media | Medio | 5 | Sprint 2 | To Do |
 | HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | To Do |
@@ -163,6 +163,11 @@ directamente y se fija la regla de que ningún componente vuelve a hacerlo.
 | Semana 1 | 15/09 al 21/09 | Sprint Planning. Modelado de matrícula, legajo, cursos y materias (REQ-14). Creación de la capa de servicios (patrón Facade) y migración de los accesos existentes. HU1: listado de solicitudes aprobadas y asignación de curso. |
 | Semana 2 | 22/09 al 28/09 | HU1: validaciones, generación del legajo digital y cambio de estado a "matriculado". HU4: carga y edición de asistencia, y vista de consulta para Padre y Estudiante. Pruebas de integración. Sprint Review y Retrospectiva. |
 
+> **Resultado del sprint: 13 de 16 puntos (81 %).** Se entregaron HU1 y REQ-14 —el
+> módulo Administrador completo— y quedó sin iniciar HU4, que se traslada al Sprint 2.
+> El detalle, las causas y las acciones acordadas están en
+> [Cierre del Sprint 1](../../02-unidad-2/03-cierre-sprint-1/README.md).
+
 ---
 
 ## 5. Sprint 2 — Calificaciones, personal y trazabilidad (29/09 al 13/10)
@@ -175,6 +180,11 @@ datos.
 |---|---|---|---|---|---|
 | HU2 | Cargar calificaciones de alumnos | Alta | 5 | G. Cerqueiro | Depende de HU1 (alumnos matriculados) y de REQ-14 (materia y docente asignados), ambos cerrados en el Sprint 1. |
 | HU6 | Gestionar legajo de personal | Media | 5 | L. Fernández | Independiente de las historias anteriores. Se agrupa con REQ-20 (postulaciones laborales) por afinidad de módulo. |
+
+> **Arrastre del Sprint 1:** HU4 — Registrar asistencia diaria (3 puntos, L. Fernández) entra
+> como primer ítem de este sprint, por acuerdo de la retrospectiva. El Sprint 2 queda entonces
+> con 19 puntos comprometidos frente a una velocidad medida de 13, así que en el Planning se
+> define de antemano qué ítem se posterga si no entra todo.
 
 **Patrón de diseño de este sprint: State.** Se modela el ciclo de vida de la matrícula y el de
 las postulaciones laborales como máquinas de estado. Cada estado declara a qué estados puede

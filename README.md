@@ -31,7 +31,8 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 1 — Parte 2 | [Repositorios de software](docs/01-unidad-1/02-parte-2-repositorios/README.md) |
 | Unidad 1 — Backlog | [Backlog del producto y sprints](docs/01-unidad-1/03-backlog-y-sprints/README.md) |
 | Unidad 2 — Modelado | [Modelado del Sistema de Gestión (DER, reglas y RLS)](docs/02-unidad-2/01-modelado/README.md) |
-| Unidad 2 — Sprint 1 | [Módulo Administrador: matrícula, cursos y materias](docs/02-unidad-2/02-modulo-administrador/README.md) |
+| Unidad 2 — Sprint 1 | [Módulo Administrador: matrícula, cursos y materias](docs/02-unidad-2/02-modulo-administrador/README.md) · [Casos de prueba](docs/02-unidad-2/02-modulo-administrador/pruebas.md) |
+| Unidad 2 — Cierre Sprint 1 | [Sprint Review y Retrospectiva](docs/02-unidad-2/03-cierre-sprint-1/README.md) |
 
 ---
 

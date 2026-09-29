@@ -138,7 +138,8 @@ de **Administración y Autoridad**; Docente y Personal solo leen.
 - [x] Capa de servicios — patrón Facade
 - [x] HU1 — matriculación, legajo y cierre de la solicitud
 - [x] REQ-14 — cursos, materias y asignación de docentes
-- [ ] Ejecutar los scripts en Supabase y verificar las políticas con cada rol
+- [x] Scripts ejecutados en Supabase y módulo probado (29/09/2026)
+- [ ] Verificar las políticas RLS con cada rol — ver [`pruebas.md`](pruebas.md)
 - [ ] HU4 — carga de asistencia diaria (módulo Profesores, Lautaro)
 - [ ] Migrar las pantallas de la Parte 1 a la capa de servicios (Sprint 2)
 - [ ] Mover la matriculación a una función de PostgreSQL para que los tres

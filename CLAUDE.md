@@ -271,14 +271,20 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   referencias históricas a ese nombre no se tocan.
 - **El DER del Sistema de Gestión está hecho para el Sprint 1** (cursos, materias, matrícula,
   legajo y asistencia): ver `docs/02-unidad-2/01-modelado/README.md` y el script
-  `docs/supabase-gestion.sql`. **Falta ejecutarlo en Supabase**, junto con
-  `docs/supabase-gestion-datos.sql` (carga inicial). Quedan sin modelar calificaciones,
-  personal, deportes, transporte y comedor: entran con las HU de los sprints 2 y 3.
+  `docs/supabase-gestion.sql`. **Ya está ejecutado en Supabase** junto con
+  `docs/supabase-gestion-datos.sql` (carga inicial: ciclo 2027, niveles, cursos, materias y
+  solicitudes de prueba). Quedan sin modelar calificaciones, personal, deportes, transporte y
+  comedor: entran con las HU de los sprints 2 y 3.
 - **El módulo Administrador está construido** (HU1 + REQ-14): pantallas de Matriculación,
   Alumnos y Cursos y materias, documentadas en
   `docs/02-unidad-2/02-modulo-administrador/README.md`. Todo acceso a datos nuevo pasa por la
   **capa de servicios `src/services/` (patrón Facade)**: las pantallas nuevas no importan
   `@/lib/supabase` y las de la Parte 1 se migran en el Sprint 2.
+- **El Sprint 1 cerró con 13 de 16 puntos**: se entregaron HU1 y REQ-14; **HU4 (asistencia
+  diaria) no se inició y se trasladó al Sprint 2** como primer ítem. La Review, la
+  Retrospectiva y la deuda técnica registrada están en
+  `docs/02-unidad-2/03-cierre-sprint-1/README.md`; los casos de prueba, en
+  `docs/02-unidad-2/02-modulo-administrador/pruebas.md` (faltan ejecutar los de permisos por rol).
 - `docs/GUIA_DEPLOY.md` quedó desactualizada: describe un deploy en Vercel, pero el proyecto se
   publica en **Netlify** (hay `netlify.toml` y `public/_redirects`).
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el
