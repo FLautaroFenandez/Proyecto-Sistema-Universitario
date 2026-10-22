@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, UserPlus, Mail, Lock, User, Phone, CreditCard, AlertCircle } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
+import { tienePermiso, PERMISOS } from '@/types/roles'
 import { Button } from '@/components/ui/Button'
 
 const registroSchema = z.object({
@@ -56,8 +57,8 @@ export default function RegistroPage() {
   /* Si ya hay sesión activa, no tiene sentido estar en /registro */
   useEffect(() => {
     if (loading || !user) return
-    const esAdmin = profile?.rol === 'admin' || profile?.rol === 'autoridad'
-    navigate(esAdmin ? '/admin' : '/dashboard', { replace: true })
+    const accedeAlPanel = tienePermiso(profile?.rol, PERMISOS.VER_PANEL_ADMIN)
+    navigate(accedeAlPanel ? '/admin' : '/dashboard', { replace: true })
   }, [user, profile, loading, navigate])
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({

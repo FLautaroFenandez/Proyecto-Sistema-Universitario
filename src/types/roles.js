@@ -29,6 +29,14 @@ export const PERMISOS = {
   GESTIONAR_USUARIOS:    [ROLES.ADMIN],
   VER_NOTICIAS_INTERNAS: [ROLES.ADMIN, ROLES.AUTORIDAD, ROLES.DOCENTE, ROLES.PERSONAL, ROLES.PADRE, ROLES.ESTUDIANTE],
   VER_PANEL_ADMIN:       [ROLES.ADMIN, ROLES.AUTORIDAD],
+
+  // ── Sistema de Gestión (Parte 2) ──
+  // Cada permiso replica en la interfaz lo que ya controla una política RLS en
+  // la base de datos. Las dos capas tienen que decir lo mismo: si acá se
+  // agrega un rol, hay que agregarlo también en docs/supabase-gestion.sql.
+  MATRICULAR:            [ROLES.ADMIN, ROLES.AUTORIDAD],
+  GESTIONAR_ACADEMICO:   [ROLES.ADMIN, ROLES.AUTORIDAD],
+  VER_ALUMNOS:           [ROLES.ADMIN, ROLES.AUTORIDAD, ROLES.DOCENTE, ROLES.PERSONAL],
 }
 
 /**

@@ -42,6 +42,11 @@ const EmpleosAdminPage       = lazy(() => import('@/pages/admin/EmpleosAdminPage
 const MensajesAdminPage      = lazy(() => import('@/pages/admin/MensajesAdminPage'))
 const UsuariosAdminPage      = lazy(() => import('@/pages/admin/UsuariosAdminPage'))
 
+// Sistema de Gestión (Parte 2)
+const MatriculacionAdminPage = lazy(() => import('@/pages/admin/MatriculacionAdminPage'))
+const AlumnosAdminPage       = lazy(() => import('@/pages/admin/AlumnosAdminPage'))
+const CursosAdminPage        = lazy(() => import('@/pages/admin/CursosAdminPage'))
+
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 const PageSpinner = () => (
@@ -99,6 +104,11 @@ export default function App() {
               <Route path="/admin/mensajes"      element={<MensajesAdminPage />} />
               {/* Usuarios: solo admin, verificado adicionalmente en la página */}
               <Route path="/admin/usuarios"      element={<UsuariosAdminPage />} />
+
+              {/* Sistema de Gestión — Módulo Administrador (Sprint 1) */}
+              <Route path="/admin/matriculacion" element={<MatriculacionAdminPage />} />
+              <Route path="/admin/alumnos"       element={<AlumnosAdminPage />} />
+              <Route path="/admin/cursos"        element={<CursosAdminPage />} />
             </Route>
 
             {/* ── 404 ── */}

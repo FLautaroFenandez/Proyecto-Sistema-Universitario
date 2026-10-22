@@ -30,6 +30,9 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 1 — Parte 1 | [Requerimientos, arquitecturas, HU, casos de uso y diagramas](docs/01-unidad-1/01-parte-1-requerimientos/README.md) |
 | Unidad 1 — Parte 2 | [Repositorios de software](docs/01-unidad-1/02-parte-2-repositorios/README.md) |
 | Unidad 1 — Backlog | [Backlog del producto y sprints](docs/01-unidad-1/03-backlog-y-sprints/README.md) |
+| Unidad 2 — Modelado | [Modelado del Sistema de Gestión (DER, reglas y RLS)](docs/02-unidad-2/01-modelado/README.md) |
+| Unidad 2 — Sprint 1 | [Módulo Administrador: matrícula, cursos y materias](docs/02-unidad-2/02-modulo-administrador/README.md) · [Casos de prueba](docs/02-unidad-2/02-modulo-administrador/pruebas.md) |
+| Unidad 2 — Cierre Sprint 1 | [Sprint Review y Retrospectiva](docs/02-unidad-2/03-cierre-sprint-1/README.md) |
 
 ---
 
@@ -152,9 +155,16 @@ educar-para-transformar/
 │   ├── hooks/                     # Custom hooks
 │   │   ├── useAuth.js             # Hook de autenticación y sesión
 │   │   ├── useRole.js             # Hook para verificar rol del usuario
+│   │   ├── useUI.js               # Efectos de UI reutilizables (scroll, Escape, click afuera)
 │   │   ├── useNoticias.js         # Hook para fetch de noticias
 │   │   ├── useGaleria.js          # Hook para galería de imágenes
 │   │   └── useOpiniones.js        # Hook para opiniones moderadas
+│   │
+│   ├── services/                  # Capa de servicios del Sistema de Gestión (patrón Facade)
+│   │   ├── base.js                # Ejecución de consultas y traducción de errores
+│   │   ├── academico.js           # Ciclos, niveles, cursos, materias y docentes
+│   │   ├── matricula.js           # Solicitudes, alumnos, tutores y matriculación
+│   │   └── index.js               # Punto de entrada: import { academico } from '@/services'
 │   │
 │   ├── lib/                       # Configuración de librerías externas
 │   │   ├── supabase.js            # Cliente Supabase (inicialización)

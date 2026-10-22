@@ -39,7 +39,7 @@ export default function NoticiasAdminPage() {
   const [filtro,     setFiltro]     = useState(null)
   const [modalOpen,  setModalOpen]  = useState(false)
   const [editando,   setEditando]   = useState(null)
-  const [eliminar,   setEliminar]   = useState(null)
+  const [noticiaAEliminar, setNoticiaAEliminar] = useState(null)
   const [imagenFile, setImagenFile] = useState(null)
   const [imagenPreview, setImagenPreview] = useState(null)
   const [subiendo,   setSubiendo]   = useState(false)
@@ -71,7 +71,7 @@ export default function NoticiasAdminPage() {
     setModalOpen(true)
   }
 
-  const handleImagenChange = (e) => {
+  const seleccionarImagenDePortada = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     setImagenFile(file)
@@ -82,7 +82,14 @@ export default function NoticiasAdminPage() {
     let imagen_url = editando?.imagen_url ?? null
     if (imagenFile) {
       setSubiendo(true)
-      try { imagen_url = await uploadImage(imagenFile, 'noticias') } catch { /* continúa sin imagen */ }
+      try {
+        imagen_url = await uploadImage(imagenFile, 'noticias')
+      } catch (error) {
+        /* Decisión deliberada: si falla la subida se guarda igual la noticia sin
+           portada, porque el contenido vale más que la imagen. Antes el error se
+           descartaba en silencio y no quedaba ningún rastro para diagnosticarlo. */
+        console.error('No se pudo subir la imagen de la noticia:', error)
+      }
       setSubiendo(false)
     }
 
@@ -96,9 +103,9 @@ export default function NoticiasAdminPage() {
   }
 
   const confirmarEliminar = async () => {
-    if (!eliminar) return
-    await supabase.from('noticias').delete().eq('id', eliminar.id)
-    setEliminar(null)
+    if (!noticiaAEliminar) return
+    await supabase.from('noticias').delete().eq('id', noticiaAEliminar.id)
+    setNoticiaAEliminar(null)
     fetchNoticias()
   }
 
@@ -121,7 +128,7 @@ export default function NoticiasAdminPage() {
           className="p-1.5 text-gray-400 hover:text-brand-azul hover:bg-blue-50 rounded-lg transition-all" title="Editar">
           <Pencil size={14}/>
         </button>
-        <button onClick={(e) => { e.stopPropagation(); setEliminar(r) }}
+        <button onClick={(e) => { e.stopPropagation(); setNoticiaAEliminar(r) }}
           className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
           <Trash2 size={14}/>
         </button>
@@ -183,7 +190,7 @@ export default function NoticiasAdminPage() {
               <label className="flex flex-col items-center gap-2 border-2 border-dashed border-gray-200 rounded-xl p-4 cursor-pointer hover:border-brand-azul transition-colors w-32 flex-shrink-0">
                 <ImagePlus size={20} className="text-gray-400"/>
                 <span className="text-xs text-gray-400 text-center">Seleccionar imagen</span>
-                <input type="file" accept="image/*" className="sr-only" onChange={handleImagenChange}/>
+                <input type="file" accept="image/*" className="sr-only" onChange={seleccionarImagenDePortada}/>
               </label>
               {imagenPreview && (
                 <div className="flex-1 h-28 rounded-xl overflow-hidden bg-gray-100">
@@ -224,13 +231,12 @@ export default function NoticiasAdminPage() {
         </form>
       </Modal>
 
-      {/* Modal eliminar */}
-      <Modal open={!!eliminar} onClose={() => setEliminar(null)} title="¿Eliminar noticia?" size="sm">
+      <Modal open={!!noticiaAEliminar} onClose={() => setNoticiaAEliminar(null)} title="¿Eliminar noticia?" size="sm">
         <p className="text-gray-600 text-sm mb-6">
-          Vas a eliminar <strong>&ldquo;{eliminar?.titulo}&rdquo;</strong>. Esta acción es irreversible.
+          Vas a eliminar <strong>&ldquo;{noticiaAEliminar?.titulo}&rdquo;</strong>. Esta acción es irreversible.
         </p>
         <div className="flex gap-3">
-          <Button variant="ghost" fullWidth onClick={() => setEliminar(null)}>Cancelar</Button>
+          <Button variant="ghost" fullWidth onClick={() => setNoticiaAEliminar(null)}>Cancelar</Button>
           <Button variant="danger" fullWidth onClick={confirmarEliminar}><Trash2 size={14}/> Eliminar</Button>
         </div>
       </Modal>

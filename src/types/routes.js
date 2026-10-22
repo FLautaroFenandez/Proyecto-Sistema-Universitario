@@ -24,5 +24,10 @@ export const ROUTES = {
   ADMIN_GALERIA:       '/admin/galeria',
   ADMIN_INSCRIPCIONES: '/admin/inscripciones',
   ADMIN_EMPLEOS:       '/admin/empleos',
+  ADMIN_MENSAJES:      '/admin/mensajes',
   ADMIN_USUARIOS:      '/admin/usuarios',
+  // Sistema de Gestión (Parte 2)
+  ADMIN_MATRICULACION: '/admin/matriculacion',
+  ADMIN_ALUMNOS:       '/admin/alumnos',
+  ADMIN_CURSOS:        '/admin/cursos',
 }
