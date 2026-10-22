@@ -119,3 +119,21 @@ visualmente. La conversión a PDF se hace con Word, no con Python.
 - El cronograma vigente va del **1 de septiembre al 27 de octubre de 2026**
   (40 días hábiles, 8 semanas, 96 h de equipo) y contempla el feriado del 12 de
   octubre. La entrega del 27/10 comprende la web y el Sistema de Gestión.
+
+---
+
+## Plan de trabajo de la Parte 3 (aplicación móvil)
+
+Mismo mecanismo, con sus propios archivos. El único que se edita si cambian las
+fechas es `cronograma_movil.py`.
+
+```bash
+cd docs/scripts
+python cronograma_movil.py                              # autodiagnóstico: fechas, PERT y ruta crítica
+python diagramas_movil.py ../recursos/diagramas         # arq-movil.png y pert-movil.png
+python plan_movil_docx.py ../recursos/diagramas "../../Metodología de Sistemas II/PlanDeTrabajo_Metodología3_Grupo4.docx"
+```
+
+El PERT se resuelve por código (ida y vuelta, holguras y ruta crítica) a partir
+de `ACTIVIDADES_PERT`, así que la tabla del documento y el diagrama nunca
+quedan desalineados.
