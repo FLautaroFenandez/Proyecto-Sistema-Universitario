@@ -37,6 +37,8 @@ export const PERMISOS = {
   MATRICULAR:            [ROLES.ADMIN, ROLES.AUTORIDAD],
   GESTIONAR_ACADEMICO:   [ROLES.ADMIN, ROLES.AUTORIDAD],
   VER_ALUMNOS:           [ROLES.ADMIN, ROLES.AUTORIDAD, ROLES.DOCENTE, ROLES.PERSONAL],
+  // HU2: la política calificaciones_docente además exige ser el titular de la materia.
+  CARGAR_CALIFICACIONES: [ROLES.DOCENTE],
 }
 
 /**

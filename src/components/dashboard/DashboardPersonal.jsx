@@ -7,8 +7,10 @@
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Newspaper, Calendar, ArrowRight, Phone } from 'lucide-react'
+import { Newspaper, Calendar, ArrowRight, Phone, GraduationCap } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
+import { ROLES } from '@/types/roles'
+import { ROUTES } from '@/types/routes'
 import { useNoticias } from '@/hooks/useNoticias'
 import { formatDateShort } from '@/utils/formatDate'
 import { SkeletonCard } from '@/components/ui/Skeleton'
@@ -24,7 +26,8 @@ export function DashboardPersonal() {
   const { profile } = useContext(AuthContext)
   const { noticias, cargando } = useNoticias({ limite: 3, soloPublicas: false })
 
-  const rol = profile?.rol === 'docente' ? 'Docente' : 'Personal administrativo'
+  const esDocente = profile?.rol === ROLES.DOCENTE
+  const rol = esDocente ? 'Docente' : 'Personal administrativo'
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
@@ -44,8 +47,16 @@ export function DashboardPersonal() {
       </motion.div>
 
       {/* Accesos rápidos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={`grid grid-cols-1 gap-4 ${esDocente ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
         {[
+          // Módulo Profesores (Sprint 2): solo para docentes.
+          ...(esDocente ? [{
+            icon: GraduationCap,
+            label: 'Mis cursos',
+            desc: 'Materias a cargo y carga de calificaciones',
+            href: ROUTES.DOCENTE,
+            color: 'text-orange-600 bg-orange-50',
+          }] : []),
           {
             icon: Newspaper,
             label: 'Noticias internas',
