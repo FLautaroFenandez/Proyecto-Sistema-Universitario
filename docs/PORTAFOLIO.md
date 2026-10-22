@@ -97,7 +97,7 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 2 — Modelado](02-unidad-2/01-modelado/README.md) | Modelo de datos del Sistema de Gestión: DER, reglas del enunciado y políticas RLS | ✅ Entregado |
 | [Unidad 2 — Sprint 1](02-unidad-2/02-modulo-administrador/README.md) | Módulo Administrador: matrícula y legajo (HU1), cursos y materias (REQ-14), patrón Facade | ✅ Entregado |
 | [Unidad 2 — Cierre Sprint 1](02-unidad-2/03-cierre-sprint-1/README.md) | Sprint Review, Retrospectiva y deuda técnica registrada | ✅ Entregado |
-| Unidad 2 — Sprint 2 | Calificaciones, legajo de personal y patrón State | ⏳ En curso |
+| [Unidad 2 — Sprint 2](02-unidad-2/04-sprint-2/README.md) | Calificaciones (HU2), patrón State y legajo de personal | ⏳ En curso |
 | Unidad 3 | Buenas prácticas en el proceso de implementación | ⏳ Pendiente |
 | Unidad 4 | Técnicas de optimización del ciclo de desarrollo | ⏳ Pendiente |
 | Unidad 5 | Validación, verificación y aseguramiento de la calidad | ⏳ Pendiente |

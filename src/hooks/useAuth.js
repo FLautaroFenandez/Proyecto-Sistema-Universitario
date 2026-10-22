@@ -60,10 +60,16 @@ export function useAuth() {
       .catch(() => setLoading(false))
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setUser(session?.user ?? null)
-        await loadProfile(session?.user?.id)
-        setLoading(false)
+        // supabase-js ejecuta este callback con su bloqueo de sesión tomado
+        // (por ejemplo, al refrescar el token cuando se vuelve a la pestaña).
+        // Una consulta esperada acá adentro queda en cola detrás de ese mismo
+        // bloqueo y desde ahí se cuelgan todas las consultas de la app. Por
+        // eso la carga del perfil se difiere hasta que el callback termine.
+        setTimeout(() => {
+          loadProfile(session?.user?.id).finally(() => setLoading(false))
+        }, 0)
       }
     )
 

@@ -17,7 +17,7 @@ requerimientos.
 |---|---|---|---|---|---|---|---|---|---|
 | HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | ✅ Done |
 | HU4 | Registrar asistencia diaria | Docente | REQ-16 | L. Fernández | Alta | Bajo | 3 | Sprint 1 → 2 | 🔄 Trasladada |
-| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | To Do |
+| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | 🔨 En prueba |
 | HU6 | Gestionar legajo de personal | Administrador | REQ-19 | L. Fernández | Media | Medio | 5 | Sprint 2 | To Do |
 | HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | To Do |
 | HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | L. Fernández | Media | Bajo | 2 | Sprint 3 | To Do |

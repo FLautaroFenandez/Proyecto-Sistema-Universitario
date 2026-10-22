@@ -7,8 +7,9 @@
  */
 
 import { useState, useEffect, useContext } from 'react'
-import { Users, ShieldAlert, ToggleLeft, ToggleRight, ChevronDown } from 'lucide-react'
+import { Users, ShieldAlert, ToggleLeft, ToggleRight, ChevronDown, AlertTriangle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { mensajeDeError, traducirError } from '@/services'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { DataTable } from '@/components/admin/DataTable'
 import { Badge } from '@/components/ui/Badge'
@@ -35,6 +36,7 @@ export default function UsuariosAdminPage() {
   const [editando,  setEditando]  = useState(null)
   const [nuevoRol,  setNuevoRol]  = useState('')
   const [guardando, setGuardando] = useState(false)
+  const [errorRol,  setErrorRol]  = useState(null)
 
   // Verificar que sea admin
   const esAdmin = profile?.rol === ROLES.ADMIN
@@ -55,15 +57,23 @@ export default function UsuariosAdminPage() {
     fetchUsuarios()
   }
 
-  const abrirEditar = (usr) => { setEditando(usr); setNuevoRol(usr.rol) }
+  const abrirEditar = (usr) => { setEditando(usr); setNuevoRol(usr.rol); setErrorRol(null) }
 
   const guardarRol = async () => {
     if (!editando) return
     setGuardando(true)
-    await supabase.from('profiles').update({ rol: nuevoRol }).eq('id', editando.id)
-    setGuardando(false)
-    setEditando(null)
-    fetchUsuarios()
+    setErrorRol(null)
+    // finally: el botón deja de girar aunque la consulta falle o se corte la red
+    try {
+      const { error } = await supabase.from('profiles').update({ rol: nuevoRol }).eq('id', editando.id)
+      if (error) throw traducirError(error, 'cambiar el rol')
+      setEditando(null)
+      fetchUsuarios()
+    } catch (err) {
+      setErrorRol(mensajeDeError(err, 'No se pudo cambiar el rol. Revisá la conexión e intentá de nuevo.'))
+    } finally {
+      setGuardando(false)
+    }
   }
 
   if (!esAdmin) return (
@@ -151,6 +161,12 @@ export default function UsuariosAdminPage() {
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"/>
               </div>
             </div>
+            {errorRol && (
+              <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+                <AlertTriangle size={16} className="flex-shrink-0 mt-0.5"/>
+                <span>{errorRol}</span>
+              </div>
+            )}
             <div className="flex gap-3">
               <Button variant="ghost" fullWidth onClick={()=>setEditando(null)}>Cancelar</Button>
               <Button variant="primary" fullWidth loading={guardando} onClick={guardarRol}>Guardar rol</Button>

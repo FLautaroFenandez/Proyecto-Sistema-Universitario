@@ -53,3 +53,6 @@ images/
 # docs/recursos/diagramas/ y SI se versionan.
 docs/recursos/imagenes/*.png
 docs/recursos/imagenes/*.jpg
+
+# Caché de Python que generan los scripts de docs/scripts/
+__pycache__/

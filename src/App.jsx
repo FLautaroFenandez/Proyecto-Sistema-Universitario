@@ -11,7 +11,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Layout } from '@/components/layout/Layout'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { ScrollToTop } from '@/components/ui/ScrollToTop'
-import { ROLES } from '@/types/roles'
+import { ROLES, PERMISOS } from '@/types/roles'
 
 // Páginas públicas — lazy loading para mejor performance
 const HomePage           = lazy(() => import('@/pages/public/HomePage'))
@@ -46,6 +46,10 @@ const UsuariosAdminPage      = lazy(() => import('@/pages/admin/UsuariosAdminPag
 const MatriculacionAdminPage = lazy(() => import('@/pages/admin/MatriculacionAdminPage'))
 const AlumnosAdminPage       = lazy(() => import('@/pages/admin/AlumnosAdminPage'))
 const CursosAdminPage        = lazy(() => import('@/pages/admin/CursosAdminPage'))
+
+// Módulo Profesores (Sprint 2)
+const MisCursosPage      = lazy(() => import('@/pages/docente/MisCursosPage'))
+const CalificacionesPage = lazy(() => import('@/pages/docente/CalificacionesPage'))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
@@ -85,6 +89,19 @@ export default function App() {
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              } />
+
+              {/* Módulo Profesores: solo docentes. La titularidad de cada materia
+                  se verifica en la página y en la base (RLS). */}
+              <Route path="/docente" element={
+                <ProtectedRoute rolesPermitidos={PERMISOS.CARGAR_CALIFICACIONES}>
+                  <MisCursosPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/docente/calificaciones/:dictadoId" element={
+                <ProtectedRoute rolesPermitidos={PERMISOS.CARGAR_CALIFICACIONES}>
+                  <CalificacionesPage />
                 </ProtectedRoute>
               } />
             </Route>

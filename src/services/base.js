@@ -28,6 +28,9 @@ const MENSAJES_POR_RESTRICCION = {
   asistencia_unica_por_dia:   'Ya hay asistencia cargada para ese alumno en esa fecha.',
   materias_codigo_key:        'Ya existe una materia con ese código.',
   ciclos_lectivos_anio_key:   'Ya existe un ciclo lectivo para ese año.',
+  // Sprint 2 — docs/supabase-sprint2.sql
+  calificacion_nota_en_rango: 'La nota tiene que estar entre 1 y 10.',
+  calificacion_unica:         'Ya hay una nota cargada para esa evaluación.',
 }
 
 /** Error con un mensaje apto para mostrar en pantalla. Conserva la causa técnica. */
