@@ -32,25 +32,27 @@ reutilizando el stack, los roles, el layout y las convenciones que ya existen.
    Definition of Done y revisión cruzada por Pull Request.
 4. **El repositorio también es el portafolio digital** de la cursada: la documentación de cada
    unidad y parte vive en `docs/` en Markdown.
+5. **Desde el 21/10/2026, Gonzalo continúa solo el desarrollo.** El repositorio oficial sigue
+   siendo el de la cuenta de Lautaro, pero todos los commits nuevos son de Gonzalo.
 
 ---
 
 ## INTEGRANTES
 
-```
-Gonzalo Cerqueiro  → gonzalo.cerqueiro@frre.utn.edu.ar
-Lautaro Fernández  → lautaro.fernandez@frre.utn.edu.ar
-```
+| Integrante | Situación |
+|---|---|
+| Gonzalo Cerqueiro | Desarrolla solo desde el 21/10/2026: autor de todos los commits nuevos. |
+| Lautaro Fernández | Grupo 4. El repositorio oficial del trabajo está en su cuenta de GitHub. |
 
-> Verificar que estos emails coincidan con el email primario de GitHub de cada uno
-> (GitHub → Settings → Emails), o el avatar no aparece en el historial de commits.
+> Los commits se firman con el correo **personal** de la configuración global de git.
+> **No** usar el mail institucional (`@frre.utn.edu.ar`): Gonzalo no maneja ese correo.
 
 ---
 
 ## MAPA DE RESPONSABILIDADES — POR HISTORIA DE USUARIO
 
-Esta es la tabla que hay que mirar para saber a quién se le atribuye un cambio.
-El criterio es **la HU que el cambio hace avanzar**, no el archivo que se tocó.
+Es el reparto de HU tal como se planificó. **Desde el 21/10/2026 ya no define la autoría de
+los commits**: el desarrollo lo continúa solo Gonzalo (ver *Autor del commit*).
 
 ### GONZALO CERQUEIRO
 
@@ -94,8 +96,8 @@ docs/**                                · portafolio digital
 ## CÓMO SE HACEN LOS COMMITS
 
 **Los commits y el push los hace el usuario**, no Claude Code. Al terminar una unidad de
-trabajo, Claude deja los archivos listos y **propone el mensaje de commit** (y el `git config`
-de autor que corresponda), pero **no ejecuta `git commit` ni `git push`** salvo pedido explícito.
+trabajo, Claude deja los archivos listos y **propone el mensaje de commit**, pero **no ejecuta
+`git commit` ni `git push`** salvo pedido explícito.
 
 ### Formato del mensaje
 
@@ -129,25 +131,11 @@ sql:      cambios en el esquema, RLS o triggers de la base de datos
 
 ### Autor del commit
 
-Antes de commitear, el autor se configura según **la HU que avanza el cambio**:
+Desde el 21/10/2026 **todos los commits son de Gonzalo Cerqueiro**, sea cual sea la HU:
 
-```bash
-# Si el cambio avanza HU1, HU2, HU3 o REQ-17:
-git config user.name "Gonzalo Cerqueiro"
-git config user.email "gonzalo.cerqueiro@frre.utn.edu.ar"
-
-# Si el cambio avanza HU4, HU5, HU6 o REQ-20:
-git config user.name "Lautaro Fernández"
-git config user.email "lautaro.fernandez@frre.utn.edu.ar"
-```
-
-Si el trabajo fue conjunto (transversal, REQ-14, REQ-22):
-
-```bash
-git commit -m "feat(REQ-14): ABM de cursos, materias y asignación docente
-
-Co-authored-by: Lautaro Fernández <lautaro.fernandez@frre.utn.edu.ar>"
-```
+- Se usan el `user.name` y el `user.email` de la configuración **global** de git (correo
+  personal). El repositorio no tiene que tener un `user.email` local que los pise.
+- **No** proponer `git config` con el mail institucional ni agregar líneas `Co-authored-by`.
 
 ### Cuándo commitear
 
@@ -172,6 +160,8 @@ un fix puntual, una migración SQL, un documento del portafolio.
 
 Toda rama se integra por PR **revisado por el otro integrante**. El *code review* cruzado es
 parte de la Definition of Done: sin review, la HU no está terminada.
+
+> Desde el 21/10/2026 no hay un segundo integrante que revise: los PR los abre e integra Gonzalo.
 
 ### Tags
 
@@ -285,6 +275,16 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   Retrospectiva y la deuda técnica registrada están en
   `docs/02-unidad-2/03-cierre-sprint-1/README.md`; los casos de prueba, en
   `docs/02-unidad-2/02-modulo-administrador/pruebas.md` (faltan ejecutar los de permisos por rol).
+- **Sprint 2 en curso (29/09–13/10).** Hecho en la semana 1: el **patrón State** para la
+  solicitud de inscripción (`src/domain/estadoSolicitud.js` + disparador
+  `trg_transicion_solicitud`) y **HU2** completa (tabla `calificaciones`, vista
+  `promedios_periodo` con `security_invoker`, módulo Profesores en `/docente`). El script es
+  `docs/supabase-sprint2.sql` y **falta ejecutarlo en Supabase**. HU4 y HU6 (Lautaro) siguen
+  sin iniciar; HU4 tiene que colgarse del módulo Profesores ya creado. Detalle en
+  `docs/02-unidad-2/04-sprint-2/README.md`.
+- **Parte 3 (app móvil):** el plan se generó con `docs/scripts/*_movil.py`. La **bitácora de
+  IA** que pide el enunciado se empieza más adelante y es **exclusiva del desarrollo de la app
+  móvil**: no crearla todavía ni cargarle incidentes de la Parte 2.
 - `docs/GUIA_DEPLOY.md` quedó desactualizada: describe un deploy en Vercel, pero el proyecto se
   publica en **Netlify** (hay `netlify.toml` y `public/_redirects`).
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el
