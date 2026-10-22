@@ -9,6 +9,7 @@
 
 import { supabase } from '@/lib/supabase'
 import { ejecutar } from './base'
+import { estadoDe } from '@/domain/estadoSolicitud'
 
 /** Curso con su nivel, tal como se lo pide desde una matrícula. */
 const CURSO_EMBEBIDO = 'curso:cursos(id, anio, division, turno, cupo, nivel:niveles(id, nombre))'
@@ -100,6 +101,10 @@ export const matricula = {
    * @returns {Promise<{alumno:object, matricula:object, tutorVinculado:boolean}>}
    */
   async matricularDesdeSolicitud({ solicitud, cursoId, cicloId, datosAlumno, matriculadoPor }) {
+    // Patrón State: solo una solicitud aceptada puede pasar a matriculada.
+    // Se valida antes de crear nada, para no tener que compensar después.
+    estadoDe(solicitud.estado).pasarA('matriculada')
+
     const [alumno] = await ejecutar(
       supabase.from('alumnos').insert({
         apellido:         datosAlumno.apellido.trim(),

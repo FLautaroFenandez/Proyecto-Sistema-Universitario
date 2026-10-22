@@ -17,4 +17,9 @@
 
 export { academico, nombreDeCurso, nombreCompletoDeCurso } from './academico'
 export { matricula, separarNombre } from './matricula'
+export { inscripciones } from './inscripciones'
+export {
+  calificaciones, PERIODOS, INSTANCIAS, NOTA_MINIMA, NOTA_MAXIMA,
+  validarNota, notaDesdeTexto, claveCelda,
+} from './calificaciones'
 export { ErrorDeServicio, mensajeDeError, traducirError } from './base'
