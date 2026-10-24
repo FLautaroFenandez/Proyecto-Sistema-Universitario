@@ -36,6 +36,7 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 2 — Sprint 2 | [Calificaciones y patrón State](docs/02-unidad-2/04-sprint-2/README.md) · [Cierre del Sprint 2](docs/02-unidad-2/05-cierre-sprint-2/README.md) |
 | Unidad 2 — Sprint 3 | [Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría](docs/02-unidad-2/06-sprint-3/README.md) |
 | Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) |
+| Seguimiento | [Tablero Kanban del Sistema de Gestión](https://github.com/users/Gonzac96/projects/1) · [Sitio publicado](https://educar-para-transforma.netlify.app) |
 
 ---
 
