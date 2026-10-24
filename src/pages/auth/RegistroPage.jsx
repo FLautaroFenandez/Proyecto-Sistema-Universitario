@@ -117,7 +117,7 @@ export default function RegistroPage() {
           className="relative z-10 text-center max-w-xs"
         >
           <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg p-2">
-            <img src="/assets/logo-ept.png" alt="Logo EPT" width={80} height={80}
+            <img src="/assets/logo-ept.webp" alt="Logo EPT" width={80} height={80}
               className="w-full h-full object-contain"
               onError={e => { e.currentTarget.style.display='none' }}
             />

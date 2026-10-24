@@ -9,7 +9,7 @@ import { FileX } from 'lucide-react'
 export function EncabezadoInstitucional({ titulo, subtitulo }) {
   return (
     <header className="flex items-center gap-4 border-b border-gray-300 pb-4">
-      <img src="/assets/logo-ept.png" alt="" className="w-14 h-14 object-contain" />
+      <img src="/assets/logo-ept.webp" alt="" className="w-14 h-14 object-contain" />
       <div className="flex-1">
         <p className="text-xs uppercase tracking-wide text-gray-500">Centro Educativo «Educar para Transformar» · Resistencia, Chaco</p>
         <h1 className="font-display font-bold text-xl">{titulo}</h1>

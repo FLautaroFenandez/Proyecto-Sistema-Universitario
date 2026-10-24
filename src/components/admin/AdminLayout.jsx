@@ -105,7 +105,7 @@ function SidebarContent({ onClose }) {
       {/* Logo del panel */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
         <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1 flex-shrink-0">
-          <img src="/assets/logo-ept.png" alt="Logo EPT" className="w-full h-full object-contain"
+          <img src="/assets/logo-ept.webp" alt="Logo EPT" className="w-full h-full object-contain"
             onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
           />
           <div className="w-full h-full rounded-lg bg-brand-azul items-center justify-center hidden">

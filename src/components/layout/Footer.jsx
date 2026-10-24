@@ -45,7 +45,7 @@ export function Footer() {
             <Link to="/" className="flex items-center gap-4">
               <div className="w-[64px] h-[64px] bg-white rounded-xl flex items-center justify-center p-1 flex-shrink-0">
                 <img
-                  src="/assets/logo-ept.png"
+                  src="/assets/logo-ept.webp"
                   alt="Logo Educar para Transformar"
                   width={56} height={56}
                   className="w-full h-full object-contain"
