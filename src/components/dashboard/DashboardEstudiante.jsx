@@ -4,7 +4,7 @@
  * próximas actividades deportivas y acceso al servicio de apoyo.
  */
 
-import { useContext } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Newspaper, Trophy, BookOpen, Heart, ArrowRight, Phone } from 'lucide-react'
@@ -12,6 +12,8 @@ import { AuthContext } from '@/components/auth/AuthContext'
 import { useNoticias } from '@/hooks/useNoticias'
 import { formatDateShort } from '@/utils/formatDate'
 import { SkeletonCard } from '@/components/ui/Skeleton'
+import { familia, comunicados as servicioComunicados } from '@/services'
+import { SeguimientoAlumno, ComunicadosRecibidos } from './SeguimientoAlumno'
 
 function hora() {
   const h = new Date().getHours()
@@ -30,6 +32,21 @@ const ACTIVIDADES = [
 export function DashboardEstudiante() {
   const { profile } = useContext(AuthContext)
   const { noticias, cargando } = useNoticias({ limite: 3, soloPublicas: false })
+  const [legajo, setLegajo] = useState(null)
+  const [comunicados, setComunicados] = useState([])
+
+  // Sistema de Gestión: si la cuenta está vinculada a un legajo, el alumno ve
+  // su asistencia (HU4), su boletín (REQ-17) y los comunicados de su curso (HU5).
+  useEffect(() => {
+    if (!profile?.id) return
+    familia.miLegajo(profile.id)
+      .then(async encontrado => {
+        setLegajo(encontrado)
+        const cursoId = encontrado?.matricula?.curso?.id
+        setComunicados(cursoId ? await servicioComunicados.recientes({ cursoIds: [cursoId], limite: 5 }) : [])
+      })
+      .catch(err => console.error('[dashboard] No se pudo cargar el legajo del alumno:', err))
+  }, [profile?.id])
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-8">
@@ -56,6 +73,16 @@ export function DashboardEstudiante() {
           <p className="text-white/75 text-sm">Accedé a noticias, actividades y recursos del Centro Educativo.</p>
         </div>
       </motion.div>
+
+      {/* Mi seguimiento: solo si la cuenta está vinculada a un legajo */}
+      {legajo && (
+        <div className="space-y-4">
+          <h2 className="font-display font-bold text-gray-700 text-lg">Mi seguimiento</h2>
+          <SeguimientoAlumno alumno={legajo.alumno} matricula={legajo.matricula} />
+          <h2 className="font-display font-bold text-gray-700 text-lg pt-2">Comunicados de mi curso</h2>
+          <ComunicadosRecibidos comunicados={comunicados} />
+        </div>
+      )}
 
       {/* Accesos rápidos */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

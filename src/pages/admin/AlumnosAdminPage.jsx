@@ -8,16 +8,80 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import { Users, Search, IdCard, AlertTriangle, UserMinus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Users, Search, IdCard, AlertTriangle, UserMinus, FileText, ScrollText, Link2, CheckCircle2 } from 'lucide-react'
 import { DataTable } from '@/components/admin/DataTable'
+import { Entrada, Seleccion } from '@/components/admin/CampoFormulario'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Spinner } from '@/components/ui/Spinner'
 import { academico, matricula, nombreCompletoDeCurso, mensajeDeError } from '@/services'
 import { formatDateShort } from '@/utils/formatDate'
+import { ROUTES } from '@/types/routes'
 
 const COLOR_ESTADO = { activo: 'green', egresado: 'blue', baja: 'gray' }
+
+/**
+ * Vincula una cuenta ya registrada con el legajo: la del padre (para que vea a
+ * su hijo) o la del propio alumno. Cubre el caso en que la persona se registró
+ * después de la matriculación.
+ */
+function VincularCuenta({ alumnoId, alVincular }) {
+  const [tipo,     setTipo]     = useState('tutor')
+  const [relacion, setRelacion] = useState('padre')
+  const [dni,      setDni]      = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [error,    setError]    = useState(null)
+  const [aviso,    setAviso]    = useState(null)
+
+  const vincular = async () => {
+    setEnviando(true)
+    setError(null)
+    setAviso(null)
+    try {
+      const cuenta = await matricula.vincularCuenta({ alumnoId, dni, tipo, relacion })
+      setAviso(`${cuenta.nombre} quedó vinculado ${tipo === 'tutor' ? 'como tutor' : 'como cuenta del alumno'}.`)
+      setDni('')
+      alVincular()
+    } catch (err) {
+      setError(mensajeDeError(err, 'No se pudo vincular la cuenta.'))
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
+        <div className="w-44">
+          <Seleccion aria-label="Tipo de cuenta" value={tipo} onChange={e => setTipo(e.target.value)}>
+            <option value="tutor">Tutor (padre)</option>
+            <option value="alumno">Cuenta del alumno</option>
+          </Seleccion>
+        </div>
+        {tipo === 'tutor' && (
+          <div className="w-32">
+            <Seleccion aria-label="Relación" value={relacion} onChange={e => setRelacion(e.target.value)}>
+              <option value="padre">Padre</option>
+              <option value="madre">Madre</option>
+              <option value="tutor">Tutor</option>
+            </Seleccion>
+          </div>
+        )}
+        <div className="flex-1 min-w-[9rem]">
+          <Entrada aria-label="DNI de la cuenta" placeholder="DNI de la cuenta" inputMode="numeric"
+            value={dni} onChange={e => setDni(e.target.value)} />
+        </div>
+        <Button type="button" variant="outline" loading={enviando} disabled={!dni.trim()} onClick={vincular}>
+          <Link2 size={15} /> Vincular
+        </Button>
+      </div>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      {aviso && <p className="text-xs text-green-700 flex items-center gap-1"><CheckCircle2 size={13} /> {aviso}</p>}
+    </div>
+  )
+}
 
 /** Detalle del alumno: datos personales, matrícula del ciclo y tutores. */
 function DetalleAlumno({ alumno, alDarDeBaja }) {
@@ -25,6 +89,8 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
   const [cargando, setCargando] = useState(true)
   const [error,    setError]    = useState(null)
   const [dandoBaja, setDandoBaja] = useState(false)
+  const [confirmandoBaja, setConfirmandoBaja] = useState(false)
+  const [version,  setVersion]  = useState(0)
 
   useEffect(() => {
     let cancelado = false
@@ -33,7 +99,7 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
       .catch(err  => { if (!cancelado) setError(mensajeDeError(err, 'No pudimos cargar los tutores.')) })
       .finally(()  => { if (!cancelado) setCargando(false) })
     return () => { cancelado = true }
-  }, [alumno.id])
+  }, [alumno.id, version])
 
   const darDeBaja = async () => {
     setDandoBaja(true)
@@ -130,7 +196,25 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
             ))}
           </ul>
         )}
+        <div className="mt-3">
+          <VincularCuenta alumnoId={alumno.id} alVincular={() => setVersion(v => v + 1)} />
+        </div>
       </div>
+
+      {alumno.matriculaActual && (
+        <div className="flex flex-wrap gap-2">
+          <Link to={ROUTES.BOLETIN(alumno.matriculaActual.id)} target="_blank"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-azul border border-brand-azul/30 px-3 py-2 rounded-lg hover:bg-blue-50">
+            <FileText size={14} /> Boletín
+          </Link>
+          {alumno.matriculaActual.estado === 'activa' && (
+            <Link to={ROUTES.CONSTANCIA(alumno.matriculaActual.id)} target="_blank"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-azul border border-brand-azul/30 px-3 py-2 rounded-lg hover:bg-blue-50">
+              <ScrollText size={14} /> Constancia de alumno regular
+            </Link>
+          )}
+        </div>
+      )}
 
       {error && (
         <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
@@ -139,11 +223,22 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
         </div>
       )}
 
-      {alumno.matriculaActual?.estado === 'activa' && (
-        <Button variant="danger" fullWidth loading={dandoBaja} onClick={darDeBaja}>
+      {/* Observación de las pruebas del 21/10: la baja se hacía con un solo clic. */}
+      {alumno.matriculaActual?.estado === 'activa' && (confirmandoBaja ? (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 space-y-3">
+          <p className="text-sm text-red-700">
+            ¿Confirmás la baja? El alumno deja el curso y se libera su lugar. El legajo y su historia se conservan.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="ghost" fullWidth onClick={() => setConfirmandoBaja(false)}>Cancelar</Button>
+            <Button variant="danger" fullWidth loading={dandoBaja} onClick={darDeBaja}>Confirmar la baja</Button>
+          </div>
+        </div>
+      ) : (
+        <Button variant="danger" fullWidth onClick={() => setConfirmandoBaja(true)}>
           <UserMinus size={15} /> Dar de baja la matrícula
         </Button>
-      )}
+      ))}
     </div>
   )
 }
@@ -190,9 +285,16 @@ export default function AlumnosAdminPage() {
         <p className="text-xs text-gray-400">DNI {fila.dni}</p>
       </div>
     )},
+    // Si la matrícula se dio de baja, se dice: antes la lista seguía mostrando el curso como vigente.
     { key: 'curso', label: 'Curso', render: fila => fila.matriculaActual
-      ? <span className="text-sm text-gray-600">{nombreCompletoDeCurso(fila.matriculaActual.curso)}</span>
+      ? <span className={`text-sm ${fila.matriculaActual.estado === 'activa' ? 'text-gray-600' : 'text-gray-400 line-through'}`}>
+          {nombreCompletoDeCurso(fila.matriculaActual.curso)}
+        </span>
       : <span className="text-xs text-gray-400">Sin matrícula</span>
+    },
+    { key: 'matricula', label: 'Matrícula', render: fila => fila.matriculaActual
+      ? <Badge color={fila.matriculaActual.estado === 'activa' ? 'green' : 'gray'}>{fila.matriculaActual.estado}</Badge>
+      : <span className="text-xs text-gray-400">—</span>
     },
     { key: 'estado', label: 'Estado', render: fila => (
       <Badge color={COLOR_ESTADO[fila.estado] ?? 'gray'}>{fila.estado}</Badge>
