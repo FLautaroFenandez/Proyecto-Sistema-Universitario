@@ -38,6 +38,14 @@ Para poder aplicarla hubo que configurar ESLint, que existía como script pero f
 falta de configuración, y corregir los 11 problemas que encontró en el código de la
 Parte 1 (importaciones sin usar, comillas sin escapar y dependencias de efectos).
 
+**Primer error detectado por el pipeline (24/10).** Al sumar las pruebas, la ejecución
+falló en 19 segundos: el pipeline usaba Node 20, que no trae WebSocket nativo, y el cliente
+de Supabase lo necesita al crearse. En la máquina de desarrollo (Node 24) las pruebas
+pasaban, así que el error no se veía en local. Se corrigió el mismo día: las pruebas de
+funciones puras ya no crean el cliente real y el pipeline pasó a Node 22. Es el beneficio
+de *detección temprana* de la integración continua: el problema apareció antes de
+integrarse a `main`, no en producción.
+
 ### Opción 2 — Tablero Kanban en GitHub Projects
 
 Un tablero con las columnas *Por hacer*, *En curso*, *En revisión* y *Terminado*, una
@@ -91,6 +99,7 @@ PR, la tarjeta pasa sola a *Terminado* (cierre automático con `Closes #N`).
 | Métrica | Antes | Después | Mejora |
 |---|---|---|---|
 | Pipeline | No existía | Lint + 23 pruebas + build en cada push, ~30 s | Verificación automática |
+| Errores detectados antes de integrar | Ninguno (no había control) | 1: incompatibilidad con Node 20, detectada en 19 s y corregida el mismo día | — |
 | Problemas de lint | 11 | 0 | −100 % |
 | Pruebas automatizadas | 0 | 23 aprobadas | — |
 | Código propio que se descarga tras un despliegue | 161,9 KB comprimido | 17,6 KB comprimido | −89 % |
