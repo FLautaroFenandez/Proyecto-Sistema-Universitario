@@ -3,7 +3,13 @@
  * notas (HU2), asistencia (HU4), nombres de la matrícula (HU1), auditoría
  * (REQ-22) y fechas sin hora (error corregido en las pruebas del 21/10).
  */
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+
+// Estas pruebas son de funciones puras: no necesitan conectarse a Supabase.
+// Sin este reemplazo, importar un servicio crea el cliente real, que en Node 20
+// falla por no tener WebSocket nativo (lo detectó el pipeline el 24/10).
+vi.mock('@/lib/supabase', () => ({ supabase: {} }))
+
 import { validarNota, notaDesdeTexto } from './calificaciones'
 import { resumirAsistencia } from './asistencias'
 import { separarNombre } from './matricula'
