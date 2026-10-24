@@ -39,6 +39,15 @@ export const PERMISOS = {
   VER_ALUMNOS:           [ROLES.ADMIN, ROLES.AUTORIDAD, ROLES.DOCENTE, ROLES.PERSONAL],
   // HU2: la política calificaciones_docente además exige ser el titular de la materia.
   CARGAR_CALIFICACIONES: [ROLES.DOCENTE],
+
+  // ── Sprint 3 (docs/supabase-sprint3.sql) ──
+  // HU4 y HU5: la base además exige dictar alguna materia en el curso.
+  TOMAR_ASISTENCIA:        [ROLES.DOCENTE],
+  ENVIAR_COMUNICADOS:      [ROLES.DOCENTE],
+  GESTIONAR_PERSONAL:      [ROLES.ADMIN, ROLES.AUTORIDAD],   // HU6
+  GESTIONAR_POSTULACIONES: [ROLES.ADMIN, ROLES.AUTORIDAD],   // REQ-20
+  VER_INDICADORES:         [ROLES.ADMIN, ROLES.AUTORIDAD],   // HU3
+  VER_AUDITORIA:           [ROLES.ADMIN, ROLES.AUTORIDAD],   // REQ-22
 }
 
 /**

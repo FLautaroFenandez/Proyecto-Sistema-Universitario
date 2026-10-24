@@ -22,4 +22,13 @@ export {
   calificaciones, PERIODOS, INSTANCIAS, NOTA_MINIMA, NOTA_MAXIMA,
   validarNota, notaDesdeTexto, claveCelda,
 } from './calificaciones'
+// Sprint 3
+export { asistencias, ESTADOS_ASISTENCIA, resumirAsistencia } from './asistencias'
+export { comunicados, LARGO_MAXIMO_TITULO } from './comunicados'
+export { personal, FUNCIONES, etiquetaDeFuncion } from './personal'
+export { postulaciones } from './postulaciones'
+export { auditoria, TABLAS_AUDITADAS, ACCIONES, etiquetaDeTabla, resumirDetalle } from './auditoria'
+export { indicadores, PERIODOS_REPORTE } from './indicadores'
+export { documentos } from './documentos'
+export { familia } from './familia'
 export { ErrorDeServicio, mensajeDeError, traducirError } from './base'
