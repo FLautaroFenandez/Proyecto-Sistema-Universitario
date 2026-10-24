@@ -275,18 +275,22 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   Retrospectiva y la deuda técnica registrada están en
   `docs/02-unidad-2/03-cierre-sprint-1/README.md`; los casos de prueba, en
   `docs/02-unidad-2/02-modulo-administrador/pruebas.md` (faltan ejecutar los de permisos por rol).
-- **Sprint 2 en curso (29/09–13/10).** Hecho en la semana 1: el **patrón State** para la
-  solicitud de inscripción (`src/domain/estadoSolicitud.js` + disparador
-  `trg_transicion_solicitud`) y **HU2** completa (tabla `calificaciones`, vista
-  `promedios_periodo` con `security_invoker`, módulo Profesores en `/docente`). El script es
-  `docs/supabase-sprint2.sql` y **falta ejecutarlo en Supabase**. HU4 y HU6 (Lautaro) siguen
-  sin iniciar; HU4 tiene que colgarse del módulo Profesores ya creado. Detalle en
-  `docs/02-unidad-2/04-sprint-2/README.md`.
+- **Sprint 2 cerrado** (29/09–13/10, cierre documentado el 24/10): patrón State y HU2,
+  probados (CP-01 a CP-48) e integrados a `main` el 22/10 por los PR #1 y #2. Review y
+  Retrospectiva en `docs/02-unidad-2/05-cierre-sprint-2/README.md`.
+- **Sprint 3 (14/10–27/10):** implementadas HU3, HU4, HU5, HU6, REQ-17, REQ-20 y REQ-22 en la
+  rama `feature/sprint-3`. El script `docs/supabase-sprint3.sql` **ya está ejecutado**
+  (24/10). Ojo: desde ese script `rol_actual()` exige `profiles.activo`, así que una cuenta
+  inactiva pierde todos los permisos. Casos de prueba CP-49 a CP-76 en
+  `docs/02-unidad-2/06-sprint-3/README.md` (solo los de la prueba rápida tienen resultado).
+- **Calidad automatizada (Unidad 4):** ESLint configurado (`.eslintrc.cjs`, cero avisos),
+  pruebas con Vitest (`npm test`) y pipeline en `.github/workflows/ci.yml`. Mantener los
+  tres en verde: el pipeline corre en cada push a `feature/**` y en cada PR a `main`.
 - **Parte 3 (app móvil):** el plan se generó con `docs/scripts/*_movil.py`. La **bitácora de
   IA** que pide el enunciado se empieza más adelante y es **exclusiva del desarrollo de la app
   móvil**: no crearla todavía ni cargarle incidentes de la Parte 2.
-- `docs/GUIA_DEPLOY.md` quedó desactualizada: describe un deploy en Vercel, pero el proyecto se
-  publica en **Netlify** (hay `netlify.toml` y `public/_redirects`).
+- El sitio se publica en **Netlify** (https://educar-para-transforma.netlify.app) con cada
+  merge a `main`; el proceso está en `docs/GUIA_DEPLOY.md`.
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el
   **estado objetivo**; hoy el código de la web está en `src/` sin ese prefijo. Migrar recién
   cuando arranque la Parte 3, en un commit propio de `refactor:`.

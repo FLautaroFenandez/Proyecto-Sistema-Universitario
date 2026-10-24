@@ -33,7 +33,9 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 2 — Modelado | [Modelado del Sistema de Gestión (DER, reglas y RLS)](docs/02-unidad-2/01-modelado/README.md) |
 | Unidad 2 — Sprint 1 | [Módulo Administrador: matrícula, cursos y materias](docs/02-unidad-2/02-modulo-administrador/README.md) · [Casos de prueba](docs/02-unidad-2/02-modulo-administrador/pruebas.md) |
 | Unidad 2 — Cierre Sprint 1 | [Sprint Review y Retrospectiva](docs/02-unidad-2/03-cierre-sprint-1/README.md) |
-| Unidad 2 — Sprint 2 | [Calificaciones y patrón State](docs/02-unidad-2/04-sprint-2/README.md) |
+| Unidad 2 — Sprint 2 | [Calificaciones y patrón State](docs/02-unidad-2/04-sprint-2/README.md) · [Cierre del Sprint 2](docs/02-unidad-2/05-cierre-sprint-2/README.md) |
+| Unidad 2 — Sprint 3 | [Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría](docs/02-unidad-2/06-sprint-3/README.md) |
+| Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) |
 
 ---
 
@@ -167,10 +169,19 @@ educar-para-transformar/
 │   │   ├── matricula.js           # Solicitudes, alumnos, tutores y matriculación
 │   │   ├── inscripciones.js       # Solicitudes de inscripción y su cambio de estado
 │   │   ├── calificaciones.js      # Notas por trimestre y promedios (HU2)
+│   │   ├── asistencias.js         # Asistencia diaria (HU4)
+│   │   ├── comunicados.js         # Comunicados a las familias (HU5)
+│   │   ├── personal.js            # Legajo de personal (HU6)
+│   │   ├── indicadores.js         # Indicadores para la Autoridad (HU3)
+│   │   ├── documentos.js          # Boletín y constancia (REQ-17)
+│   │   ├── postulaciones.js       # Postulaciones laborales (REQ-20)
+│   │   ├── auditoria.js           # Registro de auditoría (REQ-22)
+│   │   ├── familia.js             # Hijos vinculados y legajo propio
 │   │   └── index.js               # Punto de entrada: import { academico } from '@/services'
 │   │
 │   ├── domain/                    # Reglas del negocio sin acceso a datos
-│   │   └── estadoSolicitud.js     # Ciclo de vida de la solicitud (patrón State)
+│   │   ├── estadoSolicitud.js     # Ciclo de vida de la solicitud (patrón State)
+│   │   └── estadoPostulacion.js   # Ciclo de vida de una postulación (patrón State)
 │   │
 │   ├── lib/                       # Configuración de librerías externas
 │   │   ├── supabase.js            # Cliente Supabase (inicialización)
