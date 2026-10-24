@@ -1,6 +1,7 @@
 # Integración continua (Unidad 4 — Parte 2, opción 1).
 # En cada push y en cada Pull Request hacia main: instala las dependencias
-# exactas del package-lock, revisa el código con ESLint y compila el sitio.
+# exactas del package-lock, revisa el código con ESLint, corre las pruebas
+# unitarias con Vitest y compila el sitio.
 # Si algo falla, el PR queda marcado en rojo antes de integrarse.
 name: CI
 
@@ -12,7 +13,7 @@ on:
 
 jobs:
   verificar:
-    name: Lint y build
+    name: Lint, pruebas y build
     runs-on: ubuntu-latest
     steps:
       - name: Obtener el código
@@ -29,6 +30,9 @@ jobs:
 
       - name: Revisar el código (ESLint)
         run: npm run lint
+
+      - name: Ejecutar las pruebas (Vitest)
+        run: npm test
 
       - name: Compilar
         run: npm run build

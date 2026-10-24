@@ -40,4 +40,4 @@ export const supabaseConfigurado = !isPlaceholder
 // Solo en desarrollo: deja el cliente en la consola del navegador para las
 // pruebas de permisos contra la API (pruebas.md del módulo Administrador,
 // punto 2.2). El build de producción no incluye esta línea.
-if (import.meta.env.DEV) window.supabase = supabase
+if (import.meta.env.DEV && typeof window !== 'undefined') window.supabase = supabase
