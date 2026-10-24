@@ -98,3 +98,14 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
     overflow: hidden;
   }
 }
+
+/* ── Impresión y PDF (HU3, REQ-17) ──────────────────────────────────────────
+   Al imprimir se ve solo el bloque .documento-imprimible: queda afuera el menú
+   del panel, la barra del sitio y cualquier control marcado como .no-imprimir. */
+@media print {
+  body * { visibility: hidden; }
+  .documento-imprimible, .documento-imprimible * { visibility: visible; }
+  .documento-imprimible { position: absolute; inset: 0 auto auto 0; width: 100%; }
+  .no-imprimir { display: none !important; }
+  @page { margin: 15mm; }
+}
