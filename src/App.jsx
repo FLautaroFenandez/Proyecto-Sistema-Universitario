@@ -47,9 +47,19 @@ const MatriculacionAdminPage = lazy(() => import('@/pages/admin/MatriculacionAdm
 const AlumnosAdminPage       = lazy(() => import('@/pages/admin/AlumnosAdminPage'))
 const CursosAdminPage        = lazy(() => import('@/pages/admin/CursosAdminPage'))
 
+// Sprint 3
+const PersonalAdminPage      = lazy(() => import('@/pages/admin/PersonalAdminPage'))
+const PostulacionesAdminPage = lazy(() => import('@/pages/admin/PostulacionesAdminPage'))
+const IndicadoresPage        = lazy(() => import('@/pages/admin/IndicadoresPage'))
+const AuditoriaAdminPage     = lazy(() => import('@/pages/admin/AuditoriaAdminPage'))
+const BoletinPage            = lazy(() => import('@/pages/documentos/BoletinPage'))
+const ConstanciaPage         = lazy(() => import('@/pages/documentos/ConstanciaPage'))
+
 // Módulo Profesores (Sprint 2)
 const MisCursosPage      = lazy(() => import('@/pages/docente/MisCursosPage'))
 const CalificacionesPage = lazy(() => import('@/pages/docente/CalificacionesPage'))
+const AsistenciaPage     = lazy(() => import('@/pages/docente/AsistenciaPage'))
+const ComunicadosPage    = lazy(() => import('@/pages/docente/ComunicadosPage'))
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
@@ -104,7 +114,27 @@ export default function App() {
                   <CalificacionesPage />
                 </ProtectedRoute>
               } />
+              <Route path="/docente/asistencia/:cursoId" element={
+                <ProtectedRoute rolesPermitidos={PERMISOS.TOMAR_ASISTENCIA}>
+                  <AsistenciaPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/docente/comunicados" element={
+                <ProtectedRoute rolesPermitidos={PERMISOS.ENVIAR_COMUNICADOS}>
+                  <ComunicadosPage />
+                </ProtectedRoute>
+              } />
             </Route>
+
+            {/* ── Documentos imprimibles (REQ-17): sin layout, para que el PDF
+                  salga limpio. Cualquier usuario con sesión; la base decide
+                  si puede ver esa matrícula. ── */}
+            <Route path="/documentos/boletin/:matriculaId" element={
+              <ProtectedRoute><BoletinPage /></ProtectedRoute>
+            } />
+            <Route path="/documentos/constancia/:matriculaId" element={
+              <ProtectedRoute><ConstanciaPage /></ProtectedRoute>
+            } />
 
             {/* ── Admin: rutas anidadas bajo AdminLayout (sidebar + header propio) ── */}
             <Route element={
@@ -126,6 +156,12 @@ export default function App() {
               <Route path="/admin/matriculacion" element={<MatriculacionAdminPage />} />
               <Route path="/admin/alumnos"       element={<AlumnosAdminPage />} />
               <Route path="/admin/cursos"        element={<CursosAdminPage />} />
+
+              {/* Sprint 3 */}
+              <Route path="/admin/personal"      element={<PersonalAdminPage />} />
+              <Route path="/admin/postulaciones" element={<PostulacionesAdminPage />} />
+              <Route path="/admin/indicadores"   element={<IndicadoresPage />} />
+              <Route path="/admin/auditoria"     element={<AuditoriaAdminPage />} />
             </Route>
 
             {/* ── 404 ── */}

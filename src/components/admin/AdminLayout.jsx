@@ -12,6 +12,7 @@ import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
   LayoutDashboard, ChevronRight, Inbox, UserPlus, GraduationCap,
+  IdCard, BarChart3, ShieldCheck, FileText,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
@@ -30,6 +31,14 @@ const NAV_SECTIONS = [
       { icon: UserPlus,      label: 'Matriculación',    href: '/admin/matriculacion' },
       { icon: Users,         label: 'Alumnos',          href: '/admin/alumnos' },
       { icon: GraduationCap, label: 'Cursos y materias', href: '/admin/cursos' },
+      { icon: IdCard,        label: 'Personal',          href: '/admin/personal' },
+    ],
+  },
+  {
+    titulo: 'Reportes y control',
+    items: [
+      { icon: BarChart3,   label: 'Indicadores', href: '/admin/indicadores' },
+      { icon: ShieldCheck, label: 'Auditoría',   href: '/admin/auditoria' },
     ],
   },
   {
@@ -45,7 +54,8 @@ const NAV_SECTIONS = [
     items: [
       { icon: ClipboardList, label: 'Inscripciones',   href: '/admin/inscripciones' },
       { icon: Briefcase,     label: 'Empleos',          href: '/admin/empleos' },
-      { icon: Inbox,         label: 'Consultas y CVs',  href: '/admin/mensajes' },
+      { icon: FileText,      label: 'Postulaciones',    href: '/admin/postulaciones' },
+      { icon: Inbox,         label: 'Consultas',        href: '/admin/mensajes' },
     ],
   },
 ]
