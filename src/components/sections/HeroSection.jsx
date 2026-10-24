@@ -67,7 +67,7 @@ export function HeroSection() {
         style={{
           minHeight: '520px',
           height: '72vh',
-          backgroundImage: `url('/assets/fondo-educar.jpg')`,
+          backgroundImage: `url('/assets/fondo-educar.webp')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundColor: '#1B3A6B',

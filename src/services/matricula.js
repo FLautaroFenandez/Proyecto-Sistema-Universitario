@@ -8,7 +8,7 @@
  */
 
 import { supabase } from '@/lib/supabase'
-import { ejecutar } from './base'
+import { ejecutar, ErrorDeServicio, traducirError } from './base'
 import { estadoDe } from '@/domain/estadoSolicitud'
 
 /** Curso con su nivel, tal como se lo pide desde una matrícula. */
@@ -140,6 +140,7 @@ export const matricula = {
       )
 
       const tutorVinculado = await this.vincularTutorDeLaSolicitud(alumno.id, solicitud)
+      await this.vincularCuentaDelAlumno(alumno.id, alumno.dni)
       return { alumno, matricula: nueva, tutorVinculado }
     } catch (err) {
       await supabase.from('alumnos').delete().eq('id', alumno.id)
@@ -184,6 +185,67 @@ export const matricula = {
       console.error('[servicios] No se pudo vincular al tutor con el alumno:', err)
       return false
     }
+  },
+
+  /**
+   * Si el alumno ya tiene una cuenta de estudiante con su DNI, la asocia al
+   * legajo para que vea su asistencia y su boletín (HU4, REQ-17). Igual que con
+   * el tutor, es secundario: si falla, la matrícula sigue hecha.
+   */
+  async vincularCuentaDelAlumno(alumnoId, dni) {
+    try {
+      const [cuenta] = await ejecutar(
+        supabase.from('profiles').select('id').eq('dni', dni).eq('rol', 'estudiante').limit(1),
+        'buscar la cuenta del alumno',
+      )
+      if (!cuenta) return false
+      await ejecutar(
+        supabase.from('alumnos').update({ profile_id: cuenta.id }).eq('id', alumnoId).select('id'),
+        'vincular la cuenta del alumno',
+      )
+      return true
+    } catch (err) {
+      console.error('[servicios] No se pudo vincular la cuenta del alumno:', err)
+      return false
+    }
+  },
+
+  /**
+   * Vincula a mano una cuenta existente con un legajo: la de un tutor (padre)
+   * o la del propio alumno. Resuelve el caso en que la persona se registró
+   * después de la matriculación, cuando el vínculo automático no pudo hacerse.
+   *
+   * @param {{alumnoId:string, dni:string, tipo:'tutor'|'alumno', relacion?:string}} params
+   */
+  async vincularCuenta({ alumnoId, dni, tipo, relacion = 'tutor' }) {
+    const documento = dni?.trim()
+    if (!documento) throw new ErrorDeServicio('Ingresá el DNI de la cuenta que querés vincular.')
+
+    const [cuenta] = await ejecutar(
+      supabase.from('profiles').select('id, nombre, rol').eq('dni', documento).limit(1),
+      'buscar la cuenta',
+    )
+    if (!cuenta) throw new ErrorDeServicio('No hay ninguna cuenta registrada con ese DNI.')
+
+    if (tipo === 'alumno') {
+      if (cuenta.rol !== 'estudiante') {
+        throw new ErrorDeServicio(`La cuenta de ${cuenta.nombre} no tiene rol estudiante.`)
+      }
+      await ejecutar(
+        supabase.from('alumnos').update({ profile_id: cuenta.id }).eq('id', alumnoId).select('id'),
+        'vincular la cuenta del alumno',
+      )
+      return cuenta
+    }
+
+    if (cuenta.rol !== 'padre') {
+      throw new ErrorDeServicio(`La cuenta de ${cuenta.nombre} no tiene rol padre.`)
+    }
+    const { error } = await supabase.from('alumno_tutor')
+      .insert({ alumno_id: alumnoId, tutor_id: cuenta.id, relacion })
+    if (error?.code === '23505') throw new ErrorDeServicio(`${cuenta.nombre} ya está vinculado a este alumno.`)
+    if (error) throw traducirError(error, 'vincular al tutor')
+    return cuenta
   },
 
   /** Baja de una matrícula (el alumno deja el curso sin borrar su legajo ni su historia). */

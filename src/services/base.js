@@ -31,6 +31,11 @@ const MENSAJES_POR_RESTRICCION = {
   // Sprint 2 — docs/supabase-sprint2.sql
   calificacion_nota_en_rango: 'La nota tiene que estar entre 1 y 10.',
   calificacion_unica:         'Ya hay una nota cargada para esa evaluación.',
+  // Sprint 3 — docs/supabase-sprint3.sql
+  personal_dni_unico:         'Ya existe un legajo de personal con ese DNI.',
+  personal_profile_id_key:    'Esa cuenta ya está vinculada a otro legajo.',
+  comunicado_con_titulo:      'El comunicado necesita un título.',
+  comunicado_con_mensaje:     'El comunicado necesita un mensaje.',
 }
 
 /** Error con un mensaje apto para mostrar en pantalla. Conserva la causa técnica. */

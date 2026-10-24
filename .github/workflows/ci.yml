@@ -1,0 +1,43 @@
+# Integración continua (Unidad 4 — Parte 2, opción 1).
+# En cada push y en cada Pull Request hacia main: instala las dependencias
+# exactas del package-lock, revisa el código con ESLint, corre las pruebas
+# unitarias con Vitest y compila el sitio.
+# Si algo falla, el PR queda marcado en rojo antes de integrarse.
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  verificar:
+    name: Lint, pruebas y build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v5
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v5
+        with:
+          # Node 22 o superior: la misma generación que se usa en local.
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Revisar el código (ESLint)
+        run: npm run lint
+
+      - name: Ejecutar las pruebas (Vitest)
+        run: npm test
+
+      - name: Compilar
+        run: npm run build
+        env:
+          # El build no se conecta a Supabase: alcanza con valores de ejemplo.
+          VITE_SUPABASE_URL: https://ejemplo.supabase.co
+          VITE_SUPABASE_ANON_KEY: clave-de-ejemplo

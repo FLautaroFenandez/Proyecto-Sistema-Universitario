@@ -5,7 +5,7 @@
  * marcar como leído y eliminar con confirmación.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Mail, MailOpen, Trash2, Inbox, Briefcase, Reply } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Badge } from '@/components/ui/Badge'
@@ -26,16 +26,17 @@ export default function MensajesAdminPage() {
   const [eliminar,  setEliminar]  = useState(null)
   const [marcando,  setMarcando]  = useState(null)
 
-  const fetchMensajes = async () => {
+  const fetchMensajes = useCallback(async () => {
     setCargando(true)
     let q = supabase.from('contacto_mensajes').select('*').order('created_at', { ascending: false })
     if (filtro !== null) q = q.eq('leido', filtro)
     const { data } = await q
     setMensajes(data ?? [])
     setCargando(false)
-  }
+  }, [filtro])
 
-  useEffect(() => { fetchMensajes() }, [filtro])
+
+  useEffect(() => { fetchMensajes() }, [fetchMensajes])
 
   const toggleLeido = async (msg) => {
     setMarcando(msg.id)

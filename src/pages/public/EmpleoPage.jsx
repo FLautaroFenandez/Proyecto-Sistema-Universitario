@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { PageHero } from '@/components/ui/PageHero'
 import { Button } from '@/components/ui/Button'
 import { supabase } from '@/lib/supabase'
+import { postulaciones } from '@/services'
 
 const cvSchema = z.object({
   nombre: z.string().min(2, 'Requerido'),
@@ -68,17 +69,14 @@ export default function EmpleoPage() {
     return () => clearTimeout(timer)
   }, [location])
 
+  // REQ-20: la postulación va a su propia tabla para poder seguirla por estados.
   const onCvSubmit = async (data) => {
-    const { error } = await supabase.from('contacto_mensajes').insert({
-      nombre: data.nombre,
-      email:  data.email,
-      asunto: `Empleo — CV (área: ${data.area})`,
-      mensaje: data.cv_link
-        ? `Postulación espontánea.\nÁrea de interés: ${data.area}\nCV: ${data.cv_link}`
-        : `Postulación espontánea.\nÁrea de interés: ${data.area}\n(Sin enlace a CV — contactar por email)`,
-    })
-    if (error) { console.error('Error al enviar CV:', error); return }
-    setCvEnviado(true)
+    try {
+      await postulaciones.registrar({ nombre: data.nombre, email: data.email, area: data.area, cvLink: data.cv_link })
+      setCvEnviado(true)
+    } catch (error) {
+      console.error('Error al enviar CV:', error)
+    }
   }
 
   return (

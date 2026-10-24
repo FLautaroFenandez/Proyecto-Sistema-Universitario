@@ -83,7 +83,7 @@ export default function LoginPage() {
         >
           {/* Logo institucional */}
           <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg p-2">
-            <img src="/assets/logo-ept.png" alt="Logo EPT" width={80} height={80}
+            <img src="/assets/logo-ept.webp" alt="Logo EPT" width={80} height={80}
               className="w-full h-full object-contain"
               onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
             />
@@ -102,7 +102,7 @@ export default function LoginPage() {
           {/* Slogan */}
           <blockquote className="border-l-2 border-brand-naranja pl-4 text-left">
             <p className="text-white/75 text-sm italic leading-relaxed">
-              "Inspiramos, desafiamos y empoderamos a todos nuestros alumnos a ser miembros comprometidos y éticos de una comunidad global."
+              &ldquo;Inspiramos, desafiamos y empoderamos a todos nuestros alumnos a ser miembros comprometidos y éticos de una comunidad global.&rdquo;
             </p>
           </blockquote>
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
           {/* Logo mobile */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
             <div className="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center p-1">
-              <img src="/assets/logo-ept.png" alt="Logo EPT" className="w-full h-full object-contain"
+              <img src="/assets/logo-ept.webp" alt="Logo EPT" className="w-full h-full object-contain"
                 onError={e => { e.currentTarget.style.display='none' }} />
             </div>
             <span className="font-display font-bold text-brand-azul">Educar para Transformar</span>

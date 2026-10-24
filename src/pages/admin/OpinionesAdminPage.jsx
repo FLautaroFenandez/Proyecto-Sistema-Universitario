@@ -4,7 +4,7 @@
  * Acciones: Aprobar / Rechazar / Eliminar con modal de confirmación.
  */
 
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useCallback } from 'react'
 import { CheckCircle, XCircle, Trash2, MessageSquare } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { AuthContext } from '@/components/auth/AuthContext'
@@ -30,16 +30,17 @@ export default function OpinionesAdminPage() {
   const [accionando, setAccionando]     = useState(null)
   const [eliminar, setEliminar]         = useState(null) // opinión a eliminar
 
-  const fetchOpiniones = async () => {
+  const fetchOpiniones = useCallback(async () => {
     setCargando(true)
     let q = supabase.from('opiniones').select('*').order('created_at', { ascending: false })
     if (tabActivo) q = q.eq('estado', tabActivo)
     const { data } = await q
     setOpiniones(data ?? [])
     setCargando(false)
-  }
+  }, [tabActivo])
 
-  useEffect(() => { fetchOpiniones() }, [tabActivo])
+
+  useEffect(() => { fetchOpiniones() }, [fetchOpiniones])
 
   const moderar = async (id, nuevoEstado) => {
     setAccionando(id)

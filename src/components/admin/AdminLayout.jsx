@@ -12,6 +12,7 @@ import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
   LayoutDashboard, ChevronRight, Inbox, UserPlus, GraduationCap,
+  IdCard, BarChart3, ShieldCheck, FileText,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
@@ -30,6 +31,14 @@ const NAV_SECTIONS = [
       { icon: UserPlus,      label: 'Matriculación',    href: '/admin/matriculacion' },
       { icon: Users,         label: 'Alumnos',          href: '/admin/alumnos' },
       { icon: GraduationCap, label: 'Cursos y materias', href: '/admin/cursos' },
+      { icon: IdCard,        label: 'Personal',          href: '/admin/personal' },
+    ],
+  },
+  {
+    titulo: 'Reportes y control',
+    items: [
+      { icon: BarChart3,   label: 'Indicadores', href: '/admin/indicadores' },
+      { icon: ShieldCheck, label: 'Auditoría',   href: '/admin/auditoria' },
     ],
   },
   {
@@ -45,7 +54,8 @@ const NAV_SECTIONS = [
     items: [
       { icon: ClipboardList, label: 'Inscripciones',   href: '/admin/inscripciones' },
       { icon: Briefcase,     label: 'Empleos',          href: '/admin/empleos' },
-      { icon: Inbox,         label: 'Consultas y CVs',  href: '/admin/mensajes' },
+      { icon: FileText,      label: 'Postulaciones',    href: '/admin/postulaciones' },
+      { icon: Inbox,         label: 'Consultas',        href: '/admin/mensajes' },
     ],
   },
 ]
@@ -95,7 +105,7 @@ function SidebarContent({ onClose }) {
       {/* Logo del panel */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-white/10">
         <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1 flex-shrink-0">
-          <img src="/assets/logo-ept.png" alt="Logo EPT" className="w-full h-full object-contain"
+          <img src="/assets/logo-ept.webp" alt="Logo EPT" className="w-full h-full object-contain"
             onError={e => { e.currentTarget.style.display='none'; e.currentTarget.nextSibling.style.display='flex' }}
           />
           <div className="w-full h-full rounded-lg bg-brand-azul items-center justify-center hidden">

@@ -16,11 +16,15 @@ requerimientos.
 | ID | Historia de Usuario | Rol / Usuario | Req. | Responsable | Prioridad | Riesgo | Puntos | Sprint | Estado |
 |---|---|---|---|---|---|---|---|---|---|
 | HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | ✅ Done |
-| HU4 | Registrar asistencia diaria | Docente | REQ-16 | L. Fernández | Alta | Bajo | 3 | Sprint 1 → 2 | 🔄 Trasladada |
-| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | 🔨 En prueba |
-| HU6 | Gestionar legajo de personal | Administrador | REQ-19 | L. Fernández | Media | Medio | 5 | Sprint 2 | To Do |
-| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | To Do |
-| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | L. Fernández | Media | Bajo | 2 | Sprint 3 | To Do |
+| HU4 | Registrar asistencia diaria | Docente | REQ-16 | G. Cerqueiro¹ | Alta | Bajo | 3 | Sprint 1 → 3 | ✅ Implementada |
+| HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | ✅ Done |
+| HU6 | Gestionar legajo de personal | Administrador | REQ-19 | G. Cerqueiro¹ | Media | Medio | 5 | Sprint 2 → 3 | ✅ Implementada |
+| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | ✅ Implementada |
+| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | G. Cerqueiro¹ | Media | Bajo | 2 | Sprint 3 | ✅ Implementada |
+
+¹ Planificadas para L. Fernández. Desde el 21/10/2026 el desarrollo lo continúa solo G. Cerqueiro
+(ver [cierre del Sprint 2](../../02-unidad-2/05-cierre-sprint-2/README.md)). *Implementada* indica
+que falta completar la ejecución de sus casos de prueba para darla por *Done*.
 
 ---
 

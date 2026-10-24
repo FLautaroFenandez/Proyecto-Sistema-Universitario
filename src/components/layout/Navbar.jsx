@@ -101,7 +101,7 @@ function NavDropdown({ items, onNavigate }) {
         borderTop: '2px solid #E8612C',
       }}
     >
-      {items.map((item, i) => {
+      {items.map((item) => {
         const Icon = item.icon
         return (
           <Link key={item.label} to={item.href} onClick={onNavigate}
@@ -170,7 +170,7 @@ export function Navbar() {
           <Link to="/" className="flex items-center gap-3 flex-shrink-0">
             <div className="w-[52px] h-[52px] flex-shrink-0">
               <img
-                src="/assets/logo-ept.png"
+                src="/assets/logo-ept.webp"
                 alt="Logo Educar para Transformar"
                 width={52} height={52}
                 className="w-full h-full object-contain"
@@ -309,7 +309,7 @@ export function Navbar() {
             {/* Header fijo */}
             <div className="flex items-center justify-between pl-5 pr-3 h-[68px] border-b border-gray-100 flex-shrink-0">
               <Link to="/" onClick={cerrarMenuMobile} className="flex items-center gap-2.5 min-w-0">
-                <img src="/assets/logo-ept.png" alt="Logo EPT" width={40} height={40}
+                <img src="/assets/logo-ept.webp" alt="Logo EPT" width={40} height={40}
                   className="w-10 h-10 object-contain flex-shrink-0" style={{ mixBlendMode: 'multiply' }}
                   onError={e => { e.currentTarget.style.display = 'none' }}
                 />

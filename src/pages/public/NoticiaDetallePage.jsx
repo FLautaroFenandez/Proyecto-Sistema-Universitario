@@ -7,11 +7,10 @@
 import { useEffect, useContext } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Clock, User } from 'lucide-react'
+import { ArrowLeft, Clock } from 'lucide-react'
 import { useNoticiaById, useNoticias } from '@/hooks/useNoticias'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { formatDate, formatDateShort } from '@/utils/formatDate'
-import { SkeletonLine } from '@/components/ui/Skeleton'
 
 export default function NoticiaDetallePage() {
   const { id } = useParams()

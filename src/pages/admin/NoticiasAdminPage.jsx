@@ -4,7 +4,7 @@
  * upload de imagen a Supabase Storage con preview, toggles pública/publicada.
  */
 
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -49,7 +49,7 @@ export default function NoticiasAdminPage() {
     defaultValues: { publica: true, publicada: false },
   })
 
-  const fetchNoticias = async () => {
+  const fetchNoticias = useCallback(async () => {
     setCargando(true)
     // contenido y resumen se necesitan al abrir el modal de edición
     let q = supabase.from('noticias').select('id,titulo,resumen,contenido,publica,publicada,created_at,imagen_url').order('created_at', { ascending: false })
@@ -58,9 +58,10 @@ export default function NoticiasAdminPage() {
     const { data } = await q
     setNoticias(data ?? [])
     setCargando(false)
-  }
+  }, [filtro])
 
-  useEffect(() => { fetchNoticias() }, [filtro])
+
+  useEffect(() => { fetchNoticias() }, [fetchNoticias])
 
   const abrirNuevo = () => { reset({ publica: true, publicada: false }); setEditando(null); setImagenFile(null); setImagenPreview(null); setModalOpen(true) }
   const abrirEditar = (n) => {

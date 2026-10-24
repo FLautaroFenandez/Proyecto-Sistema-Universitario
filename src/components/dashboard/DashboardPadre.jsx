@@ -7,12 +7,14 @@
 import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ClipboardList, MessageCircle, Newspaper, PlusCircle, ArrowRight, CheckCircle, Clock, XCircle, Search } from 'lucide-react'
+import { ClipboardList, MessageCircle, Newspaper, PlusCircle, ArrowRight, CheckCircle, Clock, XCircle, Search, Users, Megaphone } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useNoticias } from '@/hooks/useNoticias'
 import { formatDateShort } from '@/utils/formatDate'
 import { Badge } from '@/components/ui/Badge'
+import { familia, comunicados as servicioComunicados } from '@/services'
+import { SeguimientoAlumno, ComunicadosRecibidos } from './SeguimientoAlumno'
 
 const ESTADO_CONFIG = {
   pendiente:   { icon: Clock,        color: 'orange', label: 'Pendiente de revisión',  bg: 'bg-orange-50', iconClass: 'text-orange-500' },
@@ -33,6 +35,20 @@ export function DashboardPadre() {
   const [inscripciones, setInscripciones] = useState([])
   const [cargando, setCargando] = useState(true)
   const { noticias } = useNoticias({ limite: 2, soloPublicas: false })
+  const [hijos, setHijos] = useState([])
+  const [comunicados, setComunicados] = useState([])
+
+  // Sistema de Gestión: hijos vinculados (HU4, REQ-17) y comunicados de sus cursos (HU5).
+  useEffect(() => {
+    if (!profile?.id) return
+    familia.misHijos(profile.id)
+      .then(async lista => {
+        setHijos(lista)
+        const cursoIds = lista.map(h => h.matricula?.curso?.id).filter(Boolean)
+        setComunicados(cursoIds.length ? await servicioComunicados.recientes({ cursoIds, limite: 10 }) : [])
+      })
+      .catch(err => console.error('[dashboard] No se pudo cargar el seguimiento de los hijos:', err))
+  }, [profile?.id])
 
   useEffect(() => {
     /* Las solicitudes se vinculan por email: el padre ve las inscripciones
@@ -65,6 +81,24 @@ export function DashboardPadre() {
           <span className="bg-brand-verde/15 text-green-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">Portal de Padres</span>
         </div>
       </motion.div>
+
+      {/* Mis hijos: solo aparece si la cuenta está vinculada a algún alumno */}
+      {hijos.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="font-display font-bold text-gray-700 text-lg flex items-center gap-2">
+            <Users size={19} className="text-brand-azul" /> Mis hijos
+          </h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            {hijos.map(h => (
+              <SeguimientoAlumno key={h.alumno.id} alumno={h.alumno} matricula={h.matricula} relacion={h.relacion} />
+            ))}
+          </div>
+          <h2 className="font-display font-bold text-gray-700 text-lg flex items-center gap-2 pt-2">
+            <Megaphone size={19} className="text-brand-naranja" /> Comunicados de los docentes
+          </h2>
+          <ComunicadosRecibidos comunicados={comunicados} />
+        </div>
+      )}
 
       {/* Estado de inscripciones */}
       <div>

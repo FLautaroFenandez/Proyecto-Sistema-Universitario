@@ -33,4 +33,13 @@ export const ROUTES = {
   // Módulo Profesores (Sprint 2)
   DOCENTE:                '/docente',
   DOCENTE_CALIFICACIONES: (dictadoId) => `/docente/calificaciones/${dictadoId}`,
+  // Sprint 3
+  DOCENTE_ASISTENCIA:     (cursoId) => `/docente/asistencia/${cursoId}`,
+  DOCENTE_COMUNICADOS:    '/docente/comunicados',
+  ADMIN_PERSONAL:         '/admin/personal',
+  ADMIN_POSTULACIONES:    '/admin/postulaciones',
+  ADMIN_INDICADORES:      '/admin/indicadores',
+  ADMIN_AUDITORIA:        '/admin/auditoria',
+  BOLETIN:                (matriculaId) => `/documentos/boletin/${matriculaId}`,
+  CONSTANCIA:             (matriculaId) => `/documentos/constancia/${matriculaId}`,
 }

@@ -6,7 +6,7 @@
  * crea los usuarios desde Supabase Auth Dashboard y aquí les asigna el rol).
  */
 
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useCallback } from 'react'
 import { Users, ShieldAlert, ToggleLeft, ToggleRight, ChevronDown, AlertTriangle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { mensajeDeError, traducirError } from '@/services'
@@ -41,16 +41,16 @@ export default function UsuariosAdminPage() {
   // Verificar que sea admin
   const esAdmin = profile?.rol === ROLES.ADMIN
 
-  const fetchUsuarios = async () => {
+  const fetchUsuarios = useCallback(async () => {
     setCargando(true)
     let q = supabase.from('profiles').select('id,nombre,dni,rol,activo,created_at').order('created_at',{ascending:false})
     if (filtro) q = q.eq('rol', filtro)
     const { data } = await q
     setUsuarios(data??[])
     setCargando(false)
-  }
+  }, [filtro])
 
-  useEffect(() => { if (esAdmin) fetchUsuarios() }, [filtro, esAdmin])
+  useEffect(() => { if (esAdmin) fetchUsuarios() }, [esAdmin, fetchUsuarios])
 
   const toggleActivo = async (usr) => {
     await supabase.from('profiles').update({ activo: !usr.activo }).eq('id', usr.id)
