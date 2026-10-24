@@ -102,7 +102,7 @@ export default function LoginPage() {
           {/* Slogan */}
           <blockquote className="border-l-2 border-brand-naranja pl-4 text-left">
             <p className="text-white/75 text-sm italic leading-relaxed">
-              "Inspiramos, desafiamos y empoderamos a todos nuestros alumnos a ser miembros comprometidos y éticos de una comunidad global."
+              &ldquo;Inspiramos, desafiamos y empoderamos a todos nuestros alumnos a ser miembros comprometidos y éticos de una comunidad global.&rdquo;
             </p>
           </blockquote>
 

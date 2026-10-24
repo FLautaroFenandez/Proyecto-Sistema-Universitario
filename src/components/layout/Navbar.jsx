@@ -101,7 +101,7 @@ function NavDropdown({ items, onNavigate }) {
         borderTop: '2px solid #E8612C',
       }}
     >
-      {items.map((item, i) => {
+      {items.map((item) => {
         const Icon = item.icon
         return (
           <Link key={item.label} to={item.href} onClick={onNavigate}

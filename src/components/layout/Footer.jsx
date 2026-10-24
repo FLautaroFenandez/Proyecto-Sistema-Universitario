@@ -5,7 +5,7 @@
  */
 
 import { Link } from 'react-router-dom'
-import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from 'lucide-react'
+import { MapPin, Phone, Mail, Instagram, Facebook } from 'lucide-react'
 
 const MENU_LINKS = [
   { to: '/quienes-somos',      label: 'Quiénes somos' },
