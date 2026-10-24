@@ -53,7 +53,7 @@ export function DashboardPersonal() {
           ...(esDocente ? [{
             icon: GraduationCap,
             label: 'Mis cursos',
-            desc: 'Materias a cargo y carga de calificaciones',
+            desc: 'Notas, asistencia y comunicados a las familias',
             href: ROUTES.DOCENTE,
             color: 'text-orange-600 bg-orange-50',
           }] : []),

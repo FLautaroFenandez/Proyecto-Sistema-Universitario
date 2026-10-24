@@ -10,23 +10,28 @@
 
 import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { BookOpen, Users, ArrowRight, GraduationCap, AlertTriangle } from 'lucide-react'
+import { BookOpen, Users, ArrowRight, GraduationCap, AlertTriangle, CalendarCheck, Megaphone } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { Spinner } from '@/components/ui/Spinner'
-import { calificaciones, nombreCompletoDeCurso, mensajeDeError } from '@/services'
+import { asistencias, calificaciones, nombreCompletoDeCurso, mensajeDeError } from '@/services'
 import { ROUTES } from '@/types/routes'
 
 export default function MisCursosPage() {
   const { profile } = useContext(AuthContext)
   const [dictados, setDictados] = useState([])
+  const [cursos,   setCursos]   = useState([])
   const [cargando, setCargando] = useState(true)
   const [error,    setError]    = useState(null)
 
   useEffect(() => {
     if (!profile?.id) return
     let cancelado = false
-    calificaciones.misDictados(profile.id)
-      .then(lista => { if (!cancelado) setDictados(lista) })
+    Promise.all([calificaciones.misDictados(profile.id), asistencias.misCursos(profile.id)])
+      .then(([listaDictados, listaCursos]) => {
+        if (cancelado) return
+        setDictados(listaDictados)
+        setCursos(listaCursos)
+      })
       .catch(err  => { if (!cancelado) setError(mensajeDeError(err, 'No pudimos cargar tus materias.')) })
       .finally(()  => { if (!cancelado) setCargando(false) })
     return () => { cancelado = true }
@@ -87,6 +92,42 @@ export default function MisCursosPage() {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {/* HU4 y HU5: la asistencia y los comunicados son por curso, no por materia. */}
+      {!cargando && !error && cursos.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-end justify-between flex-wrap gap-3">
+            <div>
+              <h2 className="font-display font-bold text-gray-700 text-lg flex items-center gap-2">
+                <CalendarCheck size={19} className="text-brand-azul" /> Asistencia diaria
+              </h2>
+              <p className="text-sm text-gray-400">Los cursos donde dictás alguna materia.</p>
+            </div>
+            <Link to={ROUTES.DOCENTE_COMUNICADOS}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-brand-naranja hover:underline">
+              <Megaphone size={15} /> Enviar un comunicado a las familias
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {cursos.map(curso => (
+              <Link key={curso.id} to={ROUTES.DOCENTE_ASISTENCIA(curso.id)}
+                className="group bg-white rounded-2xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-all flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-semibold text-gray-800 capitalize group-hover:text-brand-azul transition-colors">
+                    {nombreCompletoDeCurso(curso)}
+                  </p>
+                  <p className="text-sm text-gray-400 flex items-center gap-1.5">
+                    <Users size={14} /> {curso.alumnos} alumno{curso.alumnos === 1 ? '' : 's'}
+                  </p>
+                </div>
+                <span className="flex items-center gap-1 text-sm font-medium text-brand-naranja whitespace-nowrap">
+                  Tomar asistencia <ArrowRight size={14} />
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>
