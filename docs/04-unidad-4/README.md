@@ -46,13 +46,22 @@ funciones puras ya no crean el cliente real y el pipeline pasó a Node 22. Es el
 de *detección temprana* de la integración continua: el problema apareció antes de
 integrarse a `main`, no en producción.
 
-### Opción 2 — Tablero Kanban en GitHub Projects
+### Opción 2 — Tablero Kanban en GitHub Projects ✅
 
-Un tablero con las columnas *Por hacer*, *En curso*, *En revisión* y *Terminado*, una
-tarjeta por historia de usuario vinculada a su issue y a su Pull Request. Al integrar el
-PR, la tarjeta pasa sola a *Terminado* (cierre automático con `Closes #N`).
+Tablero público: **[Sistema de Gestión — Sprints](https://github.com/users/Gonzac96/projects/1)**.
 
-> ⏳ Se completa con el enlace y la captura del tablero una vez armado.
+| Pieza | Cómo quedó |
+|---|---|
+| Columnas | *Por hacer*, *En curso*, *En revisión* y *Terminado* |
+| Tarjetas | Un issue por historia y requerimiento extra (#3 a #12) y uno para la Unidad 4 (#13) |
+| Vínculo con el código | Los issues de HU1, REQ-14 y HU2 citan los PR #1 y #2; el PR #14 del Sprint 3 los cierra con `Closes #6` … `Closes #12` |
+| Automatización | Workflows del tablero: un issue cerrado o un PR integrado pasa la tarjeta a *Terminado* |
+
+Flujo real del 24/10: los siete issues del Sprint 3 estaban en *En revisión*; al integrar
+el PR #14, GitHub los cerró y el tablero los movió a *Terminado* sin intervención manual.
+
+El tablero pertenece a la cuenta de G. Cerqueiro porque GitHub solo permite vincular a un
+repositorio los tableros de su mismo dueño; los issues sí viven en el repositorio oficial.
 
 ## 3. Métricas de productividad
 
@@ -106,10 +115,30 @@ PR, la tarjeta pasa sola a *Terminado* (cierre automático con `Closes #N`).
 | Aviso de Vite por paquete mayor a 500 KB | Sí | No | — |
 | Fondo de portada | 198 KB (JPG) | 87 KB (WebP) | −56 % |
 | Logo | 106 KB (PNG 512 px) | 11 KB (WebP 160 px) | −90 % |
-| Tiempo de espera del Sprint 3 | — | ⏳ | — |
-| Despliegues a producción | 0 en 7 semanas | ⏳ | — |
-| Lighthouse — rendimiento (móvil) | 76 | ⏳ | — |
-| Lighthouse — LCP | 4,6 s | ⏳ | — |
-| Lighthouse — bytes transferidos | 831 KiB | ⏳ | — |
+| Tiempo de espera (terminado → producción) | 23 días (HU1) y 17 días (HU2) | 1 h 05 min (Sprint 3: commits 18:51, merge 19:56 del 24/10) | De semanas a horas |
+| Lead time (inicio → producción) | 37 días (HU1) y 17 días (HU2) | Mismo día (Sprint 3, 24/10) | — |
+| Despliegues a producción | 0 en 7 semanas (01/09 → 21/10) | 3 en 3 días (PR #1 y #2 el 22/10, PR #14 el 24/10) | — |
+| Ejecuciones del pipeline | — | 5: 4 exitosas y 1 fallida (la de Node 20), entre 22 y 30 s cada una | — |
+| Lighthouse — rendimiento (móvil) | 76 | 88 | +12 puntos |
+| Lighthouse — LCP | 4,6 s | 3,4 s | −26 % |
+| Lighthouse — tiempo de bloqueo (TBT) | 190 ms | 96 ms | −49 % |
+| Lighthouse — Speed Index | 4,4 s | 3,5 s | −19 % |
+| Lighthouse — bytes transferidos | 831 KiB | 628 KiB | −24 % |
+| Lighthouse — imágenes | 575 KiB | 370 KiB | −36 % |
 
-> ⏳ Se mide sobre el sitio publicado después de integrar el Sprint 3 a `main`.
+Las dos mediciones de Lighthouse se hicieron sobre el sitio publicado, con la misma
+configuración (versión 12, perfil móvil): antes, el 24/10 a las 19:01; después, el 24/10 a
+las 19:57, ya desplegado el PR #14. Lighthouse varía algunos puntos entre corridas, así que
+el número fino importa menos que la tendencia, que se repite en todas las métricas.
+
+### 3.5. Conclusiones
+
+- **El cuello de botella era la integración, no el desarrollo.** Con el pipeline como red de
+  seguridad, el Sprint 3 llegó a producción una hora después de terminado; HU1 había
+  esperado 23 días.
+- **La integración continua detectó un error real** (Node 20) antes de que llegara a `main`.
+- **Las mejoras de rendimiento más rentables fueron las imágenes:** explican la mayor parte de
+  la baja de bytes y de LCP. Separar las librerías no cambia la primera visita, pero reduce
+  un 89 % lo que se vuelve a descargar después de cada despliegue.
+- **Pendiente:** usar el tablero durante todo un sprint (no solo al cierre) para medir el
+  trabajo en curso y el tiempo en cada columna.

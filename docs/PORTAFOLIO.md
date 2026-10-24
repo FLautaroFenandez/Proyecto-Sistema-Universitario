@@ -101,7 +101,7 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 2 — Cierre Sprint 2](02-unidad-2/05-cierre-sprint-2/README.md) | Sprint Review, Retrospectiva y cambio en el equipo | ✅ Entregado |
 | [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | 🔨 En prueba |
 | Unidad 3 | Buenas prácticas en el proceso de implementación | ⏳ Pendiente |
-| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: integración continua, tablero Kanban y métricas | 🔨 En curso |
+| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: integración continua, tablero Kanban y métricas | ✅ Aplicada (entrega 27/10) |
 | Unidad 5 | Validación, verificación y aseguramiento de la calidad | ⏳ Pendiente |
 
 ---

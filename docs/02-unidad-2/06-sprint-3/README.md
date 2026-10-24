@@ -157,5 +157,5 @@ push dentro del pipeline de GitHub Actions (`npm test`).
 | Pruebas funcionales y de integración | 🔶 Prueba rápida hecha; faltan los casos sin resultado |
 | Permisos por rol con RLS | ✅ Políticas en `supabase-sprint3.sql` |
 | Código en el repositorio con revisión | ✅ Por PR, verificado por el pipeline (sin revisión cruzada desde el 21/10) |
-| Desplegado en Netlify + Supabase | ⏳ Al integrar el PR del Sprint 3 |
+| Desplegado en Netlify + Supabase | ✅ PR #14 integrado y publicado el 24/10 |
 | Documentación actualizada | ✅ Este documento |
