@@ -94,6 +94,7 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 1 — Parte 1](01-unidad-1/01-parte-1-requerimientos/README.md) | Requerimientos, clasificación del SI, arquitecturas, Historias de Usuario, Casos de Uso y Diagramas de Secuencia | ✅ Entregado |
 | [Unidad 1 — Parte 2](01-unidad-1/02-parte-2-repositorios/README.md) | Repositorios de software: conceptos, arquitecturas y portafolio digital | ✅ Entregado |
 | [Unidad 1 — Backlog](01-unidad-1/03-backlog-y-sprints/README.md) | Backlog del producto y planificación de los Sprints 1 y 2 | ✅ Entregado |
+| [Unidad 2 — Patrones de diseño](02-unidad-2/00-tp-patrones-de-diseno/README.md) | Trabajo práctico sobre el patrón Command (de comportamiento) | ✅ Entregado |
 | [Unidad 2 — Modelado](02-unidad-2/01-modelado/README.md) | Modelo de datos del Sistema de Gestión: DER, reglas del enunciado y políticas RLS | ✅ Entregado |
 | [Unidad 2 — Sprint 1](02-unidad-2/02-modulo-administrador/README.md) | Módulo Administrador: matrícula y legajo (HU1), cursos y materias (REQ-14), patrón Facade | ✅ Entregado |
 | [Unidad 2 — Cierre Sprint 1](02-unidad-2/03-cierre-sprint-1/README.md) | Sprint Review, Retrospectiva y deuda técnica registrada | ✅ Entregado |
@@ -101,8 +102,8 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 2 — Cierre Sprint 2](02-unidad-2/05-cierre-sprint-2/README.md) | Sprint Review, Retrospectiva y cambio en el equipo | ✅ Entregado |
 | [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | ✅ Entrega 27/10 |
 | [Unidad 2 — Cierre Sprint 3](02-unidad-2/07-cierre-sprint-3/README.md) | Sprint Review, Retrospectiva, deuda técnica y velocidad de los tres sprints | ✅ Entrega 27/10 |
-| Unidad 3 | Buenas prácticas en el proceso de implementación | ⏳ Pendiente |
-| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: integración continua, tablero Kanban y métricas | ✅ Aplicada (entrega 27/10) |
+| [Unidad 3](03-unidad-3/README.md) | Buenas prácticas en el proceso de implementación: diagnóstico, Clean Code, refactorización y code review | ✅ Entregado |
+| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: [Parte 1 individual](04-unidad-4/parte-1-individual.md), integración continua, tablero Kanban y métricas | ✅ Aplicada (entrega 27/10) |
 | Unidad 5 | Validación, verificación y aseguramiento de la calidad | ⏳ Pendiente |
 
 ---

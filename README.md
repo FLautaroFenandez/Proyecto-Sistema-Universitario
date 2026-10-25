@@ -30,12 +30,14 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 1 — Parte 1 | [Requerimientos, arquitecturas, HU, casos de uso y diagramas](docs/01-unidad-1/01-parte-1-requerimientos/README.md) |
 | Unidad 1 — Parte 2 | [Repositorios de software](docs/01-unidad-1/02-parte-2-repositorios/README.md) |
 | Unidad 1 — Backlog | [Backlog del producto y sprints](docs/01-unidad-1/03-backlog-y-sprints/README.md) |
+| Unidad 2 — Patrones | [Trabajo práctico del patrón Command](docs/02-unidad-2/00-tp-patrones-de-diseno/README.md) |
 | Unidad 2 — Modelado | [Modelado del Sistema de Gestión (DER, reglas y RLS)](docs/02-unidad-2/01-modelado/README.md) |
 | Unidad 2 — Sprint 1 | [Módulo Administrador: matrícula, cursos y materias](docs/02-unidad-2/02-modulo-administrador/README.md) · [Casos de prueba](docs/02-unidad-2/02-modulo-administrador/pruebas.md) |
 | Unidad 2 — Cierre Sprint 1 | [Sprint Review y Retrospectiva](docs/02-unidad-2/03-cierre-sprint-1/README.md) |
 | Unidad 2 — Sprint 2 | [Calificaciones y patrón State](docs/02-unidad-2/04-sprint-2/README.md) · [Cierre del Sprint 2](docs/02-unidad-2/05-cierre-sprint-2/README.md) |
 | Unidad 2 — Sprint 3 | [Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría](docs/02-unidad-2/06-sprint-3/README.md) · [Cierre del Sprint 3](docs/02-unidad-2/07-cierre-sprint-3/README.md) |
-| Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) |
+| Unidad 3 | [Buenas prácticas: desafío de mejora de código](docs/03-unidad-3/README.md) |
+| Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) · [Parte 1 individual](docs/04-unidad-4/parte-1-individual.md) |
 | Seguimiento | [Tablero Kanban del Sistema de Gestión](https://github.com/users/Gonzac96/projects/1) · [Sitio publicado](https://educar-para-transforma.netlify.app) |
 
 ---
