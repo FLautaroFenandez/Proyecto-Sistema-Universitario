@@ -10,6 +10,7 @@ Desarrollo: Cerqueiro, Gonzalo (desde el 21/10 continúa solo el desarrollo del 
 | Fechas | 14/10/2026 al 27/10/2026 |
 | Entrega | 27/10/2026 — Parte 2 completa (web + Sistema de Gestión) |
 | Script de base de datos | [`docs/supabase-sprint3.sql`](../../supabase-sprint3.sql) — ejecutado el 24/10 |
+| Cierre | [Review y Retrospectiva](../07-cierre-sprint-3/README.md) — 25/10 |
 
 ---
 
