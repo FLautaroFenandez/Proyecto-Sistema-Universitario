@@ -5,6 +5,7 @@ Centro Educativo *"Educar para Transformar"* — **Grupo 4**
 
 | Dato | Valor |
 |---|---|
+| Parte 1 (individual) | [Entregada el 06/10/2026](parte-1-individual.md) |
 | Parte 2 — puntos 3.a y 4.a | Entregados el 06/10/2026 |
 | Parte 2 — puntos 3.b, 4.b, 4.c y 4.d | Entrega y coevaluación el 27/10/2026 |
 | Funcionalidad analizada | HU1 — Matricular alumno desde solicitud aprobada (con REQ-14) |
