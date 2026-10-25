@@ -10,6 +10,7 @@ Desarrollo: Cerqueiro, Gonzalo (desde el 21/10 continúa solo el desarrollo del 
 | Fechas | 14/10/2026 al 27/10/2026 |
 | Entrega | 27/10/2026 — Parte 2 completa (web + Sistema de Gestión) |
 | Script de base de datos | [`docs/supabase-sprint3.sql`](../../supabase-sprint3.sql) — ejecutado el 24/10 |
+| Cierre | [Review y Retrospectiva](../07-cierre-sprint-3/README.md) — 25/10 |
 
 ---
 
@@ -27,7 +28,7 @@ El Sprint 3 absorbe todo lo que quedó pendiente del backlog (ver
 | REQ-17 | Boletines y constancias en PDF | 3 | ✅ Implementado |
 | REQ-20 | Postulaciones laborales | 2 | ✅ Implementado |
 | REQ-22 | Auditoría de acciones críticas | 3 | ✅ Implementado |
-| — | Unidad 4: integración continua (GitHub Actions) y tablero Kanban | — | ✅ Pipeline · ⏳ Tablero |
+| — | Unidad 4: integración continua (GitHub Actions) y tablero Kanban | — | ✅ Pipeline y tablero |
 
 ---
 
@@ -111,34 +112,51 @@ titular de Lengua y Literatura y una cuenta de padre vinculada desde Alumnos.
 
 | ID | Historia | Caso | Resultado esperado | Resultado |
 |---|---|---|---|---|
-| CP-49 | HU4 | Docente → Mis cursos | Ve "Asistencia diaria" con sus cursos, sin repetir | |
+| CP-49 | HU4 | Docente → Mis cursos | Ve "Asistencia diaria" con sus cursos, sin repetir | ✅ 25/10: cada curso una vez (el servicio los agrupa por curso) |
 | CP-50 | HU4 | Marcar la asistencia y guardar | *"Asistencia del … guardada"* | ✅ Prueba rápida 24/10 |
-| CP-51 | HU4 | Abrir el mismo día y cambiar un estado | Aparece lo guardado; se actualiza sin duplicar | |
-| CP-52 | HU4 | Elegir una fecha futura | El selector no lo permite; por API la base lo rechaza | |
-| CP-53 | HU4 | Un docente de otro curso abre la URL | *"Solo los docentes del curso pueden tomar asistencia"* | |
-| CP-54 | HU4 | El padre vinculado entra a su panel | Ve el porcentaje y las inasistencias del hijo | |
-| CP-55 | HU5 | Enviar un comunicado vacío | No se envía y se marca el campo | |
+| CP-51 | HU4 | Abrir el mismo día y cambiar un estado | Aparece lo guardado; se actualiza sin duplicar | ✅ 25/10: *"Este día ya estaba cargado…"*; queda una sola fila, actualizada |
+| CP-52 | HU4 | Elegir una fecha futura | El selector no lo permite; por API la base lo rechaza | ✅ 25/10: el selector llega hasta hoy; por API, *"No se puede registrar asistencia de una fecha futura"* |
+| CP-53 | HU4 | Un docente de otro curso abre la URL | *"Solo los docentes del curso pueden tomar asistencia"* | ✅ 25/10 |
+| CP-54 | HU4 | El padre vinculado entra a su panel | Ve el porcentaje y las inasistencias del hijo | ✅ 25/10: *"100 % de asistencia · 0 ausentes · 0 tardes · 0 justificadas"* |
+| CP-55 | HU5 | Enviar un comunicado vacío | No se envía y se marca el campo | ✅ 25/10: *"Escribí un título."* y *"El mensaje no puede quedar vacío."* |
 | CP-56 | HU5 | Enviar un comunicado | Aparece en "Enviados" con fecha y remitente | ✅ Prueba rápida 24/10 |
-| CP-57 | HU5 | Padre del curso y padre de otro curso | El primero lo ve con el remitente; el segundo no | |
+| CP-57 | HU5 | Padre del curso y padre de otro curso | El primero lo ve con el remitente; el segundo no | ✅ 25/10: sin vínculo la base no le devuelve comunicados; vinculado, lo ve con fecha y remitente |
 | CP-58 | HU6 | Crear un legajo | Se genera el legajo P-AAAA-NNN | ✅ Prueba rápida 24/10 |
 | CP-59 | HU6 | Crear otro con el mismo DNI | *"Ya existe un legajo de personal con ese DNI."* | ✅ Prueba rápida 24/10 |
-| CP-60 | HU6 | Editar los datos del legajo | Se guardan | |
-| CP-61 | HU6 | Vincular la cuenta de un docente | Muestra las materias a cargo | |
-| CP-62 | HU6 | Dar de baja el legajo y entrar con esa cuenta | *"Tu cuenta está inactiva"*; al reactivar vuelve el acceso | |
-| CP-63 | REQ-20 | Postularse desde /empleo | Aparece en Postulaciones como *Recibida* | |
-| CP-64 | REQ-20 | Abrir una postulación recibida | Ofrece En revisión y Descartado, no Contratado | |
-| CP-65 | REQ-20 | Llevarla hasta Contratado | Queda bloqueada | |
-| CP-66 | REQ-20 | En SQL: `UPDATE postulaciones SET estado = 'contratado' WHERE estado = 'recibida'` | La base lo rechaza | |
+| CP-60 | HU6 | Editar los datos del legajo | Se guardan | ✅ 25/10 |
+| CP-61 | HU6 | Vincular la cuenta de un docente | Muestra las materias a cargo | ✅ 25/10: Lengua y Literatura (3.º A) y la materia de prueba (2.º A) |
+| CP-62 | HU6 | Dar de baja el legajo y entrar con esa cuenta | *"Tu cuenta está inactiva"*; al reactivar vuelve el acceso | ✅ 25/10: con la baja deja de recibir notas y asistencia; al reactivar recupera el acceso |
+| CP-63 | REQ-20 | Postularse desde /empleo | Aparece en Postulaciones como *Recibida* | ✅ 25/10 |
+| CP-64 | REQ-20 | Abrir una postulación recibida | Ofrece En revisión y Descartado, no Contratado | ✅ 25/10 |
+| CP-65 | REQ-20 | Llevarla hasta Contratado | Queda bloqueada | ✅ 25/10: el selector queda deshabilitado y la base rechaza cualquier cambio posterior |
+| CP-66 | REQ-20 | En SQL: `UPDATE postulaciones SET estado = 'contratado' WHERE estado = 'recibida'` | La base lo rechaza | ✅ 25/10, por la API con sesión de admin: *"Una postulación en estado "recibida" no puede pasar a "contratado""* |
 | CP-67 | REQ-22 | Cambiar el rol de un usuario | Aparece en Auditoría con usuario y *"rol: padre → docente"* | ✅ Prueba rápida 24/10 |
-| CP-68 | REQ-22 | Cargar una nota | Aparece como alta en Calificaciones | |
-| CP-69 | REQ-22 | Un docente consulta `auditoria` por API | No recibe filas | |
+| CP-68 | REQ-22 | Cargar una nota | Aparece como alta en Calificaciones | ✅ 25/10: *"nota: 9"*, firmada por el docente |
+| CP-69 | REQ-22 | Un docente consulta `auditoria` por API | No recibe filas | ✅ 25/10: 0 filas; insertar lo rechaza la política RLS |
 | CP-70 | HU3 | La Autoridad abre Indicadores | La matrícula por nivel y curso coincide con Alumnos | ✅ Prueba rápida 24/10 |
-| CP-71 | HU3 | Cambiar el período | Los valores cambian; sin datos dice *"Sin datos disponibles"* | |
-| CP-72 | HU3 | Exportar a PDF | El PDF sale sin el menú del panel | |
+| CP-71 | HU3 | Cambiar el período | Los valores cambian; sin datos dice *"Sin datos disponibles"* | ✅ 25/10 |
+| CP-72 | HU3 | Exportar a PDF | El PDF sale sin el menú del panel | ✅ 25/10 |
 | CP-73 | REQ-17 | Boletín de un alumno con notas | Promedios por trimestre y anual, más la asistencia | ✅ Prueba rápida 24/10 |
-| CP-74 | REQ-17 | Constancia con matrícula activa y con matrícula en baja | La primera se emite; la segunda no | |
-| CP-75 | REQ-17 | Un padre abre el boletín de un alumno que no es su hijo | *"No encontramos esa matrícula o no tenés permiso…"* | |
-| CP-76 | — | Vincular un padre por DNI desde Alumnos | Aparece en Tutores vinculados; un DNI inexistente se informa | |
+| CP-74 | REQ-17 | Constancia con matrícula activa y con matrícula en baja | La primera se emite; la segunda no | ✅ 25/10: con la baja, *"La matrícula no está activa: no corresponde emitir una constancia…"* |
+| CP-75 | REQ-17 | Un padre abre el boletín de un alumno que no es su hijo | *"No encontramos esa matrícula o no tenés permiso…"* | ✅ 25/10: la base no le devuelve la matrícula; el boletín de su hijo sí se emite |
+| CP-76 | — | Vincular un padre por DNI desde Alumnos | Aparece en Tutores vinculados; un DNI inexistente se informa | ✅ 25/10: *"No hay ninguna cuenta registrada con ese DNI."* |
+
+### Observaciones de la ejecución
+
+Ningún caso falló. Quedan registradas estas observaciones:
+
+- **CP-52 y CP-66 se probaron por la API** con la sesión del usuario, no desde el editor
+  SQL: los rechaza el mismo disparador, así que la base es la que frena el cambio.
+- **CP-49 no ejercita la repetición con los datos actuales:** el docente de prueba tiene una
+  sola materia por curso. El servicio agrupa los cursos por su identificador.
+- **Con la cuenta inactiva (CP-62) se sigue leyendo el catálogo** de cursos y materias, que
+  está abierto a cualquier usuario autenticado. Notas, asistencia y alumnos dejan de llegar.
+- **Los números de legajo de personal pueden saltearse:** el alta rechazada por DNI repetido
+  (CP-59) consumió el P-2026-002. Es el funcionamiento normal de las secuencias de PostgreSQL.
+- **Auditoría muestra el identificador de quien revisó una postulación** en lugar de su
+  nombre. Es una mejora de lectura menor; queda como deuda técnica.
+- **Una matrícula en baja no cambia el estado del alumno:** el legajo del alumno es permanente
+  y la matrícula es por ciclo lectivo.
 
 ### Pruebas automáticas
 
@@ -154,7 +172,7 @@ push dentro del pipeline de GitHub Actions (`npm test`).
 | Punto | Estado |
 |---|---|
 | Criterios de aceptación | ✅ Implementados en las siete historias |
-| Pruebas funcionales y de integración | 🔶 Prueba rápida hecha; faltan los casos sin resultado |
+| Pruebas funcionales y de integración | ✅ 28 de 28 casos aprobados (24 y 25/10), más 23 pruebas automáticas |
 | Permisos por rol con RLS | ✅ Políticas en `supabase-sprint3.sql` |
 | Código en el repositorio con revisión | ✅ Por PR, verificado por el pipeline (sin revisión cruzada desde el 21/10) |
 | Desplegado en Netlify + Supabase | ✅ PR #14 integrado y publicado el 24/10 |

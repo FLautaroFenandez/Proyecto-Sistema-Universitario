@@ -99,7 +99,8 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 2 — Cierre Sprint 1](02-unidad-2/03-cierre-sprint-1/README.md) | Sprint Review, Retrospectiva y deuda técnica registrada | ✅ Entregado |
 | [Unidad 2 — Sprint 2](02-unidad-2/04-sprint-2/README.md) | Calificaciones (HU2) y patrón State, con los resultados de sus pruebas | ✅ Entregado |
 | [Unidad 2 — Cierre Sprint 2](02-unidad-2/05-cierre-sprint-2/README.md) | Sprint Review, Retrospectiva y cambio en el equipo | ✅ Entregado |
-| [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | 🔨 En prueba |
+| [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | ✅ Entrega 27/10 |
+| [Unidad 2 — Cierre Sprint 3](02-unidad-2/07-cierre-sprint-3/README.md) | Sprint Review, Retrospectiva, deuda técnica y velocidad de los tres sprints | ✅ Entrega 27/10 |
 | Unidad 3 | Buenas prácticas en el proceso de implementación | ⏳ Pendiente |
 | [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: integración continua, tablero Kanban y métricas | ✅ Aplicada (entrega 27/10) |
 | Unidad 5 | Validación, verificación y aseguramiento de la calidad | ⏳ Pendiente |

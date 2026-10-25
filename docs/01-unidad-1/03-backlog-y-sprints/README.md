@@ -16,15 +16,14 @@ requerimientos.
 | ID | Historia de Usuario | Rol / Usuario | Req. | Responsable | Prioridad | Riesgo | Puntos | Sprint | Estado |
 |---|---|---|---|---|---|---|---|---|---|
 | HU1 | Matricular alumno desde solicitud aprobada | Administrador | REQ-13 | G. Cerqueiro | Alta | Medio | 8 | Sprint 1 | ✅ Done |
-| HU4 | Registrar asistencia diaria | Docente | REQ-16 | G. Cerqueiro¹ | Alta | Bajo | 3 | Sprint 1 → 3 | ✅ Implementada |
+| HU4 | Registrar asistencia diaria | Docente | REQ-16 | G. Cerqueiro¹ | Alta | Bajo | 3 | Sprint 1 → 3 | ✅ Done |
 | HU2 | Cargar calificaciones de alumnos | Docente | REQ-15 | G. Cerqueiro | Alta | Bajo | 5 | Sprint 2 | ✅ Done |
-| HU6 | Gestionar legajo de personal | Administrador | REQ-19 | G. Cerqueiro¹ | Media | Medio | 5 | Sprint 2 → 3 | ✅ Implementada |
-| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | ✅ Implementada |
-| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | G. Cerqueiro¹ | Media | Bajo | 2 | Sprint 3 | ✅ Implementada |
+| HU6 | Gestionar legajo de personal | Administrador | REQ-19 | G. Cerqueiro¹ | Media | Medio | 5 | Sprint 2 → 3 | ✅ Done |
+| HU3 | Consultar indicadores institucionales | Autoridad | REQ-21 | G. Cerqueiro | Media | Medio | 8 | Sprint 3 | ✅ Done |
+| HU5 | Enviar comunicado a padres del curso | Docente | REQ-18 | G. Cerqueiro¹ | Media | Bajo | 2 | Sprint 3 | ✅ Done |
 
 ¹ Planificadas para L. Fernández. Desde el 21/10/2026 el desarrollo lo continúa solo G. Cerqueiro
-(ver [cierre del Sprint 2](../../02-unidad-2/05-cierre-sprint-2/README.md)). *Implementada* indica
-que falta completar la ejecución de sus casos de prueba para darla por *Done*.
+(ver [cierre del Sprint 2](../../02-unidad-2/05-cierre-sprint-2/README.md)).
 
 ---
 
@@ -202,6 +201,10 @@ puede volver a matricularse— y ordena el flujo de REQ-20.
 | Semana 1 | 29/09 al 05/10 | Sprint Planning. HU2: modelo de notas por alumno, materia y período; pantalla de carga por curso. HU6: modelo y ABM de legajos con validación de DNI único. Implementación de la máquina de estados (patrón State). |
 | Semana 2 | 06/10 al 13/10 | HU2: validación de rango y cálculo del promedio del período. HU6: estado activo/inactivo vinculado al acceso, búsqueda y filtros. REQ-20: postulaciones sobre la máquina de estados. REQ-22: registro de auditoría. Sprint Review y Retrospectiva. |
 
+> **Resultado del sprint: 5 de 18 puntos (28 %).** Se entregaron HU2 y el patrón State;
+> HU4, HU6, REQ-20 y REQ-22 no se iniciaron y pasaron al Sprint 3. El detalle está en
+> [Cierre del Sprint 2](../../02-unidad-2/05-cierre-sprint-2/README.md).
+
 ---
 
 ## 6. Sprint 3 — Comunicación, reportes e integración final (14/10 al 27/10)
@@ -224,6 +227,11 @@ estén efectivamente en uso en todos los módulos, como parte de la Definition o
 |---|---|---|
 | Semana 1 | 14/10 al 20/10 | Sprint Planning. HU3: consultas agregadas de matrícula, asistencia y rendimiento; filtro por período. HU5: modelo de comunicados, envío por curso y bandeja de los padres. REQ-17: boletines y constancias en PDF. |
 | Semana 2 | 21/10 al 27/10 | HU3: panel de reportes y exportación a PDF. Integración con la web institucional y pruebas de regresión sobre la Parte 1. Pruebas de permisos por rol. Despliegue final y entrega. Sprint Review y Retrospectiva. |
+
+> **Resultado del sprint: 26 de 26 puntos (100 %).** Absorbió todo lo pendiente del
+> backlog (HU3, HU4, HU5, HU6, REQ-17, REQ-20 y REQ-22) y lo integró a `main` el 24/10. Con
+> este sprint el backlog queda completo. El detalle está en
+> [Cierre del Sprint 3](../../02-unidad-2/07-cierre-sprint-3/README.md).
 
 ---
 

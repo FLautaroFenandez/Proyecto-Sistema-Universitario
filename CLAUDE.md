@@ -274,15 +274,20 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   diaria) no se inició y se trasladó al Sprint 2** como primer ítem. La Review, la
   Retrospectiva y la deuda técnica registrada están en
   `docs/02-unidad-2/03-cierre-sprint-1/README.md`; los casos de prueba, en
-  `docs/02-unidad-2/02-modulo-administrador/pruebas.md` (faltan ejecutar los de permisos por rol).
+  `docs/02-unidad-2/02-modulo-administrador/pruebas.md` (todos ejecutados el 21 y 22/10).
 - **Sprint 2 cerrado** (29/09–13/10, cierre documentado el 24/10): patrón State y HU2,
   probados (CP-01 a CP-48) e integrados a `main` el 22/10 por los PR #1 y #2. Review y
   Retrospectiva en `docs/02-unidad-2/05-cierre-sprint-2/README.md`.
-- **Sprint 3 (14/10–27/10):** implementadas HU3, HU4, HU5, HU6, REQ-17, REQ-20 y REQ-22 en la
-  rama `feature/sprint-3`. El script `docs/supabase-sprint3.sql` **ya está ejecutado**
-  (24/10). Ojo: desde ese script `rol_actual()` exige `profiles.activo`, así que una cuenta
-  inactiva pierde todos los permisos. Casos de prueba CP-49 a CP-76 en
-  `docs/02-unidad-2/06-sprint-3/README.md` (solo los de la prueba rápida tienen resultado).
+- **Sprint 3 cerrado** (14/10–27/10, cierre documentado el 25/10): HU3, HU4, HU5, HU6,
+  REQ-17, REQ-20 y REQ-22, integrados a `main` el 24/10 por el PR #14. **El backlog del plan
+  está completo** (44 de 44 puntos). El script `docs/supabase-sprint3.sql` ya está
+  ejecutado. Ojo: desde ese script `rol_actual()` exige `profiles.activo`, así que una cuenta
+  inactiva pierde todos los permisos. Casos CP-49 a CP-76, los 28 aprobados, en
+  `docs/02-unidad-2/06-sprint-3/README.md`. Review, Retrospectiva y deuda técnica pendiente
+  en `docs/02-unidad-2/07-cierre-sprint-3/README.md`.
+- **Las pruebas se hacen sobre la misma base que usa el sitio publicado:** los datos de
+  prueba (curso 4.º Z, materia de prueba, postulación CP63, etc.) se ven en producción. No
+  borrarlos sin pedido del usuario; separar entornos es una acción pendiente para la Parte 3.
 - **Calidad automatizada (Unidad 4):** ESLint configurado (`.eslintrc.cjs`, cero avisos),
   pruebas con Vitest (`npm test`) y pipeline en `.github/workflows/ci.yml`. Mantener los
   tres en verde: el pipeline corre en cada push a `feature/**` y en cada PR a `main`.
