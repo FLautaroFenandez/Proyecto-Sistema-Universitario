@@ -3,6 +3,11 @@
   command = "npm run build"
   publish = "dist"
 
+# Cypress y Husky solo se usan en desarrollo: el build no los descarga ni instala.
+[build.environment]
+  CYPRESS_INSTALL_BINARY = "0"
+  HUSKY = "0"
+
 # SPA: todas las rutas las maneja React Router.
 # Sin esto, refrescar en /admin o /noticias da 404.
 [[redirects]]

@@ -1,0 +1,46 @@
+# Análisis estático centralizado con SonarCloud (Unidad 5 — Parte 2).
+# Mide la cobertura con Vitest y envía el código y el informe a SonarCloud, que
+# reúne problemas de código, duplicación, vulnerabilidades y cobertura.
+# Corre solo en el fork de Gonzac96, que es el proyecto importado en SonarCloud
+# y donde está el secreto SONAR_TOKEN; en el repositorio oficial no se ejecuta.
+name: SonarCloud
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  # Permite lanzar el análisis a mano desde la pestaña Actions del fork.
+  workflow_dispatch:
+
+jobs:
+  analizar:
+    name: Análisis de calidad
+    if: github.repository_owner == 'Gonzac96'
+    runs-on: ubuntu-latest
+    env:
+      CYPRESS_INSTALL_BINARY: 0
+      HUSKY: 0
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v5
+        with:
+          # SonarCloud usa el historial completo para atribuir cada cambio.
+          fetch-depth: 0
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Medir la cobertura (Vitest)
+        run: npm run test:coverage
+
+      - name: Analizar con SonarCloud
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
