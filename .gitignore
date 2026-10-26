@@ -25,6 +25,7 @@ lerna-debug.log*
 # Editor
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -35,6 +36,12 @@ lerna-debug.log*
 
 # Testing
 coverage/
+
+# Cypress (Unidad 5): resultados locales y credenciales de la cuenta de prueba
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress.env.json
 
 # supabase
 supabase/

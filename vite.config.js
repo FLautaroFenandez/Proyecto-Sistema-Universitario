@@ -30,5 +30,13 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.js'],
+    // Unidad 5 (métricas): cobertura de código con `npm run test:coverage`.
+    // El informe lcov lo lee SonarCloud; el html queda en coverage/index.html.
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{js,jsx}'],
+      exclude: ['src/**/*.test.js'],
+      reporter: ['text-summary', 'text', 'lcov', 'html'],
+    },
   },
 })

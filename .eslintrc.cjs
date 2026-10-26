@@ -11,7 +11,7 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', 'node_modules', 'docs', 'Metodología de Sistemas II', '.eslintrc.cjs'],
+  ignorePatterns: ['dist', 'node_modules', 'coverage', 'docs', 'Metodología de Sistemas II', '.eslintrc.cjs'],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
@@ -23,8 +23,14 @@ module.exports = {
   overrides: [
     {
       // Archivos de configuración que corren en Node.
-      files: ['vite.config.js', 'tailwind.config.js', 'postcss.config.js'],
+      files: ['vite.config.js', 'tailwind.config.js', 'postcss.config.js', 'cypress.config.js', 'scripts/**/*.mjs'],
       env: { node: true },
+    },
+    {
+      // Pruebas de extremo a extremo con Cypress (Unidad 5).
+      files: ['cypress/**/*.js'],
+      env: { mocha: true },
+      globals: { cy: 'readonly', Cypress: 'readonly', expect: 'readonly' },
     },
   ],
 }
