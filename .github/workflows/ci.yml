@@ -15,6 +15,10 @@ jobs:
   verificar:
     name: Lint, pruebas y build
     runs-on: ubuntu-latest
+    env:
+      # Cypress y Husky son herramientas locales: el pipeline no los necesita.
+      CYPRESS_INSTALL_BINARY: 0
+      HUSKY: 0
     steps:
       - name: Obtener el código
         uses: actions/checkout@v5
@@ -32,8 +36,15 @@ jobs:
       - name: Revisar el código (ESLint)
         run: npm run lint
 
-      - name: Ejecutar las pruebas (Vitest)
-        run: npm test
+      - name: Ejecutar las pruebas con cobertura (Vitest)
+        run: npm run test:coverage
+
+      - name: Guardar el informe de cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura
+          path: coverage/
+          retention-days: 14
 
       - name: Compilar
         run: npm run build

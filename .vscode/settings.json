@@ -1,0 +1,8 @@
+{
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "eslint.run": "onType",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "files.eol": "\n"
+}
