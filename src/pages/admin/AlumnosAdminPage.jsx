@@ -91,6 +91,17 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
   const [dandoBaja, setDandoBaja] = useState(false)
   const [confirmandoBaja, setConfirmandoBaja] = useState(false)
   const [version,  setVersion]  = useState(0)
+  const [materias, setMaterias] = useState([])
+
+  // Materias que cursa y el profesor de cada una (enunciado, Módulo Alumnos).
+  const cursoId = alumno.matriculaActual?.curso?.id
+  useEffect(() => {
+    let cancelado = false
+    academico.listarDictados(cursoId)
+      .then(lista => { if (!cancelado) setMaterias(lista) })
+      .catch(() => { if (!cancelado) setMaterias([]) })
+    return () => { cancelado = true }
+  }, [cursoId])
 
   useEffect(() => {
     let cancelado = false
@@ -170,6 +181,26 @@ function DetalleAlumno({ alumno, alDarDeBaja }) {
           )}
         </div>
       </div>
+
+      {alumno.matriculaActual && (
+        <div>
+          <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">
+            Materias y profesores
+          </h3>
+          {materias.length === 0 ? (
+            <p className="text-sm text-gray-400">El curso todavía no tiene materias asignadas.</p>
+          ) : (
+            <ul className="divide-y divide-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+              {materias.map(dictado => (
+                <li key={dictado.id} className="flex items-center justify-between gap-3 px-4 py-2.5 bg-white">
+                  <p className="text-sm font-medium text-gray-800">{dictado.materia?.nombre}</p>
+                  <p className="text-sm text-gray-500 text-right">{dictado.docente?.nombre ?? 'Sin docente asignado'}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <div>
         <h3 className="font-semibold text-gray-700 text-sm uppercase tracking-wide mb-3">
