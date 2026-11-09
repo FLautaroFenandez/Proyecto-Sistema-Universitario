@@ -39,6 +39,7 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 3 | [Buenas prácticas: desafío de mejora de código](docs/03-unidad-3/README.md) |
 | Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) · [Parte 1 individual](docs/04-unidad-4/parte-1-individual.md) |
 | Unidad 5 | [Calidad: caso de prueba, revisión por pares, Cypress y métricas](docs/05-unidad-5/README.md) · [Parte 1](docs/05-unidad-5/parte-1.md) |
+| Parte 3 — App móvil | [Modelo de cobranza](docs/06-parte-3-app-movil/01-modelo-cobranza/README.md) · [Bitácora de IA](docs/06-parte-3-app-movil/bitacora-ia.md) |
 | Seguimiento | [Tablero Kanban del Sistema de Gestión](https://github.com/users/Gonzac96/projects/1) · [Sitio publicado](https://educar-para-transforma.netlify.app) |
 
 ---
