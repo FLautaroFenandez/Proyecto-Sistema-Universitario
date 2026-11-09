@@ -32,6 +32,8 @@ Proyecto-Sistema-Universitario/
 │   │
 │   ├── 02-unidad-2/           <- Misma estructura por partes
 │   ├── 03-unidad-3/
+│   ├── 04-unidad-4/
+│   ├── 05-unidad-5/
 │   │
 │   ├── entregas/              <- Documentos finales presentados a la cátedra
 │   └── recursos/
@@ -100,11 +102,11 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 2 — Cierre Sprint 1](02-unidad-2/03-cierre-sprint-1/README.md) | Sprint Review, Retrospectiva y deuda técnica registrada | ✅ Entregado |
 | [Unidad 2 — Sprint 2](02-unidad-2/04-sprint-2/README.md) | Calificaciones (HU2) y patrón State, con los resultados de sus pruebas | ✅ Entregado |
 | [Unidad 2 — Cierre Sprint 2](02-unidad-2/05-cierre-sprint-2/README.md) | Sprint Review, Retrospectiva y cambio en el equipo | ✅ Entregado |
-| [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | ✅ Entrega 27/10 |
-| [Unidad 2 — Cierre Sprint 3](02-unidad-2/07-cierre-sprint-3/README.md) | Sprint Review, Retrospectiva, deuda técnica y velocidad de los tres sprints | ✅ Entrega 27/10 |
+| [Unidad 2 — Sprint 3](02-unidad-2/06-sprint-3/README.md) | Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría | ✅ Entregado (27/10) |
+| [Unidad 2 — Cierre Sprint 3](02-unidad-2/07-cierre-sprint-3/README.md) | Sprint Review, Retrospectiva, deuda técnica y velocidad de los tres sprints | ✅ Entregado (27/10) |
 | [Unidad 3](03-unidad-3/README.md) | Buenas prácticas en el proceso de implementación: diagnóstico, Clean Code, refactorización y code review | ✅ Entregado |
-| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: [Parte 1 individual](04-unidad-4/parte-1-individual.md), integración continua, tablero Kanban y métricas | ✅ Aplicada (entrega 27/10) |
-| Unidad 5 | Validación, verificación y aseguramiento de la calidad | ⏳ Pendiente |
+| [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: [Parte 1 individual](04-unidad-4/parte-1-individual.md), integración continua, tablero Kanban y métricas | ✅ Entregado (27/10) |
+| [Unidad 5](05-unidad-5/README.md) | Verificación, validación y aseguramiento de la calidad: [Parte 1](05-unidad-5/parte-1.md), caso de prueba, revisión por pares, Husky, SonarCloud, Cypress y métricas | ✅ Entregado (27/10) |
 
 ---
 
