@@ -8,14 +8,14 @@
 
 Este repositorio arrancó en **Metodología de Sistemas I** con la **Parte 1 — Página Web
 institucional**, que está **terminada y desplegada**. Metodología de Sistemas II **continúa el
-mismo proyecto**, no lo reemplaza: se construye encima el **Sistema de Gestión (Parte 2)** y,
-más adelante, la **App móvil (Parte 3)**.
+mismo proyecto**, no lo reemplaza: se construyó encima el **Sistema de Gestión (Parte 2)** y
+ahora se desarrolla la **App móvil (Parte 3)**.
 
 | Parte | Qué es | Estado |
 |---|---|---|
 | Parte 1 — Página Web | Sitio institucional público + auth por roles + panel admin de contenido | ✅ Terminada (MDS I) |
-| Parte 2 — Sistema de Gestión | Matrícula, cursos/materias, calificaciones, asistencia, personal, comunicados, reportes | 🔨 En desarrollo (MDS II) |
-| Parte 3 — App móvil | — | ⏳ No iniciada |
+| Parte 2 — Sistema de Gestión | Matrícula, cursos/materias, calificaciones, asistencia, personal, comunicados, reportes | ✅ Entregada el 27/10 (MDS II) |
+| Parte 3 — App móvil | Cuotas, comprobantes de pago e informe de uso de IA | 🔨 En desarrollo (entrega 10/11) |
 
 **Consecuencia práctica:** no romper lo que ya funciona. Todo lo nuevo se agrega
 reutilizando el stack, los roles, el layout y las convenciones que ya existen.
@@ -291,9 +291,12 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
 - **Calidad automatizada (Unidad 4):** ESLint configurado (`.eslintrc.cjs`, cero avisos),
   pruebas con Vitest (`npm test`) y pipeline en `.github/workflows/ci.yml`. Mantener los
   tres en verde: el pipeline corre en cada push a `feature/**` y en cada PR a `main`.
-- **Parte 3 (app móvil):** el plan se generó con `docs/scripts/*_movil.py`. La **bitácora de
-  IA** que pide el enunciado se empieza más adelante y es **exclusiva del desarrollo de la app
-  móvil**: no crearla todavía ni cargarle incidentes de la Parte 2.
+- **Parte 3 (app móvil):** el plan se generó con `docs/scripts/*_movil.py`. **La cátedra
+  adelantó una semana el cronograma: el 10/11/2026 se entregan juntos la app terminada, la
+  actividad de testing y el informe de uso de IA con la bitácora.** Se trabaja por etapas
+  cerradas y con el **alcance mínimo indispensable**; lo extra se evalúa recién al final. La
+  **bitácora de IA** es **exclusiva del desarrollo de la app móvil**: se registra desde la
+  primera etapa de la Parte 3 y no lleva incidentes de la Parte 2.
 - El sitio se publica en **Netlify** (https://educar-para-transforma.netlify.app) con cada
   merge a `main`; el proceso está en `docs/GUIA_DEPLOY.md`.
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el

@@ -2,7 +2,7 @@
 
 > Centro Educativo Privado · Resistencia, Chaco · Argentina  
 > Proyecto académico — UTN FRRe · TUP 2026  
-> Metodología de Sistemas I (Parte 1) → **Metodología de Sistemas II (Parte 2, en curso)**
+> Metodología de Sistemas I (Parte 1) → **Metodología de Sistemas II (Parte 2 entregada · Parte 3 en curso)**
 
 ---
 
@@ -15,8 +15,8 @@ El proyecto integrador se desarrolla en tres partes:
 | Parte | Qué es | Materia | Estado |
 |---|---|---|---|
 | **Parte 1** — Página Web | Sitio institucional público, autenticación por roles y panel de administración de contenido | Metodología I | ✅ Terminada |
-| **Parte 2** — Sistema de Gestión | Matrícula, cursos y materias, calificaciones, asistencia, legajos de personal, comunicados y reportes | Metodología II | 🔨 En desarrollo |
-| **Parte 3** — App móvil | — | Metodología II | ⏳ No iniciada |
+| **Parte 2** — Sistema de Gestión | Matrícula, cursos y materias, calificaciones, asistencia, legajos de personal, comunicados y reportes | Metodología II | ✅ Entregada (27/10) |
+| **Parte 3** — App móvil | Cuotas, comprobantes de pago e informe de uso de IA | Metodología II | 🔨 En desarrollo |
 
 ---
 
@@ -38,6 +38,7 @@ La documentación de la cursada, ordenada por unidad y parte, está en **[`docs/
 | Unidad 2 — Sprint 3 | [Asistencia, comunicados, personal, indicadores, boletines, postulaciones y auditoría](docs/02-unidad-2/06-sprint-3/README.md) · [Cierre del Sprint 3](docs/02-unidad-2/07-cierre-sprint-3/README.md) |
 | Unidad 3 | [Buenas prácticas: desafío de mejora de código](docs/03-unidad-3/README.md) |
 | Unidad 4 | [Integración continua, tablero Kanban y métricas](docs/04-unidad-4/README.md) · [Parte 1 individual](docs/04-unidad-4/parte-1-individual.md) |
+| Unidad 5 | [Calidad: caso de prueba, revisión por pares, Cypress y métricas](docs/05-unidad-5/README.md) · [Parte 1](docs/05-unidad-5/parte-1.md) |
 | Seguimiento | [Tablero Kanban del Sistema de Gestión](https://github.com/users/Gonzac96/projects/1) · [Sitio publicado](https://educar-para-transforma.netlify.app) |
 
 ---

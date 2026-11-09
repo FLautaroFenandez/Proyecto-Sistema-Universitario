@@ -13,8 +13,10 @@ Registro de los documentos presentados, en orden cronológico.
 | 7 | Plan de trabajo de la Parte 3 (app móvil) | `PlanDeTrabajo_Metodología3_Grupo4.pdf` | Se incorpora al empezar la Parte 3; hoy se genera con [`docs/scripts/`](../scripts/README.md) | 29/09/2026 |
 | 8 | TP Unidad 4 — Parte 1 (individual) | `TP-Unidad4_Parte1_Cerqueiro.pdf` | [04-unidad-4/parte-1-individual](../04-unidad-4/parte-1-individual.md) | 06/10/2026 |
 | 9 | TP Unidad 4 — Parte 2, puntos 3.a y 4.a | `TP-Unidad4_Parte2_Grupo4.pdf` | [04-unidad-4](../04-unidad-4/README.md) | 06/10/2026 |
-| 10 | TP Unidad 4 — Parte 2, puntos 3.b a 4.d | `TP-Unidad4_Parte2_Grupo4_27-10.pdf` | [04-unidad-4](../04-unidad-4/README.md) | 27/10/2026 *(a entregar)* |
-| 11 | Parte 2 completa: web + Sistema de Gestión | Repositorio y [sitio publicado](https://educar-para-transforma.netlify.app) | [02-unidad-2](../02-unidad-2/07-cierre-sprint-3/README.md) (sprints 1 a 3) | 27/10/2026 *(a entregar)* |
+| 10 | TP Unidad 4 — Parte 2, puntos 3.b a 4.d | `TP-Unidad4_Parte2_Grupo4_27-10.pdf` | [04-unidad-4](../04-unidad-4/README.md) | 27/10/2026 |
+| 11 | Parte 2 completa: web + Sistema de Gestión | Repositorio y [sitio publicado](https://educar-para-transforma.netlify.app) | [02-unidad-2](../02-unidad-2/07-cierre-sprint-3/README.md) (sprints 1 a 3) | 27/10/2026 |
+| 12 | TP Unidad 5 — Parte 1 | `TP-Unidad5_Parte1_Grupo4.pdf` | [05-unidad-5/parte-1](../05-unidad-5/parte-1.md) | 27/10/2026 |
+| 13 | TP Unidad 5 — Parte 2 y material de la revisión por pares | `TP-Unidad5_Parte2_Grupo4.pdf` · `Revision-por-pares_HU2_Grupo4.pdf` | [05-unidad-5](../05-unidad-5/README.md) | 27/10/2026 |
 
 ## Sobre los archivos originales
 
