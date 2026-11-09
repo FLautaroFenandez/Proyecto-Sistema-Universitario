@@ -296,7 +296,16 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   actividad de testing y el informe de uso de IA con la bitácora.** Se trabaja por etapas
   cerradas y con el **alcance mínimo indispensable**; lo extra se evalúa recién al final. La
   **bitácora de IA** es **exclusiva del desarrollo de la app móvil**: se registra desde la
-  primera etapa de la Parte 3 y no lleva incidentes de la Parte 2.
+  primera etapa de la Parte 3 y no lleva incidentes de la Parte 2. Vive en
+  `docs/06-parte-3-app-movil/bitacora-ia.md` y se actualiza en cada paso.
+- **Parte 3, tecnología:** React Native + **Expo**, como dice el plan. El usuario lo eligió
+  explícitamente en lugar de una PWA: no volver a proponer el cambio.
+- **Parte 3, Etapa 1 cerrada (09/11):** modelo de cobranza en `docs/supabase-cobranza.sql`
+  (conceptos, inscripciones_servicio, facturas, factura_items, comprobantes, vista
+  `facturas_estado`, funciones `generar_facturas`, `emitir_comprobante` e
+  `informar_transferencia`, bucket privado `comprobantes`) y datos en
+  `docs/supabase-cobranza-datos.sql`. **Los dos ya están ejecutados en Supabase**. El
+  padre no escribe en las tablas de cobranza: solo llama a las dos funciones de pago.
 - El sitio se publica en **Netlify** (https://educar-para-transforma.netlify.app) con cada
   merge a `main`; el proceso está en `docs/GUIA_DEPLOY.md`.
 - La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el

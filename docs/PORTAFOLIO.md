@@ -34,6 +34,7 @@ Proyecto-Sistema-Universitario/
 │   ├── 03-unidad-3/
 │   ├── 04-unidad-4/
 │   ├── 05-unidad-5/
+│   ├── 06-parte-3-app-movil/  <- App móvil: etapas y bitácora de IA
 │   │
 │   ├── entregas/              <- Documentos finales presentados a la cátedra
 │   └── recursos/
@@ -107,6 +108,7 @@ Los archivos originales quedan en la carpeta local de la cursada, fuera del cont
 | [Unidad 3](03-unidad-3/README.md) | Buenas prácticas en el proceso de implementación: diagnóstico, Clean Code, refactorización y code review | ✅ Entregado |
 | [Unidad 4](04-unidad-4/README.md) | Técnicas de optimización del ciclo de desarrollo: [Parte 1 individual](04-unidad-4/parte-1-individual.md), integración continua, tablero Kanban y métricas | ✅ Entregado (27/10) |
 | [Unidad 5](05-unidad-5/README.md) | Verificación, validación y aseguramiento de la calidad: [Parte 1](05-unidad-5/parte-1.md), caso de prueba, revisión por pares, Husky, SonarCloud, Cypress y métricas | ✅ Entregado (27/10) |
+| [Parte 3 — Modelo de cobranza](06-parte-3-app-movil/01-modelo-cobranza/README.md) | Etapa 1 de la app móvil: cuotas, facturas, comprobantes y Storage, con RLS · [Bitácora de IA](06-parte-3-app-movil/bitacora-ia.md) | 🔨 En curso (Etapa 1 cerrada) |
 
 ---
 
