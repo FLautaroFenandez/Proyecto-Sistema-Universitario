@@ -41,10 +41,8 @@ Proyecto-Sistema-Universitario/
 │       ├── diagramas/         <- Diagramas de secuencia, casos de uso, DER
 │       └── imagenes/          <- Capturas de pantalla y bocetos
 │
-├── src/                       <- Código fuente del proyecto
-│   ├── web/                   <- Parte 1: página web institucional
-│   ├── gestion/               <- Parte 2: sistema de gestión
-│   └── app/                   <- Parte 3: aplicación móvil
+├── src/                       <- Web: Parte 1 (sitio institucional) y Parte 2 (Sistema de Gestión)
+├── app-movil/                 <- Parte 3: aplicación móvil (Expo), con su propio package.json
 │
 ├── database/                  <- Scripts de base de datos y políticas de seguridad
 │
@@ -52,11 +50,13 @@ Proyecto-Sistema-Universitario/
     └── workflows/             <- Pipelines de automatización (CI/CD)
 ```
 
-> **Estado actual del código.** La división `src/web`, `src/gestion` y `src/app` es el estado
-> objetivo del repositorio al completar las tres partes del proyecto. Hoy el código de la
-> Parte 1 vive directamente en `src/` (sin el prefijo `web/`) y los scripts de base de datos
-> en `docs/*.sql`. La migración a esa estructura se hará en un commit propio de `refactor:`
-> cuando arranque la Parte 3, para no romper el build de Vite en medio de un sprint.
+> **Estado actual del código.** La división `src/web`, `src/gestion` y `src/app` se planteó el
+> 18/08/2026, antes de elegir la tecnología de la app móvil. Al elegir Expo (plan de la
+> Parte 3), la app pasó a ser otro proyecto, con su propio empaquetador, su propia versión de
+> React y su propio `package.json`. Por eso vive en **`app-movil/`**, en la raíz, y no dentro
+> de `src/`, que Vite compila para la web. La web (Partes 1 y 2) sigue en `src/`, y los
+> scripts de base de datos en `docs/*.sql`. El detalle está en
+> [Parte 3 — Etapa 2, sección 7.1](06-parte-3-app-movil/02-ingreso-y-cuotas/README.md).
 
 ---
 
@@ -70,7 +70,8 @@ Proyecto-Sistema-Universitario/
 | `docs/0X-unidad-X/` | Una carpeta por unidad y una subcarpeta numerada por cada parte o entrega. La numeración con ceros mantiene el orden cronológico. |
 | `docs/entregas/` | Versión final de cada trabajo presentado, separada de los documentos de trabajo. |
 | `docs/recursos/` | Imágenes y diagramas centralizados, referenciados desde cualquier documento sin duplicar archivos. |
-| `src/` | Código fuente dividido según las tres partes del proyecto. |
+| `src/` | Código fuente de la web: Partes 1 y 2 (React + Vite). |
+| `app-movil/` | Código fuente de la aplicación móvil: Parte 3 (React Native + Expo). |
 | `database/` | Scripts de tablas y políticas de seguridad por rol. |
 | `.github/workflows/` | Definición de los pipelines de automatización. |
 
