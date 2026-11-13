@@ -23,7 +23,10 @@ repositorio.
 | 6 | 29/09 (detectado el 09/11) | El plan de trabajo afirmaba que la app compartiría la capa de servicios de la web | Pedido de generar el plan de trabajo de la Parte 3 ([detalle](#6-supuesto-del-plan-la-capa-de-servicios-se-comparte)) | Claude Code | En la sección 1.7 del plan: "la capa de servicios se comparte" | No | Al revisar el código para la Etapa 2 se vio que los servicios dependen de Vite. Se mantiene el patrón Facade con una capa propia de la app | Reemplazado |
 | 8 | 12/11 | La app dejó de abrir en el celular ("Failed to download remote update") y falló una actualización de Expo | "Corrí npx expo start y me dio error… quise actualizar pero también me dio error" ([detalle](#8-la-app-no-abría-en-el-celular)) | Claude Code | Diagnóstico: el Wi-Fi figuraba como red pública y el firewall bloqueaba al celular. Para el túnel, intentó instalar ngrok forzando las dependencias | Parcialmente | Se descartó forzar la instalación (quitaba 21 paquetes) y se corrigió la causa real: `react-dom` desalineado con el SDK. El antivirus bloqueó ngrok, y se pasó al túnel propio de Expo con un token de acceso | Correcto: la app abre por el túnel de Expo y la instalación desde cero funciona |
 | 9 | 12/11 y 13/11 | Programar las pantallas de ingreso y de consulta de cuotas (HU-M6 y HU-M1) | "Listo, pude hacerlo con el token. Sigamos" ([detalle](#9-pantallas-de-ingreso-y-cuotas)) | Claude Code | 4 pantallas, la capa de servicios, el patrón State para la factura y la protección de pantallas con `Stack.Protected`, consultando antes la documentación del SDK 58 | Sí | Ninguna en el código. Faltaba un dato: la cuenta de padre de prueba no era tutora de ningún alumno, y se la vinculó desde la web | Correcto: las 7 pruebas en el celular dieron el resultado esperado |
-| 10 | 13/11 | Diseñar el pago desde la app (HU-M2, HU-M4 y HU-M3) | "Salió todo lo esperado… primero vamos a completar todos los requisitos. Sigamos" | Claude Code | Recorrido de pago en 7 pasos, 2 pantallas nuevas y 6 decisiones a validar ([documento](03-pagar/README.md)) | *Pendiente* | *Pendiente de la validación del equipo* | *Pendiente* |
+| 10 | 13/11 | Diseñar el pago desde la app (HU-M2, HU-M4 y HU-M3) | "Salió todo lo esperado… primero vamos a completar todos los requisitos. Sigamos" | Claude Code | Recorrido de pago en 7 pasos, 2 pantallas nuevas y 6 decisiones a validar ([documento](03-pagar/README.md)) | Sí | Ninguna: el equipo aprobó las seis decisiones, con la reserva de revisarlas después de usarlo | Correcto |
+| 11 | 13/11 | Programar el pago desde la app (HU-M2, HU-M4 y HU-M3) | "Me parecen correctas estas decisiones… lo implementamos y vemos si hay que cambiar algo después" | Claude Code | Casillas y botón Pagar en la factura, pantalla del comprobante con adjuntar y ver el archivo, pantalla de historial y deuda por ítem. Antes consultó la documentación del SDK 58 para elegir y leer el archivo | Parcialmente | Corrigió dos avisos del analizador del editor. En el celular, adjuntar el archivo falló (registro 12); además, el final de las pantallas quedaba tapado por la barra de navegación de Android, y se agregó el margen en el marco común | Correcto: las 10 pruebas en el celular dieron el resultado esperado |
+| 12 | 13/11 | Adjuntar la transferencia fallaba con cualquier imagen o PDF | Captura del error: "Missing 'READ' permission for accessing the file" ([detalle](#12-el-archivo-no-se-podía-leer)) | Claude Code | La causa estaba en Expo Go: el selector copiaba el archivo a una carpeta que el módulo de archivos no deja leer. Se dejó de copiar y se lee el enlace que da Android | Sí | Antes hubo que agregar el registro del error en la consola: la pantalla lo capturaba sin dejar el detalle técnico | Correcto |
+| 13 | 13/11 | Una factura de mayo de 2027 que nadie generó a propósito | Captura del historial con ítems de mayo ([detalle](#13-prueba-de-seguridad-de-la-etapa-1-sin-confirmar)) | Claude Code | La factura salió de la prueba de seguridad de la Etapa 1, que se ejecutó como `postgres` y no como padre: esa prueba quedó registrada como aprobada sin haberse hecho | No | La IA había aceptado "todo salió bien" sin pedir el resultado de cada consulta. Se corrigió el registro de la Etapa 1 | La prueba se repite en la Etapa 5 |
 
 ## Detalle de cada registro
 
@@ -191,3 +194,39 @@ repositorio.
   comprobó en el panel de administración de la web y, con la confirmación del equipo, la
   vinculó desde la ficha del alumno. Sirvió como prueba real del criterio "un usuario sin
   hijos asociados no accede a datos de otros alumnos".
+
+### 12. El archivo no se podía leer
+
+- **Qué pasó:** al adjuntar la transferencia, la app mostraba solo "No se pudo adjuntar el
+  archivo", con imágenes y con PDF.
+- **Primer error de la IA:** la pantalla capturaba el error para mostrar un mensaje claro,
+  pero no dejaba el detalle técnico en la consola, como sí hace la capa de servicios. Sin
+  ese dato no había forma de saber qué fallaba. Se agregó el registro y el equipo envió la
+  captura: *"Call to function 'FileSystemFile.bytes' has been rejected. Missing 'READ'
+  permission for accessing the file."*
+- **Causa:** la IA no la dedujo. La encontró leyendo el código nativo de Android de los dos
+  paquetes, en `node_modules`:
+  1. el selector (`expo-document-picker`), con `copyToCacheDirectory: true`, copiaba el
+     archivo a la carpeta temporal general;
+  2. dentro de Expo Go conviven los archivos de todos los proyectos abiertos, así que el
+     módulo de archivos (`expo-file-system`) solo deja leer los del proyecto actual, y esa
+     carpeta no entraba en el control.
+- **Corrección:** `copyToCacheDirectory: false`. El selector devuelve el enlace que da
+  Android al archivo (`content://…`), que el control acepta, y se lee directo de ahí.
+- **Aprendizaje (apartado 3 del informe):** la IA siguió la documentación oficial al pie de
+  la letra (la opción `true` es la recomendada "para que otras APIs de Expo lean el archivo
+  enseguida") y aun así falló en el entorno real del proyecto: Expo Go en Android. La
+  documentación describe el caso general; el contexto concreto lo aporta la prueba.
+
+### 13. Prueba de seguridad de la Etapa 1 sin confirmar
+
+- **Qué pasó:** el 13/11 apareció una factura de mayo de 2027. La única llamada que la
+  podía crear era la prueba de la Etapa 1 en la que `generar_facturas('2027-05-01')` tenía
+  que fallar como padre. Esa prueba se registró como aprobada.
+- **Lo que se concluye:** la prueba se ejecutó como `postgres` y no con la cuenta de padre.
+  La IA dio por buena la respuesta "todo salió bien" sin pedir el resultado de cada
+  consulta, y anotó las seis pruebas como aprobadas.
+- **Qué se hizo:** se corrigió el documento de la Etapa 1 y la prueba se repite en la Etapa
+  5. La factura de mayo se conserva.
+- **Aprendizaje:** en una verificación de seguridad, "salió bien" no alcanza: hay que
+  registrar qué devolvió cada prueba.
