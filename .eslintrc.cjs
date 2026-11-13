@@ -11,7 +11,10 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', 'node_modules', 'coverage', 'docs', 'Metodología de Sistemas II', '.eslintrc.cjs'],
+  ignorePatterns: [
+    'dist', 'node_modules', 'coverage', 'docs', 'Metodología de Sistemas II', '.eslintrc.cjs',
+    'app-movil/.expo',
+  ],
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
@@ -31,6 +34,14 @@ module.exports = {
       files: ['cypress/**/*.js'],
       env: { mocha: true },
       globals: { cy: 'readonly', Cypress: 'readonly', expect: 'readonly' },
+    },
+    {
+      // App móvil (Parte 3): React Native con Expo. Pasa por las mismas reglas que la web,
+      // con dos diferencias de entorno: lee la configuración con process.env (Expo) y usa
+      // React 19, la versión que exige Expo SDK 58.
+      files: ['app-movil/**/*.{js,jsx}'],
+      env: { browser: false, node: true },
+      settings: { react: { version: '19.3' } },
     },
   ],
 }

@@ -308,6 +308,8 @@ sprint, así que hay que tratarlos como trabajo comprometido, no como "si sobra 
   padre no escribe en las tablas de cobranza: solo llama a las dos funciones de pago.
 - El sitio se publica en **Netlify** (https://educar-para-transforma.netlify.app) con cada
   merge a `main`; el proceso está en `docs/GUIA_DEPLOY.md`.
-- La estructura `src/web`, `src/gestion`, `src/app` que describe `docs/PORTAFOLIO.md` es el
-  **estado objetivo**; hoy el código de la web está en `src/` sin ese prefijo. Migrar recién
-  cuando arranque la Parte 3, en un commit propio de `refactor:`.
+- **Estructura del código:** la web (Partes 1 y 2) queda en `src/` y la app móvil en
+  **`app-movil/`**, en la raíz, con su propio `package.json` (Expo usa React 19 y Metro; la
+  web, React 18 y Vite). La migración a `src/web`, `src/gestion` y `src/app` que se planteó
+  en agosto **se descartó** (ver `docs/06-parte-3-app-movil/02-ingreso-y-cuotas/README.md`,
+  sección 7.1). La app tiene su propia capa de servicios; lo compartido es la base de datos.

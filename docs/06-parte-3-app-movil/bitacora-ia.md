@@ -18,6 +18,12 @@ repositorio.
 | 2 | 09/11 | Diseñar el modelo de datos de cobranza integrado al esquema existente | "Vayamos con Expo y haciendo todo por partes… que lo que vayamos haciendo pueda tener el por qué se hace y cómo se hace" ([detalle](#2-modelo-de-datos-de-cobranza)) | Claude Code | Diseño de 5 tablas, una vista y 3 funciones ([documento](01-modelo-cobranza/README.md)) | Sí | Ninguna: el equipo revisó el diseño y aprobó las cuatro decisiones planteadas | Correcto |
 | 3 | 09/11 | Implementar el modelo validado en la base de datos | "Listo, me parece correcto" (aprobación del diseño, que habilita escribir el script) ([detalle](#3-script-sql-de-cobranza)) | Claude Code | `supabase-cobranza.sql` (tablas, reglas, funciones de pago, vista, RLS y Storage) y `supabase-cobranza-datos.sql` (precios, servicios y facturas de prueba) | Sí | Ninguna: los dos scripts corrieron sin errores en la primera ejecución | Correcto |
 | 4 | 09/11 | Al ejecutar los datos de prueba, Supabase advierte que se crea una tabla sin RLS | "Me aparece esto al querer correr supabase-cobranza-datos.sql" (con la captura de la advertencia) | Claude Code | Es un falso positivo: el script solo inserta datos. Antes de ejecutarlo, comprobar con una consulta a `pg_class` que las 5 tablas tienen RLS activo, y después elegir "Run without RLS" | Sí | Ninguna: la consulta confirmó RLS activo en las 5 tablas antes de ejecutar | Correcto |
+| 5 | 09/11 | Diseñar las pantallas de ingreso y consulta de cuotas (HU-M6 y HU-M1) | "Listo, sigamos" (inicio de la Etapa 2, con el método acordado: primero el diseño, después el código) ([detalle](#5-diseño-de-la-app-ingreso-y-cuotas)) | Claude Code | 4 pantallas, estructura del proyecto Expo con Expo Router y los patrones Singleton, Facade y State ([documento](02-ingreso-y-cuotas/README.md)) | Parcialmente | El equipo aprobó el recorrido, pero pidió justificar por qué cambiaban la carpeta, la capa de servicios y el lenguaje respecto de lo planificado, y preguntó qué pasa con el rol administrador. Se agregó la sección 7 y el apartado sobre el administrador; el equipo aceptó que el administrador use la web | Correcto (después de los cambios) |
+| 7 | 09/11 | Crear el proyecto Expo y conectarlo a Supabase | "Estoy de acuerdo… Sigamos así" ([detalle](#7-creación-del-proyecto-expo)) | Claude Code | Proyecto Expo SDK 58 con Expo Router y el cliente de Supabase; antes de configurarlo, consultó la documentación oficial de esa versión | Parcialmente | Ejecutó un comando antes de instalar la base del proyecto y lo repitió en el orden correcto. Cambió de "ignorar la app en ESLint" a "lintearla con una regla propia" | Correcto: el equipo abrió la app en su celular con Expo Go y confirmó la conexión con Supabase |
+| 6 | 29/09 (detectado el 09/11) | El plan de trabajo afirmaba que la app compartiría la capa de servicios de la web | Pedido de generar el plan de trabajo de la Parte 3 ([detalle](#6-supuesto-del-plan-la-capa-de-servicios-se-comparte)) | Claude Code | En la sección 1.7 del plan: "la capa de servicios se comparte" | No | Al revisar el código para la Etapa 2 se vio que los servicios dependen de Vite. Se mantiene el patrón Facade con una capa propia de la app | Reemplazado |
+| 8 | 12/11 | La app dejó de abrir en el celular ("Failed to download remote update") y falló una actualización de Expo | "Corrí npx expo start y me dio error… quise actualizar pero también me dio error" ([detalle](#8-la-app-no-abría-en-el-celular)) | Claude Code | Diagnóstico: el Wi-Fi figuraba como red pública y el firewall bloqueaba al celular. Para el túnel, intentó instalar ngrok forzando las dependencias | Parcialmente | Se descartó forzar la instalación (quitaba 21 paquetes) y se corrigió la causa real: `react-dom` desalineado con el SDK. El antivirus bloqueó ngrok, y se pasó al túnel propio de Expo con un token de acceso | Correcto: la app abre por el túnel de Expo y la instalación desde cero funciona |
+| 9 | 12/11 y 13/11 | Programar las pantallas de ingreso y de consulta de cuotas (HU-M6 y HU-M1) | "Listo, pude hacerlo con el token. Sigamos" ([detalle](#9-pantallas-de-ingreso-y-cuotas)) | Claude Code | 4 pantallas, la capa de servicios, el patrón State para la factura y la protección de pantallas con `Stack.Protected`, consultando antes la documentación del SDK 58 | Sí | Ninguna en el código. Faltaba un dato: la cuenta de padre de prueba no era tutora de ningún alumno, y se la vinculó desde la web | Correcto: las 7 pruebas en el celular dieron el resultado esperado |
+| 10 | 13/11 | Diseñar el pago desde la app (HU-M2, HU-M4 y HU-M3) | "Salió todo lo esperado… primero vamos a completar todos los requisitos. Sigamos" | Claude Code | Recorrido de pago en 7 pasos, 2 pantallas nuevas y 6 decisiones a validar ([documento](03-pagar/README.md)) | *Pendiente* | *Pendiente de la validación del equipo* | *Pendiente* |
 
 ## Detalle de cada registro
 
@@ -77,3 +83,111 @@ repositorio.
   después ejecutar el script tal como estaba.
 - **Aprendizaje:** las herramientas también dan falsos positivos. La decisión se tomó con
   un dato verificado y no con la palabra de la IA.
+
+### 5. Diseño de la app: ingreso y cuotas
+
+- **Qué se pidió:** diseñar las pantallas a partir de los criterios de aceptación de HU-M6
+  y HU-M1 del plan de trabajo, antes de escribir código.
+- **Qué hizo la IA antes de proponer:**
+  - Consultó la versión vigente de Expo (SDK 58) y confirmó que es compatible con el Node
+    instalado (24.16).
+  - Revisó cómo están configurados el ESLint y el cliente de Supabase de la web, para no
+    romperlos.
+- **Diferencias con el plan que propone:**
+  - La app tiene su propia capa de servicios, en lugar de compartir la de la web.
+  - El código va en una carpeta `app-movil/` en la raíz, en lugar de `src/app`.
+  - Las dos razones están en la sección 7 del documento.
+- **Qué pidió el equipo antes de aprobar:**
+  - Justificar por qué se planteó así al principio y por qué cambia ahora: la carpeta, la
+    capa de servicios y el lenguaje.
+  - Aclarar qué pasa con el rol administrador.
+
+  La primera versión del diseño enunciaba los cambios, pero no explicaba su historia.
+
+### 6. Supuesto del plan: "la capa de servicios se comparte"
+
+- **Origen:** el plan de trabajo de la Parte 3 (29/09) se generó con asistencia de IA,
+  mediante los scripts de `docs/scripts/*_movil.py`. En la sección 1.7 afirma que, al usar
+  Expo, *"la capa de servicios se comparte"* con la web.
+- **Por qué era incorrecto para nuestro sistema:** la afirmación es razonable en general
+  (mismo lenguaje y misma librería), pero nadie la verificó contra el código. Al leerlo
+  aparecen tres dependencias de la web:
+  - el cliente de Supabase lee la configuración con `import.meta.env`, que solo existe en
+    Vite;
+  - la sesión se guarda en `localStorage` del navegador;
+  - los servicios importan con el alias `@/`, definido en `vite.config.js`.
+
+  Además, la web no tiene servicios de cobranza que reutilizar.
+- **Qué se hizo:** la app tiene su propia capa de servicios, con el mismo patrón. Lo que se
+  comparte es la base de datos con sus reglas.
+- **Aprendizaje (apartado 3 del informe):** la IA generó una afirmación técnicamente
+  plausible pero incorrecta para este sistema, porque razonó sobre las tecnologías y no
+  sobre el código concreto. El error apareció recién al implementar.
+
+### 7. Creación del proyecto Expo
+
+- **Conocimiento desactualizado:** Expo SDK 58 es posterior a lo que la IA conoce. La
+  propia plantilla de Expo trae un archivo para asistentes de IA que advierte que Expo
+  cambia en cada versión y que no hay que confiar en lo que el modelo recuerda.
+  - Antes de configurar, la IA consultó la documentación oficial de Expo Router (SDK 58) y
+    la guía de Supabase para React Native.
+  - De ahí salieron los paquetes, la entrada `expo-router/entry` y el almacenamiento de la
+    sesión en AsyncStorage.
+- **Errores y correcciones:**
+  - La IA creó el proyecto sin instalar dependencias y quiso agregar paquetes antes de
+    instalar la base. El comando falló y lo repitió en el orden correcto.
+  - El diseño proponía que ESLint ignorara la app. Al probarlo, solo aparecieron dos
+    diferencias de entorno, y se optó por lintear la app con las mismas reglas que la web.
+- **Archivos de la plantilla quitados:** `AGENTS.md` y `.claude/`, que configuraban
+  asistentes de IA (uno activaba un complemento). No forman parte de la app.
+- **Verificado por la IA:**
+  - La app compila para Android.
+  - El lint y las 23 pruebas de la web siguen en verde.
+  - `.env.local` y `node_modules` quedan fuera del repositorio.
+- **Verificado por el equipo (09/11):** la app abrió en un Android real con Expo Go y
+  mostró *"Conexión con Supabase: correcta"*.
+
+### 8. La app no abría en el celular
+
+- **Qué pasó:** tres días después de la primera prueba, Expo Go no descargaba la app, y la
+  actualización de Expo que ofrecía la terminal fallaba.
+- **Diagnóstico de la IA:**
+  - Windows tenía el Wi-Fi como red pública, y el firewall bloqueaba la conexión del
+    celular a la PC.
+  - La actualización fallaba por un conflicto de versiones ajeno al código de la app.
+- **Error de la IA:** para instalar ngrok (el túnel) usó `--legacy-peer-deps`, que ignora
+  los conflictos. npm quitó 21 paquetes necesarios. Lo detectó al revisar qué se había
+  quitado, antes de darlo por bueno, y volvió al estado commiteado.
+- **Causa real:** el `package-lock.json` del 09/11 traía `react-dom` 19.3.1, que exige un
+  React más nuevo que el que fija el SDK 58 (19.3.0). `npm install` lo había tolerado;
+  `npm ci`, que es estricto, lo rechazaba. Se corrigió con `npx expo install react-dom`,
+  que elige la versión compatible, y se verificó con una instalación desde cero.
+- **Lo que decidió el equipo:**
+  - Preguntó qué implicaba marcar la red como privada antes de cambiarla.
+  - El antivirus puso en cuarentena el ejecutable de ngrok, y se respetó el bloqueo: se
+    quitó ngrok del proyecto.
+  - Usó el túnel propio de Expo, con su cuenta y un token de acceso creado por él.
+- **Aprendizaje:** un comando que "hace que funcione" ignorando un aviso puede romper otra
+  cosa. La verificación (qué cambió, si compila, si instala desde cero) fue lo que frenó
+  el error.
+
+### 9. Pantallas de ingreso y cuotas
+
+- **Qué entregó la IA:** el código en capas (servicios, dominio, sesión, pantallas), con
+  los criterios de aceptación de HU-M6 y HU-M1 citados en el encabezado de cada pantalla.
+- **Qué verificó la IA antes de entregar:**
+  - El lint de todo el repositorio.
+  - La compilación para Android.
+  - Que las consultas fueran válidas y que, sin iniciar sesión, la base no devolviera
+    ningún dato.
+- **Qué verificó el equipo en el celular (13/11):**
+  - Contraseña equivocada → mensaje claro.
+  - Cuenta de otro rol → no entra.
+  - Cuenta de padre → ve a su hijo, las cuotas de marzo y abril de 2027 con sus importes,
+    y el detalle por ítem.
+  - La sesión se conserva al cerrar la app, y "Salir" vuelve al ingreso.
+- **Hallazgo:** en la primera prueba la app mostró "No tenés alumnos asociados". El código
+  estaba bien: la cuenta de padre de prueba no era tutora de ningún alumno. La IA lo
+  comprobó en el panel de administración de la web y, con la confirmación del equipo, la
+  vinculó desde la ficha del alumno. Sirvió como prueba real del criterio "un usuario sin
+  hijos asociados no accede a datos de otros alumnos".
