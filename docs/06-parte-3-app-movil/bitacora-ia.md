@@ -27,6 +27,10 @@ repositorio.
 | 11 | 13/11 | Programar el pago desde la app (HU-M2, HU-M4 y HU-M3) | "Me parecen correctas estas decisiones… lo implementamos y vemos si hay que cambiar algo después" | Claude Code | Casillas y botón Pagar en la factura, pantalla del comprobante con adjuntar y ver el archivo, pantalla de historial y deuda por ítem. Antes consultó la documentación del SDK 58 para elegir y leer el archivo | Parcialmente | Corrigió dos avisos del analizador del editor. En el celular, adjuntar el archivo falló (registro 12); además, el final de las pantallas quedaba tapado por la barra de navegación de Android, y se agregó el margen en el marco común | Correcto: las 10 pruebas en el celular dieron el resultado esperado |
 | 12 | 13/11 | Adjuntar la transferencia fallaba con cualquier imagen o PDF | Captura del error: "Missing 'READ' permission for accessing the file" ([detalle](#12-el-archivo-no-se-podía-leer)) | Claude Code | La causa estaba en Expo Go: el selector copiaba el archivo a una carpeta que el módulo de archivos no deja leer. Se dejó de copiar y se lee el enlace que da Android | Sí | Antes hubo que agregar el registro del error en la consola: la pantalla lo capturaba sin dejar el detalle técnico | Correcto |
 | 13 | 13/11 | Una factura de mayo de 2027 que nadie generó a propósito | Captura del historial con ítems de mayo ([detalle](#13-prueba-de-seguridad-de-la-etapa-1-sin-confirmar)) | Claude Code | La factura salió de la prueba de seguridad de la Etapa 1, que se ejecutó como `postgres` y no como padre: esa prueba quedó registrada como aprobada sin haberse hecho | No | La IA había aceptado "todo salió bien" sin pedir el resultado de cada consulta. Se corrigió el registro de la Etapa 1 | La prueba se repite en la Etapa 5 |
+| 14 | 13/11 | Diseñar la cobranza en la web del administrador: precios, facturas del mes y reporte | "Cuando estén los dos integrados, arrancamos la Etapa 4" (aprobación implícita al integrar los PR) | Claude Code | 2 pantallas y 7 decisiones a validar, sin cambios en la base: el modelo de la Etapa 1 ya lo preveía ([documento](04-web-cobranza/README.md)) | Sí | Ninguna: el equipo aprobó las siete decisiones | Correcto |
+| 15 | 13/11 | Programar las pantallas de precios, facturación y reporte | "Perfecto, sigamos con esas decisiones" | Claude Code | Servicio `cobranza.js` de la web, 2 pantallas, sección en el menú, filtro de auditoría y 13 pruebas de Vitest. Controla que un precio se haya guardado de verdad: si RLS bloquea un cambio, Supabase no da error, devuelve cero filas | Sí | Corrigió los avisos de ESLint y del analizador del editor antes de entregar | Correcto: lint, pruebas y compilación en verde |
+| 16 | 13/11 | Mejoras pedidas al usar las pantallas: categorías indistinguibles, precios editables de entrada y auditoría sin decir qué se cambió | "Me parecería mejor que las categorías sean distinguibles… que haya que apretar el botón para Editar… en el detalle aparece bien el cambio pero no indica qué se cambió" ([detalle](#16-la-auditoría-no-decía-qué-se-cambió)) | Claude Code | Ícono y color por categoría; botón Editar con Guardar y Cancelar; la auditoría busca el nombre del registro por su id | Sí | Ninguna | Correcto |
+| 17 | 13/11 | Cerrar las pruebas con un "listo" del equipo | "Listo" ([detalle](#17-verificar-antes-de-dar-por-aprobado)) | Claude Code | Antes de registrar las pruebas, revisó en el navegador lo que había quedado: Natación estaba en $ 19.000 y no en $ 18.000, y los meses decían "Marzo De 2027" | Sí | El equipo volvió el precio a $ 18.000 y la IA corrigió el formato del mes | Correcto: se registró cómo se comprobó cada prueba |
 
 ## Detalle de cada registro
 
@@ -230,3 +234,35 @@ repositorio.
   5. La factura de mayo se conserva.
 - **Aprendizaje:** en una verificación de seguridad, "salió bien" no alcanza: hay que
   registrar qué devolvió cada prueba.
+
+### 16. La auditoría no decía qué se cambió
+
+- **Qué pasó:** al cambiar el precio de Natación, la auditoría mostraba
+  `importe: 18000 → 18500`, pero no de qué concepto.
+- **Causa:** el disparador de auditoría de la Parte 2 guarda, en un cambio, solo los campos
+  que cambiaron y el id del registro. El nombre "Natación" no cambió, así que no queda en el
+  detalle. La IA había probado la auditoría con altas, donde sí aparece el nombre.
+- **Opciones:** modificar el disparador para que guarde también el nombre (cambia la base,
+  afecta a todas las tablas y obliga a ejecutar otro script) o buscar el nombre por el id al
+  mostrar la auditoría. Se eligió la segunda: no toca la base y alcanza para las tablas de
+  cobranza.
+- **Pendiente:** las tablas de la Parte 2 (notas, matrículas, legajos) tienen la misma
+  limitación. Queda como mejora para después.
+
+### 17. Verificar antes de dar por aprobado
+
+- **Qué pasó:** el equipo respondió "listo" a la lista de 11 pruebas. Por lo aprendido en el
+  registro 13, la IA no las anotó como aprobadas de entrada: revisó en el navegador los
+  precios, la auditoría y el reporte.
+- **Qué encontró:**
+  1. Natación estaba en $ 19.000. La auditoría mostraba la prueba completa (18000 → 18500 →
+     18000) y un cambio más, hecho al volver a probar con el botón Editar, que no se había
+     revertido. El equipo lo corrigió desde la pantalla.
+  2. Los meses se veían "Marzo De 2027": la clase `capitalize` de CSS, que eligió la IA, pone
+     en mayúscula la inicial de cada palabra. Se reemplazó por una función que solo cambia la
+     primera letra, con su prueba.
+- **Cómo se registró:** el documento de la etapa dice, para cada prueba, si se comprobó en
+  el sistema o si la informó el equipo.
+- **Aprendizaje:** una prueba que modifica datos reales tiene que terminar con el dato
+  verificado en su valor original. Y conviene mirar el resultado con los propios ojos: el
+  error de formato no lo detectaban ni el lint ni las pruebas.
