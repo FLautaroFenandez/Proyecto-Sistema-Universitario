@@ -18,6 +18,9 @@ export const TABLAS_AUDITADAS = [
   { clave: 'inscripciones',  etiqueta: 'Solicitudes de inscripción' },
   { clave: 'personal',       etiqueta: 'Legajos de personal' },
   { clave: 'postulaciones',  etiqueta: 'Postulaciones' },
+  // Parte 3: los disparadores están en docs/supabase-cobranza.sql
+  { clave: 'conceptos',      etiqueta: 'Precios de cobranza' },
+  { clave: 'comprobantes',   etiqueta: 'Comprobantes de pago' },
 ]
 
 export const ACCIONES = { INSERT: 'Alta', UPDATE: 'Cambio', DELETE: 'Baja' }
@@ -38,8 +41,34 @@ export function resumirDetalle(entrada) {
       .map(([campo, { antes, despues }]) => `${campo}: ${mostrar(antes)} → ${mostrar(despues)}`)
       .join(' · ')
   }
-  const claves = ['estado', 'rol', 'nota', 'legajo', 'nombre', 'apellido', 'curso_id']
+  const claves = ['numero', 'estado', 'rol', 'nota', 'legajo', 'nombre', 'apellido', 'importe', 'curso_id']
   return claves.filter(c => c in detalle).map(c => `${c}: ${mostrar(detalle[c])}`).join(' · ')
+}
+
+/**
+ * Cómo nombrar el registro afectado. En un cambio, la base guarda solo los campos
+ * que cambiaron ("importe: 18000 → 18500") y el id del registro, no su nombre.
+ * Para las tablas de cobranza se busca ese nombre por el id, sin tocar la base.
+ */
+const NOMBRE_DEL_REGISTRO = {
+  conceptos:    { campos: 'id, nombre', nombrar: c => c.nombre },
+  comprobantes: { campos: 'id, numero', nombrar: c => `Comprobante N.º ${c.numero}` },
+}
+
+/** Agrega a cada entrada `registro`: el nombre legible de lo que se cambió, si se conoce. */
+async function nombrarRegistros(entradas) {
+  const nombres = new Map()
+  // Una consulta por tabla, todas a la vez.
+  await Promise.all(Object.entries(NOMBRE_DEL_REGISTRO).map(async ([tabla, { campos, nombrar }]) => {
+    const ids = [...new Set(entradas.filter(e => e.tabla === tabla && e.registro_id).map(e => e.registro_id))]
+    if (ids.length === 0) return
+    const filas = await ejecutar(
+      supabase.from(tabla).select(campos).in('id', ids),
+      'cargar el detalle de la auditoría',
+    )
+    filas.forEach(f => nombres.set(`${tabla}:${f.id}`, nombrar(f)))
+  }))
+  return entradas.map(e => ({ ...e, registro: nombres.get(`${e.tabla}:${e.registro_id}`) ?? null }))
 }
 
 export const auditoria = {
@@ -50,6 +79,6 @@ export const auditoria = {
     if (tabla) consulta = consulta.eq('tabla', tabla)
     if (desde) consulta = consulta.gte('created_at', `${desde}T00:00:00-03:00`)
     if (hasta) consulta = consulta.lte('created_at', `${hasta}T23:59:59-03:00`)
-    return ejecutar(consulta, 'cargar la auditoría')
+    return nombrarRegistros(await ejecutar(consulta, 'cargar la auditoría'))
   },
 }

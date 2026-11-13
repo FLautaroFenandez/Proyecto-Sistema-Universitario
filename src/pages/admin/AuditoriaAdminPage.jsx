@@ -50,7 +50,12 @@ export default function AuditoriaAdminPage() {
       </div>
     )},
     { key: 'accion', label: 'Acción', render: e => <Badge color={COLOR_ACCION[e.accion] ?? 'gray'}>{ACCIONES[e.accion] ?? e.accion}</Badge> },
-    { key: 'tabla', label: 'Sobre', render: e => <span className="text-sm text-gray-600">{etiquetaDeTabla(e.tabla)}</span> },
+    { key: 'tabla', label: 'Sobre', render: e => (
+      <div>
+        <p className="text-sm text-gray-600">{etiquetaDeTabla(e.tabla)}</p>
+        {e.registro && <p className="text-xs font-medium text-gray-800">{e.registro}</p>}
+      </div>
+    )},
     { key: 'detalle', label: 'Detalle', render: e => <span className="text-xs text-gray-500 break-all">{resumirDetalle(e) || '—'}</span> },
   ]
 

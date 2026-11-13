@@ -41,3 +41,20 @@ export function formatDateShort(isoDate) {
   if (!isoDate) return ''
   return formatterShort.format(aFecha(isoDate))
 }
+
+const formatterMes = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' })
+
+/** Mes de una factura (Parte 3): "2027-04-01" → "abril de 2027". */
+export function formatMes(isoDate) {
+  if (!isoDate) return ''
+  return formatterMes.format(aFecha(isoDate))
+}
+
+/**
+ * Mes al comienzo de un texto o en un listado: "Abril de 2027". Solo la primera
+ * letra va en mayúscula (la clase `capitalize` de CSS ponía "Abril De 2027").
+ */
+export function formatMesTitulo(isoDate) {
+  const texto = formatMes(isoDate)
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
+}
