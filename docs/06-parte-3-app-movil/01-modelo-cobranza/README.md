@@ -18,7 +18,16 @@ Centro Educativo *"Educar para Transformar"* — **Grupo 4**
 | Facturas de marzo y abril | Todas en estado `pendiente`; abril suma Natación y el Recorrido 1 | ✅ |
 | Un tercer deporte simultáneo | Se rechaza: *"dos deportes como máximo al mismo tiempo"* | ✅ |
 | Consulta como la cuenta de padre de prueba | Solo las facturas de sus hijos | ✅ |
-| `generar_facturas()` como padre | Se rechaza: *"Solo la Administración puede generar las facturas"* | ✅ |
+| `generar_facturas()` como padre | Se rechaza: *"Solo la Administración puede generar las facturas"* | ⚠️ Sin confirmar (ver nota) |
+
+> **Nota (13/11/2026).** El 13/11 apareció en la app una factura de **mayo de 2027** que
+> nadie generó a propósito. La única llamada a `generar_facturas('2027-05-01')` fue la de
+> esta prueba, así que todo indica que se ejecutó como `postgres` (el administrador de la
+> base) y no con la cuenta de padre. Por eso la prueba quedó registrada como aprobada sin
+> haberse hecho como estaba prevista. La factura de mayo se conserva: es un dato válido. La
+> prueba se repite en la Etapa 5 (testing). Que una cuenta de padre no puede escribir sí está
+> comprobado por otro camino: sin sesión, la base rechaza `emitir_comprobante` con
+> *"permission denied"*.
 
 ---
 

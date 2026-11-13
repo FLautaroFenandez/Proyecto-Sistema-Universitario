@@ -18,12 +18,14 @@
 import { useEffect } from 'react'
 import { SplashScreen, Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ProveedorSesion, useSesion } from '../src/context/sesion'
 import { colores } from '../src/tema'
 
 // La pantalla de bienvenida queda visible hasta saber si hay una sesión guardada.
 // Así no se ve el formulario de ingreso por un instante cuando el padre ya ingresó.
-SplashScreen.preventAutoHideAsync()
+// Si este pedido fallara, la bienvenida simplemente se ocultaría antes: no es un error.
+SplashScreen.preventAutoHideAsync().catch(() => {})
 
 export default function Layout() {
   return (
@@ -36,6 +38,10 @@ export default function Layout() {
 
 function Navegacion() {
   const { usuario, cargando } = useSesion()
+  // Alto de la barra de navegación del teléfono (atrás, inicio, recientes). En Android la
+  // app se dibuja también detrás de esa barra; sin este margen, el final de cada pantalla
+  // queda tapado. Se aplica una sola vez acá, para todas las pantallas.
+  const margenes = useSafeAreaInsets()
 
   useEffect(() => {
     if (!cargando) SplashScreen.hide()
@@ -47,7 +53,7 @@ function Navegacion() {
         headerStyle: { backgroundColor: colores.azul },
         headerTintColor: '#FFFFFF',
         headerTitleStyle: { fontWeight: '700' },
-        contentStyle: { backgroundColor: colores.fondo },
+        contentStyle: { backgroundColor: colores.fondo, paddingBottom: margenes.bottom },
       }}
     >
       <Stack.Protected guard={!usuario}>
@@ -58,6 +64,8 @@ function Navegacion() {
         <Stack.Screen name="hijos" options={{ title: 'Mis hijos' }} />
         <Stack.Screen name="hijo/[id]" options={{ title: 'Cuotas' }} />
         <Stack.Screen name="factura/[id]" options={{ title: 'Factura' }} />
+        <Stack.Screen name="comprobante/[id]" options={{ title: 'Comprobante' }} />
+        <Stack.Screen name="historial/[id]" options={{ title: 'Historial' }} />
       </Stack.Protected>
     </Stack>
   )
