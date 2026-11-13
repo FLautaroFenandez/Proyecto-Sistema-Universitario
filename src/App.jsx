@@ -12,6 +12,7 @@ import { Layout } from '@/components/layout/Layout'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { ScrollToTop } from '@/components/ui/ScrollToTop'
 import { ROLES, PERMISOS } from '@/types/roles'
+import { ROUTES } from '@/types/routes'
 
 // Páginas públicas — lazy loading para mejor performance
 const HomePage           = lazy(() => import('@/pages/public/HomePage'))
@@ -54,6 +55,10 @@ const IndicadoresPage        = lazy(() => import('@/pages/admin/IndicadoresPage'
 const AuditoriaAdminPage     = lazy(() => import('@/pages/admin/AuditoriaAdminPage'))
 const BoletinPage            = lazy(() => import('@/pages/documentos/BoletinPage'))
 const ConstanciaPage         = lazy(() => import('@/pages/documentos/ConstanciaPage'))
+
+// Parte 3 · Etapa 4 — cobranza
+const CobranzaAdminPage      = lazy(() => import('@/pages/admin/CobranzaAdminPage'))
+const ReporteCobranzaPage    = lazy(() => import('@/pages/admin/ReporteCobranzaPage'))
 
 // Módulo Profesores (Sprint 2)
 const MisCursosPage      = lazy(() => import('@/pages/docente/MisCursosPage'))
@@ -162,6 +167,10 @@ export default function App() {
               <Route path="/admin/postulaciones" element={<PostulacionesAdminPage />} />
               <Route path="/admin/indicadores"   element={<IndicadoresPage />} />
               <Route path="/admin/auditoria"     element={<AuditoriaAdminPage />} />
+
+              {/* Parte 3 · Etapa 4 — cobranza. La Autoridad entra en modo consulta. */}
+              <Route path={ROUTES.ADMIN_COBRANZA}         element={<CobranzaAdminPage />} />
+              <Route path={ROUTES.ADMIN_COBRANZA_REPORTE} element={<ReporteCobranzaPage />} />
             </Route>
 
             {/* ── 404 ── */}

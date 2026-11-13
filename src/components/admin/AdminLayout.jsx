@@ -12,10 +12,11 @@ import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
   LayoutDashboard, ChevronRight, Inbox, UserPlus, GraduationCap,
-  IdCard, BarChart3, ShieldCheck, FileText,
+  IdCard, BarChart3, ShieldCheck, FileText, Wallet, Receipt,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
+import { ROUTES } from '@/types/routes'
 import { supabase } from '@/lib/supabase'
 
 const NAV_SECTIONS = [
@@ -32,6 +33,13 @@ const NAV_SECTIONS = [
       { icon: Users,         label: 'Alumnos',          href: '/admin/alumnos' },
       { icon: GraduationCap, label: 'Cursos y materias', href: '/admin/cursos' },
       { icon: IdCard,        label: 'Personal',          href: '/admin/personal' },
+    ],
+  },
+  {
+    titulo: 'Cobranza',
+    items: [
+      { icon: Wallet,  label: 'Precios y facturación', href: ROUTES.ADMIN_COBRANZA },
+      { icon: Receipt, label: 'Reporte de cobranza',   href: ROUTES.ADMIN_COBRANZA_REPORTE },
     ],
   },
   {

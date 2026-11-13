@@ -31,4 +31,8 @@ export { auditoria, TABLAS_AUDITADAS, ACCIONES, etiquetaDeTabla, resumirDetalle 
 export { indicadores, PERIODOS_REPORTE } from './indicadores'
 export { documentos } from './documentos'
 export { familia } from './familia'
+// Parte 3 · Etapa 4
+export {
+  cobranza, TIPOS_CONCEPTO, ESTADOS_FACTURA, validarImporte, mesesDelCiclo, resumirCobranza,
+} from './cobranza'
 export { ErrorDeServicio, mensajeDeError, traducirError } from './base'

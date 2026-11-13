@@ -42,4 +42,7 @@ export const ROUTES = {
   ADMIN_AUDITORIA:        '/admin/auditoria',
   BOLETIN:                (matriculaId) => `/documentos/boletin/${matriculaId}`,
   CONSTANCIA:             (matriculaId) => `/documentos/constancia/${matriculaId}`,
+  // Parte 3 · Etapa 4 — cobranza
+  ADMIN_COBRANZA:         '/admin/cobranza',
+  ADMIN_COBRANZA_REPORTE: '/admin/cobranza/reporte',
 }
