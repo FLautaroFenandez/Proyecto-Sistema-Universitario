@@ -36,3 +36,26 @@ export function fecha(fechaIso) {
   const { anio, mes, dia } = partes(fechaIso)
   return `${String(dia).padStart(2, '0')}/${String(mes).padStart(2, '0')}/${anio}`
 }
+
+/**
+ * Momento exacto (con hora) → "13/11/2026". A diferencia de las fechas sin hora, un
+ * momento sí se convierte con `Date`, para mostrarlo en la hora del teléfono.
+ * '2026-11-13T18:30:00+00:00' → "13/11/2026"
+ */
+export function fechaDeMomento(momentoIso) {
+  const d = new Date(momentoIso)
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+}
+
+/** Primer día del mes de una fecha: '2027-03-15' → '2027-03-01'. Así se guardan los períodos. */
+export function inicioDeMes(fechaIso) {
+  const { anio, mes } = partes(fechaIso)
+  return `${anio}-${String(mes).padStart(2, '0')}-01`
+}
+
+/** Corre un período la cantidad de meses indicada: ('2027-12-01', 1) → '2028-01-01'. */
+export function sumarMeses(periodoIso, cantidad) {
+  const { anio, mes } = partes(periodoIso)
+  const total = anio * 12 + (mes - 1) + cantidad
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}-01`
+}

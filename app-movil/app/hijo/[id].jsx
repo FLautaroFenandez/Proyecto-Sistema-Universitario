@@ -11,6 +11,7 @@
 import { useCallback } from 'react'
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Boton } from '../../src/components/Boton'
 import { Aviso, Carga } from '../../src/components/Carga'
 import { Insignia } from '../../src/components/Insignia'
 import { estadoDe } from '../../src/domain/estadoFactura'
@@ -44,6 +45,11 @@ export default function CuotasDelHijo() {
             <Aviso texto="Todavía no hay cuotas emitidas para este alumno." />
           ) : (
             <>
+              <Boton
+                texto="Ver historial y deuda"
+                variante="secundario"
+                alTocar={() => router.push({ pathname: '/historial/[id]', params: { id, nombre } })}
+              />
               <Text style={estilos.seccion}>Pendientes</Text>
               {pendientes.length === 0 && <Aviso texto="No hay cuotas pendientes." />}
               {pendientes.map(factura => (
