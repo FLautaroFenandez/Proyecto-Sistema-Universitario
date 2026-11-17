@@ -24,6 +24,17 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "educar"
+    "scheme": "educar",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "598f64ed-b8da-4ec2-8762-85312fdb440d"
+      }
+    },
+    "owner": "gonzalocerqueiro"
   }
 }
