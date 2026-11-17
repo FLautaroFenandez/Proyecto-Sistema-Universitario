@@ -41,6 +41,12 @@ export default function CuotasDelHijo() {
           contentContainerStyle={estilos.contenido}
           refreshControl={<RefreshControl refreshing={cargando} onRefresh={recargar} />}
         >
+          {/* Las inscripciones se pueden consultar aunque todavía no haya ninguna cuota emitida. */}
+          <Boton
+            texto="Ver inscripciones a servicios"
+            variante="secundario"
+            alTocar={() => router.push({ pathname: '/inscripciones/[id]', params: { id, nombre } })}
+          />
           {facturas.length === 0 ? (
             <Aviso texto="Todavía no hay cuotas emitidas para este alumno." />
           ) : (

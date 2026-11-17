@@ -88,6 +88,9 @@ export default function Ingreso() {
             ? <ActivityIndicator color="#FFFFFF" />
             : <Text style={estilos.botonTexto}>Ingresar</Text>}
         </Pressable>
+
+        {/* Recuperar la contraseña exige enviar correos; como en la web, lo resuelve la Administración. */}
+        <Text style={estilos.olvido}>¿Olvidaste tu contraseña? Consultá en la Administración.</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   )
@@ -108,4 +111,5 @@ const estilos = StyleSheet.create({
   boton:         { backgroundColor: colores.azul, borderRadius: 8, paddingVertical: 13, alignItems: 'center' },
   botonInactivo: { opacity: 0.5 },
   botonTexto:    { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  olvido:        { fontSize: 14, color: colores.suave, textAlign: 'center' },
 })

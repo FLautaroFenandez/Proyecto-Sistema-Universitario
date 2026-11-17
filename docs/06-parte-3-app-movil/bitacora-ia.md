@@ -31,6 +31,9 @@ repositorio.
 | 15 | 13/11 | Programar las pantallas de precios, facturación y reporte | "Perfecto, sigamos con esas decisiones" | Claude Code | Servicio `cobranza.js` de la web, 2 pantallas, sección en el menú, filtro de auditoría y 13 pruebas de Vitest. Controla que un precio se haya guardado de verdad: si RLS bloquea un cambio, Supabase no da error, devuelve cero filas | Sí | Corrigió los avisos de ESLint y del analizador del editor antes de entregar | Correcto: lint, pruebas y compilación en verde |
 | 16 | 13/11 | Mejoras pedidas al usar las pantallas: categorías indistinguibles, precios editables de entrada y auditoría sin decir qué se cambió | "Me parecería mejor que las categorías sean distinguibles… que haya que apretar el botón para Editar… en el detalle aparece bien el cambio pero no indica qué se cambió" ([detalle](#16-la-auditoría-no-decía-qué-se-cambió)) | Claude Code | Ícono y color por categoría; botón Editar con Guardar y Cancelar; la auditoría busca el nombre del registro por su id | Sí | Ninguna | Correcto |
 | 17 | 13/11 | Cerrar las pruebas con un "listo" del equipo | "Listo" ([detalle](#17-verificar-antes-de-dar-por-aprobado)) | Claude Code | Antes de registrar las pruebas, revisó en el navegador lo que había quedado: Natación estaba en $ 19.000 y no en $ 18.000, y los meses decían "Marzo De 2027" | Sí | El equipo volvió el precio a $ 18.000 y la IA corrigió el formato del mes | Correcto: se registró cómo se comprobó cada prueba |
+| 18 | 16/11 | Diseñar el testing de la app | "Sí, sigamos" (pedido de arrancar la Etapa 5) | Claude Code | Antes de diseñar releyó el enunciado completo y encontró dos pedidos fuera del mínimo: cambiar la contraseña y que el padre consulte las inscripciones de cada hijo. Propuso hacerlos antes de probar ([documento](04b-cuenta-e-inscripciones/README.md)) | Sí | Ninguna: el equipo aprobó sumar la Etapa 4b | Correcto |
+| 19 | 17/11 | El equipo no veía en el celular las pantallas nuevas | Grabación de pantalla: "no veo estas nuevas pantallas a las que te referís" ([detalle](#19-pantallas-anunciadas-que-todavía-no-existían)) | Claude Code | Las pantallas no existían: la IA había presentado el diseño detallado para validarlo otra vez, aunque el equipo ya había aprobado la etapa, y no dijo con claridad que todavía no estaban programadas | No | Se programó la etapa a continuación | Corregido: costó una ronda de prueba |
+| 20 | 17/11 | Programar el cambio de contraseña y la consulta de inscripciones | La misma grabación (pedido implícito de ver las pantallas) | Claude Code | Dos pantallas nuevas, sin cambios en la base. Para verificar la contraseña actual leyó el código de la librería de Supabase instalada (2.119): volver a ingresar con ella la comprueba sin tocar la sesión, y el campo `current_password` solo se valida con una opción del servidor que el proyecto no tiene | Sí | Ninguna | Correcto: 9 pruebas en el celular aprobadas |
 
 ## Detalle de cada registro
 
@@ -266,3 +269,18 @@ repositorio.
 - **Aprendizaje:** una prueba que modifica datos reales tiene que terminar con el dato
   verificado en su valor original. Y conviene mirar el resultado con los propios ojos: el
   error de formato no lo detectaban ni el lint ni las pruebas.
+
+### 19. Pantallas anunciadas que todavía no existían
+
+- **Qué pasó:** el 16/11 el equipo aprobó el plan de testing, que incluía sumar la Etapa 4b
+  ("estoy de acuerdo con todo lo que planteaste, empecemos"). La IA preparó el diseño
+  detallado de las dos pantallas y lo presentó para validarlo de nuevo, sin programarlo. El
+  17/11 el equipo abrió la app esperando verlas y mandó una grabación: no estaban.
+- **Causa:** la forma de trabajo acordada pide validar el diseño de cada etapa antes de
+  programar. La IA la aplicó también a una etapa cuyo alcance ya estaba aprobado, y el
+  mensaje no dejó claro que el código todavía no existía.
+- **Qué se hizo:** se programó la etapa a continuación. El documento registra que el alcance
+  se aprobó con el plan de testing.
+- **Aprendizaje (apartado 5 del informe):** al cerrar un mensaje hay que decir qué está hecho
+  y qué no, no solo qué se propone. Una frase como "diseño para validar" no le avisa a quien
+  lee que no hay nada para probar.
