@@ -6,6 +6,9 @@
  * es el mes de la factura, igual que en el historial de la app. Los números
  * salen de la vista facturas_estado, la misma que lee la familia en el teléfono.
  *
+ * El mismo período se ve de cuatro formas: por factura, por alumno (agrupado por año,
+ * con su curso), por deporte y por recorrido de transporte (agrupados por nivel).
+ *
  * Lo ven Administración y Autoridad (RLS de docs/supabase-cobranza.sql). Se
  * exporta a PDF con la impresión del navegador, como los Indicadores (HU3).
  */
@@ -15,7 +18,10 @@ import { Receipt, Printer, AlertTriangle, Wallet, CheckCircle2, Clock, Scale } f
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
-import { academico, cobranza, ESTADOS_FACTURA, mesesDelCiclo, mensajeDeError } from '@/services'
+import {
+  academico, cobranza, ESTADOS_FACTURA, ESTADOS_ITEM, mesesDelCiclo, mensajeDeError,
+  resumirPorAlumno, agruparPorServicio,
+} from '@/services'
 import { formatDate, formatMes, formatMesTitulo, hoyISO } from '@/utils/formatDate'
 import { formatPesos } from '@/utils/formatPesos'
 
@@ -49,11 +55,122 @@ function SelectorMes({ id, etiqueta, valor, meses, onChange }) {
 
 const nombreDeAlumno = a => (a ? `${a.apellido}, ${a.nombre}` : 'Alumno no disponible')
 
+/** Las cuatro formas de ver el mismo período (filas de la plantilla del 3.er parcial). */
+const VISTAS = [
+  { clave: 'facturas',   etiqueta: 'Facturas' },
+  { clave: 'alumnos',    etiqueta: 'Por alumno' },
+  { clave: 'deportes',   etiqueta: 'Por deporte' },
+  { clave: 'recorridos', etiqueta: 'Por recorrido' },
+]
+
+const TH = 'py-2 pr-3'
+
+/** Pagos completos e incompletos por año y por alumno, con su curso. */
+function VistaPorAlumno({ facturas }) {
+  const grupos = resumirPorAlumno(facturas)
+  return grupos.map(grupo => (
+    <section key={grupo.anio} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+      <h2 className="font-display font-bold text-gray-700">Año {grupo.anio} <span className="font-normal text-sm text-gray-400">· {grupo.alumnos.length} alumnos</span></h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead><tr className="text-left text-xs text-gray-400 uppercase">
+            <th className={TH}>Alumno</th><th className="pr-3">Curso</th>
+            <th className="pr-3 text-right">Facturado</th><th className="pr-3 text-right">Pagado</th><th className="pr-3 text-right">Saldo</th>
+            <th className="pr-3 text-center">Pago completo</th><th className="text-center">Pago incompleto</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100">
+            {grupo.alumnos.map(a => (
+              <tr key={a.alumno?.id ?? a.curso}>
+                <td className="py-2 pr-3 font-medium text-gray-700">
+                  {nombreDeAlumno(a.alumno)}
+                  {a.alumno?.legajo && <span className="block text-xs font-normal text-gray-400">Legajo {a.alumno.legajo}</span>}
+                </td>
+                <td className="pr-3">{a.curso} <span className="text-xs text-gray-400">{a.nivel}</span></td>
+                <td className="pr-3 text-right">{formatPesos(a.facturado)}</td>
+                <td className="pr-3 text-right">{formatPesos(a.cobrado)}</td>
+                <td className="pr-3 text-right font-medium">{formatPesos(a.saldo)}</td>
+                <td className="pr-3 text-center">{a.completas}</td>
+                <td className="text-center">{a.incompletas}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  ))
+}
+
+/**
+ * Pagos de cada deporte o de cada recorrido, por nivel. Horario y profesor a cargo no
+ * existen en la base: los grupos de cada deporte no se modelaron (fuera del alcance mínimo).
+ */
+function VistaPorServicio({ items, tipo }) {
+  const grupos = agruparPorServicio(items, tipo)
+  const esDeporte = tipo === 'deporte'
+  if (grupos.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 text-sm text-gray-400">
+        No hay {esDeporte ? 'deportes' : 'recorridos de transporte'} facturados en el período.
+      </div>
+    )
+  }
+  return (
+    <>
+      {grupos.map(grupo => (
+        <section key={grupo.nombre} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+          <div className="flex items-baseline justify-between flex-wrap gap-2">
+            <h2 className="font-display font-bold text-gray-700">{grupo.nombre}</h2>
+            <p className="text-sm text-gray-500">
+              Facturado {formatPesos(grupo.totales.facturado)} · Cobrado {formatPesos(grupo.totales.cobrado)} · Pendiente {formatPesos(grupo.totales.pendiente)}
+            </p>
+          </div>
+          {grupo.niveles.map(n => (
+            <div key={n.nivel} className="space-y-2">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Nivel {n.nivel}</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left text-xs text-gray-400 uppercase">
+                    <th className={TH}>Alumno</th><th className="pr-3">Curso</th><th className="pr-3">Mes</th>
+                    <th className="pr-3 text-right">Importe</th><th className="pr-3">Estado</th>
+                    {esDeporte && <><th className="pr-3">Horario</th><th>Profesor a cargo</th></>}
+                  </tr></thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {n.filas.map(i => {
+                      const estado = ESTADOS_ITEM[i.estado]
+                      return (
+                        <tr key={i.id}>
+                          <td className="py-2 pr-3 font-medium text-gray-700">{nombreDeAlumno(i.alumno)}</td>
+                          <td className="pr-3">{i.curso}</td>
+                          <td className="pr-3">{formatMesTitulo(i.periodo)}</td>
+                          <td className="pr-3 text-right">{formatPesos(i.importe)}</td>
+                          <td className="pr-3"><Badge color={estado.color}>{estado.etiqueta}</Badge></td>
+                          {esDeporte && <><td className="pr-3 text-gray-400">Sin registrar</td><td className="text-gray-400">Sin registrar</td></>}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+        </section>
+      ))}
+      {esDeporte && (
+        <p className="text-xs text-gray-400">
+          Horario y profesor a cargo: el sistema todavía no registra los grupos de cada deporte por horario y profesor
+          (quedaron fuera del alcance mínimo de la Parte 3). El pago se discrimina por deporte y por nivel.
+        </p>
+      )}
+    </>
+  )
+}
+
 export default function ReporteCobranzaPage() {
   const [meses,    setMeses]    = useState([])
   const [desde,    setDesde]    = useState('')
   const [hasta,    setHasta]    = useState('')
   const [filtro,   setFiltro]   = useState('todas')
+  const [vista,    setVista]    = useState('facturas')
   const [datos,    setDatos]    = useState(null)
   const [cargando, setCargando] = useState(true)
   const [error,    setError]    = useState(null)
@@ -156,7 +273,21 @@ export default function ReporteCobranzaPage() {
             <Tarjeta icono={Scale} titulo="Saldo pendiente" valor={formatPesos(t.saldo)} detalle={`${t.vencidas} facturas vencidas`} />
           </div>
 
-          <section className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+          <fieldset className="flex flex-wrap gap-1 no-imprimir">
+            <legend className="sr-only">Cómo ver el período</legend>
+            {VISTAS.map(v => (
+              <button key={v.clave} type="button" onClick={() => setVista(v.clave)} aria-pressed={vista === v.clave}
+                className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${vista === v.clave ? 'bg-brand-azul text-white border-brand-azul' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>
+                {v.etiqueta}
+              </button>
+            ))}
+          </fieldset>
+
+          {vista === 'alumnos' && <VistaPorAlumno facturas={datos.facturas} />}
+          {vista === 'deportes' && <VistaPorServicio items={datos.items} tipo="deporte" />}
+          {vista === 'recorridos' && <VistaPorServicio items={datos.items} tipo="transporte" />}
+
+          {vista === 'facturas' && <section className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <h2 className="font-display font-bold text-gray-700">
                 Facturas <span className="font-normal text-sm text-gray-400">· {t.completas} con pago completo · {t.incompletas} con pago incompleto</span>
@@ -209,7 +340,7 @@ export default function ReporteCobranzaPage() {
                 </table>
               </div>
             )}
-          </section>
+          </section>}
 
           <p className="text-xs text-gray-400">
             El período es el mes de la factura. Pago completo: la factura no tiene saldo. Pago incompleto: queda al

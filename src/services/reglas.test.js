@@ -15,7 +15,10 @@ import { validarNota, notaDesdeTexto } from './calificaciones'
 import { resumirAsistencia } from './asistencias'
 import { separarNombre } from './matricula'
 import { resumirDetalle } from './auditoria'
-import { validarImporte, mesesDelCiclo, resumirCobranza } from './cobranza'
+import {
+  validarImporte, mesesDelCiclo, resumirCobranza,
+  estadoDeItem, cursoDelAlumno, resumirPorAlumno, agruparPorServicio,
+} from './cobranza'
 import { formatDateShort, formatMes, formatMesTitulo } from '@/utils/formatDate'
 
 describe('Validación de notas (HU2)', () => {
@@ -174,6 +177,49 @@ describe('Totales del reporte de cobranza (REQ-32)', () => {
 
   it('sin facturas, todo en cero', () => {
     expect(resumirCobranza([])).toMatchObject({ cantidad: 0, facturado: 0, completas: 0, incompletas: 0 })
+  })
+})
+
+describe('Listados por alumno, por deporte y por recorrido', () => {
+  const yura = {
+    id: 'a1', apellido: 'hakanson', nombre: 'yura', legajo: '2026-0001',
+    matriculas: [{ estado: 'activa', curso: { anio: 3, division: 'A', nivel: { nombre: 'primario' }, ciclo: { activo: true } } }],
+  }
+
+  it('un ítem cuenta como pagado solo con la transferencia informada', () => {
+    expect(estadoDeItem({ comprobante: { estado: 'informado' } })).toBe('pagado')
+    expect(estadoDeItem({ comprobante: { estado: 'emitido' } })).toBe('en_proceso')
+    expect(estadoDeItem({ comprobante: null })).toBe('pendiente')
+  })
+
+  it('el curso sale de la matrícula activa del ciclo vigente', () => {
+    expect(cursoDelAlumno(yura)).toEqual({ curso: '3.º A', nivel: 'Primario' })
+    expect(cursoDelAlumno({ matriculas: [] }).curso).toBe('Sin matrícula activa')
+  })
+
+  it('agrupa las facturas por año y por alumno, con completas e incompletas', () => {
+    const grupos = resumirPorAlumno([
+      { alumno_id: 'a1', alumno: yura, periodo: '2027-03-01', total: 148000, pagado: 148000, en_proceso: 0, saldo: 0, estado: 'pagada' },
+      { alumno_id: 'a1', alumno: yura, periodo: '2027-04-01', total: 192000, pagado: 133000, en_proceso: 0, saldo: 59000, estado: 'parcial' },
+    ])
+    expect(grupos).toHaveLength(1)
+    expect(grupos[0].anio).toBe('2027')
+    expect(grupos[0].alumnos[0]).toMatchObject({ curso: '3.º A', facturado: 340000, cobrado: 281000, completas: 1, incompletas: 1 })
+  })
+
+  it('agrupa los ítems de un tipo por concepto y por nivel, con sus totales', () => {
+    const item = (id, nombre, tipo, importe, estado, periodo) =>
+      ({ id, concepto: { tipo, nombre }, importe, estado, periodo, alumno: yura, curso: '3.º A', nivel: 'Primario' })
+    const items = [
+      item('1', 'Recorrido 1', 'transporte', 26000, 'pendiente', '2027-04-01'),
+      item('2', 'Recorrido 1', 'transporte', 26000, 'pagado', '2027-05-01'),
+      item('3', 'Natación', 'deporte', 18000, 'pagado', '2027-04-01'),
+    ]
+    const recorridos = agruparPorServicio(items, 'transporte')
+    expect(recorridos).toHaveLength(1)
+    expect(recorridos[0].totales).toEqual({ facturado: 52000, cobrado: 26000, pendiente: 26000 })
+    expect(recorridos[0].niveles[0].nivel).toBe('Primario')
+    expect(agruparPorServicio(items, 'deporte')[0].nombre).toBe('Natación')
   })
 })
 
