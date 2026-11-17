@@ -5,6 +5,7 @@
  *   Precios ............... conceptos, actualizarImporte, validarImporte
  *   Facturas del mes ...... mesesDelCiclo, generarFacturas
  *   Reporte (REQ-32) ...... reporte, resumirCobranza
+ *   Listados .............. resumirPorAlumno, agruparPorServicio (por deporte y por recorrido)
  *
  * Las reglas viven en la base (docs/supabase-cobranza.sql):
  *   - Solo el rol admin escribe en `conceptos` (RLS) y cada cambio queda en la auditoría.
@@ -88,6 +89,95 @@ export function resumirCobranza(facturas) {
   }
 }
 
+// ── Listados por alumno, por deporte y por recorrido (REQ-32, plantilla del 3.er parcial) ──
+
+const aCentavos = valor => Math.round(Number(valor ?? 0) * 100)
+
+/** Estado de pago de un ítem según su comprobante: informado = pagado. */
+export const ESTADOS_ITEM = {
+  pagado:     { etiqueta: 'Pagado',     color: 'green' },
+  en_proceso: { etiqueta: 'En proceso', color: 'blue' },
+  pendiente:  { etiqueta: 'Pendiente',  color: 'orange' },
+}
+
+/** @param {{comprobante?: {estado: string} | null}} item */
+export function estadoDeItem(item) {
+  if (item.comprobante?.estado === 'informado') return 'pagado'
+  if (item.comprobante?.estado === 'emitido') return 'en_proceso'
+  return 'pendiente'
+}
+
+/** Curso de la matrícula activa del ciclo vigente: { curso: '3.º A', nivel: 'Primario' }. */
+export function cursoDelAlumno(alumno) {
+  const matricula = (alumno?.matriculas ?? []).find(m => m.estado === 'activa' && m.curso?.ciclo?.activo)
+  if (!matricula) return { curso: 'Sin matrícula activa', nivel: 'Sin nivel' }
+  const { anio, division, nivel } = matricula.curso
+  const nombre = nivel?.nombre ?? ''
+  return { curso: `${anio}.º ${division}`, nivel: nombre.charAt(0).toUpperCase() + nombre.slice(1) }
+}
+
+/**
+ * Pagos completos e incompletos por año y por alumno.
+ * @param {Array<object>} facturas - Filas del reporte, con `alumno` y `periodo`
+ * @returns {Array<{anio: string, alumnos: Array<object>}>}
+ */
+export function resumirPorAlumno(facturas) {
+  const porAnio = new Map()
+  for (const f of facturas) {
+    const anio = f.periodo.slice(0, 4)
+    if (!porAnio.has(anio)) porAnio.set(anio, new Map())
+    const delAnio = porAnio.get(anio)
+    if (!delAnio.has(f.alumno_id)) delAnio.set(f.alumno_id, [])
+    delAnio.get(f.alumno_id).push(f)
+  }
+  return [...porAnio.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([anio, delAnio]) => ({
+    anio,
+    alumnos: [...delAnio.values()]
+      .map(lista => ({ alumno: lista[0].alumno, ...cursoDelAlumno(lista[0].alumno), ...resumirCobranza(lista) }))
+      .sort((a, b) => (a.alumno?.apellido ?? '').localeCompare(b.alumno?.apellido ?? '')),
+  }))
+}
+
+/**
+ * Ítems de un tipo de servicio agrupados por concepto (cada deporte, cada recorrido) y,
+ * dentro de cada uno, por nivel educativo.
+ * @param {Array<object>} items - Ítems con `concepto`, `importe`, `estado`, `alumno`, `curso`, `nivel`, `periodo`
+ * @param {'deporte'|'transporte'} tipo
+ */
+export function agruparPorServicio(items, tipo) {
+  const porConcepto = new Map()
+  for (const item of items.filter(i => i.concepto?.tipo === tipo)) {
+    const nombre = item.concepto.nombre
+    if (!porConcepto.has(nombre)) porConcepto.set(nombre, [])
+    porConcepto.get(nombre).push(item)
+  }
+  const totales = lista => {
+    const facturado = lista.reduce((s, i) => s + aCentavos(i.importe), 0)
+    const cobrado = lista.filter(i => i.estado === 'pagado').reduce((s, i) => s + aCentavos(i.importe), 0)
+    return { facturado: facturado / 100, cobrado: cobrado / 100, pendiente: (facturado - cobrado) / 100 }
+  }
+  return [...porConcepto.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([nombre, lista]) => {
+    const porNivel = new Map()
+    for (const item of lista) {
+      if (!porNivel.has(item.nivel)) porNivel.set(item.nivel, [])
+      porNivel.get(item.nivel).push(item)
+    }
+    return {
+      nombre,
+      totales: totales(lista),
+      niveles: [...porNivel.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([nivel, filas]) => ({
+        nivel,
+        filas: [...filas].sort((a, b) => a.periodo.localeCompare(b.periodo)
+          || (a.alumno?.apellido ?? '').localeCompare(b.alumno?.apellido ?? '')),
+      })),
+    }
+  })
+}
+
+const ALUMNO_DEL_REPORTE =
+  'id, legajo, apellido, nombre, ' +
+  'matriculas(estado, curso:cursos(anio, division, nivel:niveles(nombre), ciclo:ciclos_lectivos(activo)))'
+
 export const cobranza = {
 
   /** Conceptos vigentes, agrupables por tipo. Los lee cualquier usuario con sesión. */
@@ -146,14 +236,38 @@ export const cobranza = {
       'cargar el reporte de cobranza',
     )
 
-    const ids = [...new Set(facturas.map(f => f.alumno_id))]
-    const alumnos = ids.length === 0 ? [] : await ejecutar(
-      supabase.from('alumnos').select('id, legajo, apellido, nombre').in('id', ids),
-      'cargar los alumnos del reporte',
-    )
-    const porId = new Map(alumnos.map(a => [a.id, a]))
+    if (facturas.length === 0) return { facturas: [], items: [], totales: resumirCobranza([]) }
 
+    const ids = [...new Set(facturas.map(f => f.alumno_id))]
+    const [alumnos, items] = await Promise.all([
+      ejecutar(
+        supabase.from('alumnos').select(ALUMNO_DEL_REPORTE).in('id', ids),
+        'cargar los alumnos del reporte',
+      ),
+      ejecutar(
+        supabase.from('factura_items')
+          .select('id, factura_id, descripcion, importe, concepto:conceptos(tipo, nombre), comprobante:comprobantes(estado)')
+          .in('factura_id', facturas.map(f => f.id)),
+        'cargar los ítems del reporte',
+      ),
+    ])
+    const porId = new Map(alumnos.map(a => [a.id, a]))
     const filas = facturas.map(f => ({ ...f, alumno: porId.get(f.alumno_id) ?? null }))
-    return { facturas: filas, totales: resumirCobranza(filas) }
+    const facturaDe = new Map(filas.map(f => [f.id, f]))
+
+    return {
+      facturas: filas,
+      totales: resumirCobranza(filas),
+      items: items.map(item => {
+        const factura = facturaDe.get(item.factura_id)
+        return {
+          ...item,
+          estado: estadoDeItem(item),
+          periodo: factura?.periodo ?? '',
+          alumno: factura?.alumno ?? null,
+          ...cursoDelAlumno(factura?.alumno),
+        }
+      }),
+    }
   },
 }

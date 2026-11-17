@@ -34,5 +34,6 @@ export { familia } from './familia'
 // Parte 3 · Etapa 4
 export {
   cobranza, TIPOS_CONCEPTO, ESTADOS_FACTURA, validarImporte, mesesDelCiclo, resumirCobranza,
+  ESTADOS_ITEM, resumirPorAlumno, agruparPorServicio,
 } from './cobranza'
 export { ErrorDeServicio, mensajeDeError, traducirError } from './base'
