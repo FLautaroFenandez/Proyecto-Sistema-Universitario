@@ -1,14 +1,14 @@
 # Bitácora de uso de IA — Parte 3 (aplicación móvil)
 
-Metodología de Sistemas II · UTN FRRe · TUP 2026
-Centro Educativo *"Educar para Transformar"* — **Grupo 4**
+Metodología de Sistemas II · UTN FRRe · TUP 2026  
+Centro Educativo *"Educar para Transformar"* — **Grupo 4**  
 
 Registro que pide el enunciado de la Parte 3: cada intervención relevante de la IA en el
 desarrollo de la app móvil, si funcionó y qué hubo que cambiar. Se completa **a medida que
 se trabaja**, no al final. Solo incluye la Parte 3.
 
-**Herramienta:** Claude Code (modelo Claude Opus 5.5), integrado en VS Code, con acceso al
-repositorio.
+**Herramientas:** Claude Code (modelo Claude Opus 5.5), integrado en VS Code, con acceso al
+repositorio (registros 1 a 20), y Gemini, para consultas fuera del repositorio (registro 21).
 
 ## Registro
 
@@ -34,6 +34,10 @@ repositorio.
 | 18 | 16/11 | Diseñar el testing de la app | "Sí, sigamos" (pedido de arrancar la Etapa 5) | Claude Code | Antes de diseñar releyó el enunciado completo y encontró dos pedidos fuera del mínimo: cambiar la contraseña y que el padre consulte las inscripciones de cada hijo. Propuso hacerlos antes de probar ([documento](04b-cuenta-e-inscripciones/README.md)) | Sí | Ninguna: el equipo aprobó sumar la Etapa 4b | Correcto |
 | 19 | 17/11 | El equipo no veía en el celular las pantallas nuevas | Grabación de pantalla: "no veo estas nuevas pantallas a las que te referís" ([detalle](#19-pantallas-anunciadas-que-todavía-no-existían)) | Claude Code | Las pantallas no existían: la IA había presentado el diseño detallado para validarlo otra vez, aunque el equipo ya había aprobado la etapa, y no dijo con claridad que todavía no estaban programadas | No | Se programó la etapa a continuación | Corregido: costó una ronda de prueba |
 | 20 | 17/11 | Programar el cambio de contraseña y la consulta de inscripciones | La misma grabación (pedido implícito de ver las pantallas) | Claude Code | Dos pantallas nuevas, sin cambios en la base. Para verificar la contraseña actual leyó el código de la librería de Supabase instalada (2.119): volver a ingresar con ella la comprueba sin tocar la sesión, y el campo `current_password` solo se valida con una opción del servidor que el proyecto no tiene | Sí | Ninguna | Correcto: 9 pruebas en el celular aprobadas |
+| 21 | 09/11 al 17/11 | Dudas menores sobre el funcionamiento del sistema durante el desarrollo | Consultas puntuales del equipo, fuera del repositorio ([detalle](#21-gemini-como-segunda-herramienta)) | Gemini | Explicaciones generales sobre cómo funcionan las piezas del sistema | Sí | Ninguna: no generó código del proyecto | Correcto: complementó las explicaciones de Claude Code |
+
+**Herramientas:** Claude Code para el diseño, el código, la documentación y el diagnóstico
+de errores (registros 1 a 20); Gemini para consultas de comprensión (registro 21).
 
 ## Detalle de cada registro
 
@@ -78,9 +82,11 @@ repositorio.
     la Parte 2.
 - **Cómo se verificó:** el equipo ejecutó los dos scripts en Supabase y las consultas de
   verificación. Las seis pruebas dieron el resultado esperado: el detalle está en el
-  [documento del modelo](01-modelo-cobranza/README.md). La prueba de seguridad se hizo con
-  la función de impersonación del SQL Editor: como la cuenta de padre de prueba, la base
-  solo devolvió las facturas de sus hijos y rechazó generar facturas.
+  [documento del modelo](01-modelo-cobranza/README.md). La prueba de seguridad debía
+  hacerse con la función de impersonación del SQL Editor, como la cuenta de padre de
+  prueba. **Corrección del 13/11:** la parte de "rechazar generar facturas" se ejecutó en
+  realidad como `postgres` y quedó registrada como aprobada sin serlo (ver
+  [registro 13](#13-prueba-de-seguridad-de-la-etapa-1-sin-confirmar)).
 - **Por qué importa:** la seguridad se probó contra la base y no solo en pantalla, como
   pide el plan (sección 1.8, *Seguridad*).
 
@@ -284,3 +290,12 @@ repositorio.
 - **Aprendizaje (apartado 5 del informe):** al cerrar un mensaje hay que decir qué está hecho
   y qué no, no solo qué se propone. Una frase como "diseño para validar" no le avisa a quien
   lee que no hay nada para probar.
+
+### 21. Gemini como segunda herramienta
+
+- **Para qué se usó:** dudas menores sobre el funcionamiento del sistema, mientras se
+  desarrollaba con Claude Code.
+- **Diferencia con Claude Code:** Gemini no tuvo acceso al repositorio, así que sus
+  respuestas eran generales y no sobre el código del proyecto. Por eso se usó para entender,
+  no para producir: ningún archivo del proyecto salió de Gemini.
+- **Evidencia:** el historial de las conversaciones queda en la cuenta del integrante.
