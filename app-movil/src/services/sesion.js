@@ -9,6 +9,8 @@
  *  - Ver únicamente las funciones que su rol habilita: la app es para las familias,
  *    así que solo entra el rol `padre`. Es la primera capa de seguridad; la segunda es
  *    el RLS de la base, que le niega los datos ajenos aunque alguien modifique la app.
+ *
+ * Etapa 4b: suma el cambio de contraseña que pide el Módulo 1 del enunciado.
  */
 
 import { supabase } from '../lib/supabase'
@@ -16,6 +18,29 @@ import { ErrorDeServicio } from './base'
 
 /** Único rol que usa la app. El administrador gestiona la cobranza desde la web. */
 export const ROL_FAMILIA = 'padre'
+
+/** La misma regla que el registro de la web (src/pages/auth/RegistroPage.jsx). */
+export const LARGO_MINIMO_CLAVE = 8
+
+/**
+ * Revisa los tres campos del cambio de contraseña antes de ir a Supabase.
+ * @returns {string | null} El mensaje para mostrar, o null si está todo bien.
+ */
+export function validarClaveNueva(actual, nueva, repetida) {
+  if (!actual) return 'Ingresá tu contraseña actual.'
+  if (nueva.length < LARGO_MINIMO_CLAVE) {
+    return `La contraseña nueva tiene que tener al menos ${LARGO_MINIMO_CLAVE} caracteres.`
+  }
+  if (nueva === actual) return 'La contraseña nueva tiene que ser distinta de la actual.'
+  if (nueva !== repetida) return 'Las dos contraseñas nuevas no coinciden.'
+  return null
+}
+
+/** Mensajes para los rechazos de Supabase al cambiar la contraseña, por código de error. */
+const RECHAZOS_AL_CAMBIAR = {
+  same_password: 'La contraseña nueva tiene que ser distinta de la actual.',
+  weak_password: 'La contraseña nueva es muy débil. Probá con una más larga.',
+}
 
 /**
  * Comprueba que la cuenta pueda usar la app y devuelve sus datos.
@@ -95,6 +120,41 @@ export const sesion = {
   /** Cierra la sesión y borra la guardada en el teléfono. */
   async salir() {
     await supabase.auth.signOut()
+  },
+
+  /**
+   * Cambia la contraseña de quien tiene la sesión abierta (Etapa 4b · Módulo 1).
+   *
+   * Son dos pasos:
+   *  1. Se comprueba la contraseña actual volviendo a ingresar con ella. Sin este paso,
+   *     alcanzaría con tener el teléfono desbloqueado para cambiar la clave. Si no
+   *     coincide, Supabase lo rechaza y la sesión abierta queda como estaba.
+   *  2. Recién entonces se guarda la nueva.
+   *
+   * `current_password` se envía también: Supabase lo verifica solo si el proyecto tiene
+   * activada esa opción. No se depende de eso; la comprobación real es el paso 1.
+   *
+   * @param {string} email - El de la sesión abierta
+   */
+  async cambiarClave(email, actual, nueva) {
+    const { error: errorActual } = await supabase.auth.signInWithPassword({ email, password: actual })
+    if (errorActual) {
+      throw new ErrorDeServicio(
+        errorActual.status === 400
+          ? 'La contraseña actual no es correcta.'
+          : 'No se pudo conectar. Revisá tu conexión e intentá de nuevo.',
+        errorActual,
+      )
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: nueva, current_password: actual })
+    if (error) {
+      console.error('[sesion] No se pudo cambiar la contraseña:', error)
+      throw new ErrorDeServicio(
+        RECHAZOS_AL_CAMBIAR[error.code] ?? 'No se pudo cambiar la contraseña. Intentá de nuevo.',
+        error,
+      )
+    }
   },
 
   /**

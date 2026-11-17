@@ -6,11 +6,14 @@
  *  - Después de ingresar, el padre ve a sus hijos asociados.
  *  - Un usuario sin hijos asociados no accede a datos de otros alumnos: la base no le
  *    devuelve ninguno y la pantalla lo explica.
+ *
+ * Etapa 4b: al pie está el acceso para cambiar la contraseña de la cuenta.
  */
 
 import { useCallback } from 'react'
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
+import { Boton } from '../src/components/Boton'
 import { Aviso, Carga } from '../src/components/Carga'
 import { useSesion } from '../src/context/sesion'
 import { useCarga } from '../src/hooks/useCarga'
@@ -45,6 +48,12 @@ export default function MisHijos() {
           ListEmptyComponent={
             <Aviso texto="No tenés alumnos asociados a tu cuenta. Consultá en la Administración." />
           }
+          ListFooterComponent={
+            <View style={estilos.cuenta}>
+              <Text style={estilos.detalle}>Tu cuenta: {usuario?.email}</Text>
+              <Boton texto="Cambiar contraseña" variante="secundario" alTocar={() => router.push('/cuenta')} />
+            </View>
+          }
           renderItem={({ item: hijo }) => (
             <Pressable
               style={estilos.tarjeta}
@@ -75,5 +84,6 @@ const estilos = StyleSheet.create({
   nombre:   { fontSize: 17, fontWeight: '700', color: colores.texto },
   detalle:  { fontSize: 14, color: colores.suave },
   enlace:   { fontSize: 14, fontWeight: '600', color: colores.azul, marginTop: 6 },
+  cuenta:   { gap: 10, marginTop: 20, paddingTop: 16, borderTopColor: colores.borde, borderTopWidth: 1 },
   salir:    { color: '#FFFFFF', fontSize: 15, fontWeight: '600' },
 })

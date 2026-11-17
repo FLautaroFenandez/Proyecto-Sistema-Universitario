@@ -8,6 +8,7 @@
  *   HU-M2 · elegir ítems y pagar ........ emitirComprobante, comprobante
  *   HU-M4 · adjuntar la transferencia ... adjuntarTransferencia, enlaceDelArchivo
  *   HU-M3 · historial y deuda ........... cicloVigente, historial
+ *   Etapa 4b · consultar servicios ...... inscripcionesDe
  *
  * Regla del enunciado: "un padre solamente puede consultar la información de sus
  * hijos". La aplica la base (función alumnos_a_cargo y políticas RLS de
@@ -270,5 +271,39 @@ export const cobranza = {
       deuda,
       totalAdeudado: deuda.reduce((suma, item) => suma + item.importe, 0),
     }
+  },
+
+  // ── Etapa 4b: a qué servicios está inscripto un hijo ──────────────────────
+
+  /**
+   * Inscripciones de un alumno a deportes, transporte y comedor, con su período y el
+   * precio vigente del servicio. Solo lectura: inscribir es tarea de la Administración.
+   *
+   * Regla del enunciado: "los padres pueden acceder a… inscripción a deportes, servicio
+   * de transporte y comedor" de cada hijo. La política `insc_servicio_lectura` de la base
+   * devuelve únicamente las de los alumnos a cargo.
+   *
+   * @returns {Promise<Array<{id: string, tipo: 'deporte'|'transporte'|'comedor', nombre: string,
+   *   importe: number, desde: string, hasta: string | null}>>}
+   */
+  async inscripcionesDe(alumnoId) {
+    const filas = await ejecutar(
+      supabase
+        .from('inscripciones_servicio')
+        .select('id, desde, hasta, concepto:conceptos(tipo, nombre, importe)')
+        .eq('alumno_id', alumnoId)
+        .order('desde'),
+      'cargar las inscripciones',
+    )
+    return filas
+      .filter(fila => fila.concepto)
+      .map(fila => ({
+        id: fila.id,
+        tipo: fila.concepto.tipo,
+        nombre: fila.concepto.nombre,
+        importe: fila.concepto.importe,
+        desde: fila.desde,
+        hasta: fila.hasta,
+      }))
   },
 }

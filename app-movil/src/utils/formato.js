@@ -47,6 +47,12 @@ export function fechaDeMomento(momentoIso) {
   return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
 }
 
+/** La fecha de hoy según el teléfono, con el formato de la base: '2026-11-17'. */
+export function hoyIso() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 /** Primer día del mes de una fecha: '2027-03-15' → '2027-03-01'. Así se guardan los períodos. */
 export function inicioDeMes(fechaIso) {
   const { anio, mes } = partes(fechaIso)
