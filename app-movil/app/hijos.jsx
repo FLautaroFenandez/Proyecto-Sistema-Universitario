@@ -8,7 +8,9 @@
  *    devuelve ninguno y la pantalla lo explica.
  *
  * Etapa 4b: al pie está el acceso para cambiar la contraseña de la cuenta.
- * Versión 1.1: arriba, el acceso a los avisos de cobranza.
+ * Versión 1.1: arriba, el acceso a los avisos de cobranza. Es la pantalla de inicio: lleva
+ * las figuras del logo en la barra, la franja de la marca y, en cada hijo, sus iniciales en
+ * un círculo con uno de los colores del logo, para distinguir a los hermanos de un vistazo.
  */
 
 import { useCallback } from 'react'
@@ -16,10 +18,11 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
 import { Boton } from '../src/components/Boton'
 import { Aviso, Carga } from '../src/components/Carga'
+import { FranjaMarca, Isotipo } from '../src/components/Marca'
 import { useSesion } from '../src/context/sesion'
 import { useCarga } from '../src/hooks/useCarga'
 import { cobranza } from '../src/services/cobranza'
-import { colores } from '../src/tema'
+import { colores, coloresDelLogo } from '../src/tema'
 
 export default function MisHijos() {
   const { usuario, salir } = useSesion()
@@ -32,6 +35,7 @@ export default function MisHijos() {
     <View style={estilos.pantalla}>
       <Stack.Screen
         options={{
+          headerLeft: Isotipo,
           headerRight: () => (
             <Pressable onPress={salir} hitSlop={12} accessibilityRole="button">
               <Text style={estilos.salir}>Salir</Text>
@@ -39,6 +43,7 @@ export default function MisHijos() {
           ),
         }}
       />
+      <FranjaMarca />
 
       <Carga cargando={cargando} error={error} alReintentar={recargar}>
         <FlatList
@@ -60,21 +65,37 @@ export default function MisHijos() {
               <Boton texto="Cambiar contraseña" variante="secundario" alTocar={() => router.push('/cuenta')} />
             </View>
           }
-          renderItem={({ item: hijo }) => (
+          renderItem={({ item: hijo, index }) => (
             <Pressable
               style={estilos.tarjeta}
               accessibilityRole="button"
               onPress={() => router.push({ pathname: '/hijo/[id]', params: { id: hijo.id, nombre: hijo.nombre } })}
             >
-              <Text style={estilos.nombre}>{hijo.nombre} {hijo.apellido}</Text>
-              <Text style={estilos.detalle}>
-                {hijo.curso || 'Sin matrícula activa'} · Legajo {hijo.legajo}
-              </Text>
-              <Text style={estilos.enlace}>Ver cuotas ›</Text>
+              <Iniciales hijo={hijo} color={coloresDelLogo[index % coloresDelLogo.length]} />
+              <View style={estilos.datos}>
+                <Text style={estilos.nombre}>{hijo.nombre} {hijo.apellido}</Text>
+                <Text style={estilos.detalle}>
+                  {hijo.curso || 'Sin matrícula activa'} · Legajo {hijo.legajo}
+                </Text>
+                <Text style={estilos.enlace}>Ver cuotas ›</Text>
+              </View>
             </Pressable>
           )}
         />
       </Carga>
+    </View>
+  )
+}
+
+/**
+ * Las iniciales del hijo en un círculo con un color del logo. El texto va en azul sobre un
+ * fondo claro: varios colores del logo (el verde, el celeste) no se leen con letras blancas.
+ */
+function Iniciales({ hijo, color }) {
+  const iniciales = `${hijo.nombre?.[0] ?? ''}${hijo.apellido?.[0] ?? ''}`.toUpperCase()
+  return (
+    <View style={[estilos.iniciales, { borderColor: color, backgroundColor: `${color}1F` }]}>
+      <Text style={estilos.inicialesTexto}>{iniciales}</Text>
     </View>
   )
 }
@@ -86,8 +107,13 @@ const estilos = StyleSheet.create({
   saludo:   { fontSize: 18, fontWeight: '700', color: colores.texto },
   tarjeta:  {
     backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10,
-    padding: 16, gap: 4,
+    padding: 16, flexDirection: 'row', alignItems: 'center', gap: 14,
   },
+  datos:    { flex: 1, gap: 4 },
+  iniciales: {
+    width: 48, height: 48, borderRadius: 24, borderWidth: 2, alignItems: 'center', justifyContent: 'center',
+  },
+  inicialesTexto: { fontSize: 17, fontWeight: '800', color: colores.azul },
   nombre:   { fontSize: 17, fontWeight: '700', color: colores.texto },
   detalle:  { fontSize: 14, color: colores.suave },
   enlace:   { fontSize: 14, fontWeight: '600', color: colores.azul, marginTop: 6 },

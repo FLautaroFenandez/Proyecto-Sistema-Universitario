@@ -10,6 +10,8 @@
  *    importe definitivo lo calcula la base al emitir.
  *  - Una factura pagada no puede volver a cobrarse: si el estado no admite pago, no
  *    hay casillas ni botón (patrón State). La base, además, rechaza un ítem ya pagado.
+ *
+ * Versión 1.1: cada ítem lleva el ícono de su tipo (cuota, deporte, transporte o comedor).
  */
 
 import { useCallback, useState } from 'react'
@@ -17,6 +19,7 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { Boton } from '../../src/components/Boton'
 import { Aviso, Carga } from '../../src/components/Carga'
+import { IconoServicio } from '../../src/components/IconoServicio'
 import { Insignia } from '../../src/components/Insignia'
 import { estadoDe, situacionDeItem } from '../../src/domain/estadoFactura'
 import { useCarga } from '../../src/hooks/useCarga'
@@ -182,6 +185,7 @@ function Item({ item, conBorde, elegible, elegido, alElegir, alAbrirComprobante 
             {elegido && <Text style={estilos.tilde}>✓</Text>}
           </View>
         )}
+        <IconoServicio tipo={item.tipo} medida={16} />
         <Text style={estilos.concepto}>{item.descripcion}</Text>
         <Text style={estilos.importe}>{pesos(item.importe)}</Text>
       </View>

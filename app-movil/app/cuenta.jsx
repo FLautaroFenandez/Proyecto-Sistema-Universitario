@@ -9,11 +9,16 @@
  *
  * La pantalla no habla con Supabase: valida los campos con el servicio de sesión, le pide
  * el cambio y muestra el mensaje que el servicio devuelve.
+ *
+ * Versión 1.1: el teclado ya no tapa los campos (ver `Formulario`) y cada contraseña se
+ * puede mostrar (ver `CampoClave`).
  */
 
 import { useState } from 'react'
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Boton } from '../src/components/Boton'
+import { CampoClave } from '../src/components/CampoClave'
+import { Formulario } from '../src/components/Formulario'
 import { useSesion } from '../src/context/sesion'
 import { mensajeDeError } from '../src/services/base'
 import { LARGO_MINIMO_CLAVE, sesion, validarClaveNueva } from '../src/services/sesion'
@@ -62,62 +67,39 @@ export default function CambiarClave() {
   }
 
   return (
-    <KeyboardAvoidingView style={estilos.pantalla} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
-        <View style={estilos.cuenta}>
-          <Text style={estilos.nombre}>{usuario?.nombre}</Text>
-          <Text style={estilos.detalle}>{usuario?.email}</Text>
-        </View>
+    <Formulario estiloContenido={estilos.contenido}>
+      <View style={estilos.cuenta}>
+        <Text style={estilos.nombre}>{usuario?.nombre}</Text>
+        <Text style={estilos.detalle}>{usuario?.email}</Text>
+      </View>
 
-        <Campo etiqueta="Contraseña actual" valor={actual} alCambiar={alEscribir(setActual)} editable={!enviando} />
-        <Campo
-          etiqueta="Contraseña nueva"
-          ayuda={`Al menos ${LARGO_MINIMO_CLAVE} caracteres.`}
-          valor={nueva}
-          alCambiar={alEscribir(setNueva)}
-          editable={!enviando}
-        />
-        <Campo etiqueta="Repetir la contraseña nueva" valor={repetida} alCambiar={alEscribir(setRepetida)} editable={!enviando} />
-
-        {error && <Text style={estilos.error} accessibilityRole="alert">{error}</Text>}
-        {cambiada && (
-          <Text style={estilos.exito} accessibilityRole="alert">
-            Contraseña cambiada. La próxima vez ingresá con la nueva, acá y en la web.
-          </Text>
-        )}
-
-        <Boton texto="Cambiar contraseña" alTocar={alCambiar} ocupado={enviando} inactivo={incompleto} />
-
-        <Text style={estilos.detalle}>
-          Si olvidaste tu contraseña actual, consultá en la Administración.
-        </Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  )
-}
-
-/** Un campo de contraseña con su etiqueta. El texto se oculta mientras se escribe. */
-function Campo({ etiqueta, ayuda, valor, alCambiar, editable }) {
-  return (
-    <View style={estilos.campo}>
-      <Text style={estilos.etiqueta}>{etiqueta}</Text>
-      <TextInput
-        style={estilos.entrada}
-        value={valor}
-        onChangeText={alCambiar}
-        secureTextEntry
-        autoCapitalize="none"
-        autoCorrect={false}
-        editable={editable}
-        accessibilityLabel={etiqueta}
+      <CampoClave etiqueta="Contraseña actual" valor={actual} alCambiar={alEscribir(setActual)} editable={!enviando} />
+      <CampoClave
+        etiqueta="Contraseña nueva"
+        ayuda={`Al menos ${LARGO_MINIMO_CLAVE} caracteres.`}
+        valor={nueva}
+        alCambiar={alEscribir(setNueva)}
+        editable={!enviando}
       />
-      {ayuda && <Text style={estilos.ayuda}>{ayuda}</Text>}
-    </View>
+      <CampoClave etiqueta="Repetir la contraseña nueva" valor={repetida} alCambiar={alEscribir(setRepetida)} editable={!enviando} />
+
+      {error && <Text style={estilos.error} accessibilityRole="alert">{error}</Text>}
+      {cambiada && (
+        <Text style={estilos.exito} accessibilityRole="alert">
+          Contraseña cambiada. La próxima vez ingresá con la nueva, acá y en la web.
+        </Text>
+      )}
+
+      <Boton texto="Cambiar contraseña" alTocar={alCambiar} ocupado={enviando} inactivo={incompleto} />
+
+      <Text style={estilos.detalle}>
+        Si olvidaste tu contraseña actual, consultá en la Administración.
+      </Text>
+    </Formulario>
   )
 }
 
 const estilos = StyleSheet.create({
-  pantalla:  { flex: 1 },
   contenido: { padding: 24, gap: 16 },
   cuenta:    {
     backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10,
@@ -125,13 +107,6 @@ const estilos = StyleSheet.create({
   },
   nombre:    { fontSize: 17, fontWeight: '700', color: colores.texto },
   detalle:   { fontSize: 14, color: colores.suave },
-  campo:     { gap: 6 },
-  etiqueta:  { fontSize: 14, fontWeight: '600', color: colores.texto },
-  ayuda:     { fontSize: 13, color: colores.suave },
-  entrada:   {
-    backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 10, fontSize: 16, color: colores.texto,
-  },
-  error:     { fontSize: 15, color: colores.rojo },
+  error:    { fontSize: 15, color: colores.rojo },
   exito:     { fontSize: 15, color: colores.verde, fontWeight: '600' },
 })

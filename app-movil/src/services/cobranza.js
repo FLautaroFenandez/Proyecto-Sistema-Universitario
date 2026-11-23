@@ -87,11 +87,12 @@ export const cobranza = {
 
   /**
    * Una factura con el detalle de sus ítems. Cada ítem trae su comprobante, si tiene:
-   * es lo que permite ver la deuda discriminada por ítem.
+   * es lo que permite ver la deuda discriminada por ítem. Desde la versión 1.1 trae
+   * también el tipo de concepto (cuota, deporte, transporte o comedor), para su ícono.
    * @returns {Promise<{factura: object, items: object[]} | null>} null si no existe o no es de un hijo.
    */
   async factura(facturaId) {
-    const [factura, items] = await Promise.all([
+    const [factura, filas] = await Promise.all([
       ejecutar(
         supabase
           .from('facturas_estado')
@@ -103,12 +104,13 @@ export const cobranza = {
       ejecutar(
         supabase
           .from('factura_items')
-          .select('id, descripcion, importe, comprobante:comprobantes(id, numero, estado)')
+          .select('id, descripcion, importe, concepto:conceptos(tipo), comprobante:comprobantes(id, numero, estado)')
           .eq('factura_id', facturaId)
           .order('importe', { ascending: false }),
         'cargar el detalle de la factura',
       ),
     ])
+    const items = filas.map(({ concepto, ...item }) => ({ ...item, tipo: concepto?.tipo }))
     return factura ? { factura, items } : null
   },
 

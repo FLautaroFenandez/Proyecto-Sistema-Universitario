@@ -6,7 +6,9 @@
  * transporte y comedor" de cada hijo. Muestra a qué está inscripto, desde cuándo, el
  * precio vigente y, en los deportes, el grupo (días, horario y profesor responsable).
  *
- * Versión 1.1 (HU-M5): desde acá se inscribe a un servicio nuevo y se da de baja uno.
+ * Versión 1.1 (HU-M5): desde acá se inscribe a un servicio nuevo y se da de baja uno. Cada
+ * servicio lleva su ícono y su color (los mismos de la web), en el título y en el borde de
+ * cada tarjeta.
  *
  * Un padre ve solo las inscripciones de sus hijos: lo garantiza el RLS de la base.
  */
@@ -16,13 +18,14 @@ import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'r
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { Boton } from '../../src/components/Boton'
 import { Aviso, Carga } from '../../src/components/Carga'
+import { IconoServicio } from '../../src/components/IconoServicio'
 import { Insignia } from '../../src/components/Insignia'
 import {
   MAXIMO_DEPORTES, admiteBaja, horarioDeGrupo, situacionDeInscripcion,
 } from '../../src/domain/situacionInscripcion'
 import { useCarga } from '../../src/hooks/useCarga'
 import { cobranza } from '../../src/services/cobranza'
-import { colores } from '../../src/tema'
+import { colores, estiloDeServicio } from '../../src/tema'
 import { fecha, hoyIso, pesos } from '../../src/utils/formato'
 
 /** Los tres servicios, en el orden en que se muestran, y qué decir si no hay ninguno. */
@@ -60,7 +63,12 @@ export default function InscripcionesDelHijo() {
             const delServicio = inscripciones.filter(i => i.tipo === servicio.tipo)
             return (
               <View key={servicio.tipo} style={estilos.grupo}>
-                <Text style={estilos.seccion}>{tituloDe(servicio, delServicio)}</Text>
+                <View style={estilos.encabezado}>
+                  <IconoServicio tipo={servicio.tipo} medida={16} />
+                  <Text style={[estilos.seccion, { color: estiloDeServicio(servicio.tipo).texto }]}>
+                    {tituloDe(servicio, delServicio)}
+                  </Text>
+                </View>
                 {delServicio.length === 0 && <Aviso texto={servicio.vacio} />}
                 {delServicio.map(inscripcion => (
                   <TarjetaInscripcion
@@ -97,7 +105,7 @@ function TarjetaInscripcion({ inscripcion, alDarDeBaja }) {
     ? `Del ${fecha(inscripcion.desde)} al ${fecha(inscripcion.hasta)}`
     : `Desde el ${fecha(inscripcion.desde)}`
   return (
-    <View style={estilos.tarjeta}>
+    <View style={[estilos.tarjeta, { borderLeftColor: estiloDeServicio(inscripcion.tipo).borde }]}>
       <View style={estilos.fila}>
         <Text style={estilos.servicio}>{inscripcion.nombre}</Text>
         <Text style={estilos.importe}>{pesos(inscripcion.importe)}</Text>
@@ -120,11 +128,12 @@ const estilos = StyleSheet.create({
   pantalla:  { flex: 1 },
   contenido: { padding: 16, gap: 16 },
   grupo:     { gap: 10 },
+  encabezado: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   seccion:   {
     fontSize: 13, fontWeight: '700', color: colores.suave, letterSpacing: 0.8, textTransform: 'uppercase',
   },
   tarjeta:   {
-    backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10,
+    backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderLeftWidth: 4, borderRadius: 10,
     padding: 16, gap: 6,
   },
   fila:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 },
