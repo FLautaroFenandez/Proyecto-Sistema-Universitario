@@ -29,7 +29,8 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.js'],
+    // También las reglas de la app móvil: son funciones puras, sin React Native.
+    include: ['src/**/*.test.js', 'app-movil/src/domain/**/*.test.js'],
     // Unidad 5 (métricas): cobertura de código con `npm run test:coverage`.
     // El informe lcov lo lee SonarCloud; el html queda en coverage/index.html.
     coverage: {

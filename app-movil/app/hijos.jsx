@@ -8,6 +8,7 @@
  *    devuelve ninguno y la pantalla lo explica.
  *
  * Etapa 4b: al pie está el acceso para cambiar la contraseña de la cuenta.
+ * Versión 1.1: arriba, el acceso a los avisos de cobranza.
  */
 
 import { useCallback } from 'react'
@@ -44,7 +45,12 @@ export default function MisHijos() {
           data={hijos ?? []}
           keyExtractor={hijo => hijo.id}
           contentContainerStyle={estilos.lista}
-          ListHeaderComponent={<Text style={estilos.saludo}>Hola, {usuario?.nombre}</Text>}
+          ListHeaderComponent={
+            <View style={estilos.cabecera}>
+              <Text style={estilos.saludo}>Hola, {usuario?.nombre}</Text>
+              <Boton texto="Avisos de cobranza" variante="secundario" alTocar={() => router.push('/avisos')} />
+            </View>
+          }
           ListEmptyComponent={
             <Aviso texto="No tenés alumnos asociados a tu cuenta. Consultá en la Administración." />
           }
@@ -76,7 +82,8 @@ export default function MisHijos() {
 const estilos = StyleSheet.create({
   pantalla: { flex: 1 },
   lista:    { padding: 16, gap: 12 },
-  saludo:   { fontSize: 18, fontWeight: '700', color: colores.texto, marginBottom: 4 },
+  cabecera: { gap: 12, marginBottom: 4 },
+  saludo:   { fontSize: 18, fontWeight: '700', color: colores.texto },
   tarjeta:  {
     backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10,
     padding: 16, gap: 4,

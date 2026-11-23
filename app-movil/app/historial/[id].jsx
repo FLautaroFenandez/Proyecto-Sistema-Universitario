@@ -15,6 +15,7 @@ import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'r
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { Aviso, Carga } from '../../src/components/Carga'
 import { Insignia } from '../../src/components/Insignia'
+import { SelectorDeMes } from '../../src/components/SelectorDeMes'
 import { estadoDeComprobante } from '../../src/domain/estadoComprobante'
 import { estadoDe } from '../../src/domain/estadoFactura'
 import { useCarga } from '../../src/hooks/useCarga'
@@ -159,35 +160,6 @@ export default function Historial() {
   )
 }
 
-/** Un mes con flechas para retroceder y avanzar: "Desde  ‹  Marzo 2027  ›". */
-function SelectorDeMes({ etiqueta, valor, puedeRetroceder, puedeAvanzar, alMover }) {
-  return (
-    <View style={estilos.fila}>
-      <Text style={estilos.detalle}>{etiqueta}</Text>
-      <View style={estilos.selector}>
-        <Flecha simbolo="‹" descripcion={`${etiqueta}: mes anterior`} activa={puedeRetroceder} alTocar={() => alMover(-1)} />
-        <Text style={estilos.mes}>{periodo(valor)}</Text>
-        <Flecha simbolo="›" descripcion={`${etiqueta}: mes siguiente`} activa={puedeAvanzar} alTocar={() => alMover(1)} />
-      </View>
-    </View>
-  )
-}
-
-function Flecha({ simbolo, descripcion, activa, alTocar }) {
-  return (
-    <Pressable
-      style={[estilos.flecha, !activa && estilos.flechaInactiva]}
-      onPress={alTocar}
-      disabled={!activa}
-      hitSlop={8}
-      accessibilityRole="button"
-      accessibilityLabel={descripcion}
-    >
-      <Text style={estilos.flechaTexto}>{simbolo}</Text>
-    </Pressable>
-  )
-}
-
 const estilos = StyleSheet.create({
   pantalla:       { flex: 1 },
   contenido:      { padding: 16, gap: 10 },
@@ -210,12 +182,4 @@ const estilos = StyleSheet.create({
   comprobante:    { borderTopColor: colores.borde, borderTopWidth: 1, paddingTop: 10, gap: 6 },
   total:          { borderTopColor: colores.borde, borderTopWidth: 1, paddingTop: 10 },
   totalImporte:   { fontSize: 17, fontWeight: '800', color: colores.azul, fontVariant: ['tabular-nums'] },
-  selector:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  mes:            { fontSize: 16, fontWeight: '600', color: colores.texto, minWidth: 130, textAlign: 'center' },
-  flecha:         {
-    width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: colores.azul,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  flechaInactiva: { opacity: 0.3 },
-  flechaTexto:    { fontSize: 22, fontWeight: '700', color: colores.azul, lineHeight: 24 },
 })

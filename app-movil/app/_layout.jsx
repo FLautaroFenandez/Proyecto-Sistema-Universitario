@@ -67,6 +67,9 @@ function Navegacion() {
         <Stack.Screen name="comprobante/[id]" options={{ title: 'Comprobante' }} />
         <Stack.Screen name="historial/[id]" options={{ title: 'Historial' }} />
         <Stack.Screen name="inscripciones/[id]" options={{ title: 'Inscripciones' }} />
+        <Stack.Screen name="inscribir/[id]" options={{ title: 'Inscribir' }} />
+        <Stack.Screen name="baja/[id]" options={{ title: 'Dar de baja' }} />
+        <Stack.Screen name="avisos" options={{ title: 'Avisos de cobranza' }} />
         <Stack.Screen name="cuenta" options={{ title: 'Cambiar contraseña' }} />
       </Stack.Protected>
     </Stack>
