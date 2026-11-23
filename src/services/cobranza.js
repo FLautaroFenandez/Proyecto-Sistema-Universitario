@@ -174,6 +174,29 @@ export function agruparPorServicio(items, tipo) {
   })
 }
 
+/**
+ * Grupo (días, horario y profesor) del deporte que se facturó en un ítem: el de la
+ * inscripción del alumno a ese deporte que estaba vigente en el mes de la factura.
+ * null si no tiene grupo (por ejemplo, transporte o comedor).
+ */
+export function grupoDelItem(inscripciones, alumnoId, conceptoId, periodo) {
+  const vigente = (inscripciones ?? []).find(i =>
+    i.alumno_id === alumnoId && i.concepto_id === conceptoId
+    && i.desde.slice(0, 7) <= String(periodo).slice(0, 7)
+    && (!i.hasta || i.hasta >= periodo))
+  return vigente?.grupo ?? null
+}
+
+const DIAS = ['', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+
+/** Días y horario de un grupo: "Lun y Mié · 17:00 a 18:30". Vacío si no hay grupo. */
+export function horarioDeGrupo(grupo) {
+  if (!grupo) return ''
+  const dias = [...grupo.dias].sort((a, b) => a - b).map(d => DIAS[d] ?? '?')
+  const lista = dias.length > 1 ? `${dias.slice(0, -1).join(', ')} y ${dias.at(-1)}` : dias[0]
+  return `${lista} · ${String(grupo.hora_inicio).slice(0, 5)} a ${String(grupo.hora_fin).slice(0, 5)}`
+}
+
 const ALUMNO_DEL_REPORTE =
   'id, legajo, apellido, nombre, ' +
   'matriculas(estado, curso:cursos(anio, division, nivel:niveles(nombre), ciclo:ciclos_lectivos(activo)))'
@@ -239,16 +262,22 @@ export const cobranza = {
     if (facturas.length === 0) return { facturas: [], items: [], totales: resumirCobranza([]) }
 
     const ids = [...new Set(facturas.map(f => f.alumno_id))]
-    const [alumnos, items] = await Promise.all([
+    const [alumnos, items, inscripciones] = await Promise.all([
       ejecutar(
         supabase.from('alumnos').select(ALUMNO_DEL_REPORTE).in('id', ids),
         'cargar los alumnos del reporte',
       ),
       ejecutar(
         supabase.from('factura_items')
-          .select('id, factura_id, descripcion, importe, concepto:conceptos(tipo, nombre), comprobante:comprobantes(estado)')
+          .select('id, factura_id, concepto_id, descripcion, importe, concepto:conceptos(tipo, nombre), comprobante:comprobantes(estado)')
           .in('factura_id', facturas.map(f => f.id)),
         'cargar los ítems del reporte',
+      ),
+      ejecutar(
+        supabase.from('inscripciones_servicio')
+          .select('alumno_id, concepto_id, desde, hasta, grupo:deporte_grupos(dias, hora_inicio, hora_fin, profesor)')
+          .in('alumno_id', ids),
+        'cargar los grupos de los deportes',
       ),
     ])
     const porId = new Map(alumnos.map(a => [a.id, a]))
@@ -265,6 +294,7 @@ export const cobranza = {
           estado: estadoDeItem(item),
           periodo: factura?.periodo ?? '',
           alumno: factura?.alumno ?? null,
+          grupo: grupoDelItem(inscripciones, factura?.alumno_id, item.concepto_id, factura?.periodo),
           ...cursoDelAlumno(factura?.alumno),
         }
       }),

@@ -18,6 +18,7 @@ import { resumirDetalle } from './auditoria'
 import {
   validarImporte, mesesDelCiclo, resumirCobranza,
   estadoDeItem, cursoDelAlumno, resumirPorAlumno, agruparPorServicio,
+  grupoDelItem, horarioDeGrupo,
 } from './cobranza'
 import { formatDateShort, formatMes, formatMesTitulo } from '@/utils/formatDate'
 
@@ -220,6 +221,26 @@ describe('Listados por alumno, por deporte y por recorrido', () => {
     expect(recorridos[0].totales).toEqual({ facturado: 52000, cobrado: 26000, pendiente: 26000 })
     expect(recorridos[0].niveles[0].nivel).toBe('Primario')
     expect(agruparPorServicio(items, 'deporte')[0].nombre).toBe('Natación')
+  })
+})
+
+describe('Horario y profesor en el reporte por deporte', () => {
+  const grupo = { dias: [3, 1], hora_inicio: '17:00:00', hora_fin: '18:30:00', profesor: 'Prof. Martín Acosta' }
+  const inscripciones = [
+    { alumno_id: 'a1', concepto_id: 5, desde: '2027-03-01', hasta: '2027-05-31', grupo },
+  ]
+
+  it('muestra los días ordenados y el horario', () => {
+    expect(horarioDeGrupo(grupo)).toBe('Lun y Mié · 17:00 a 18:30')
+  })
+
+  it('toma el grupo de la inscripción vigente en el mes de la factura', () => {
+    expect(grupoDelItem(inscripciones, 'a1', 5, '2027-04-01')).toBe(grupo)
+  })
+
+  it('fuera del período de la inscripción no hay grupo', () => {
+    expect(grupoDelItem(inscripciones, 'a1', 5, '2027-06-01')).toBeNull()
+    expect(grupoDelItem(inscripciones, 'a1', 9, '2027-04-01')).toBeNull()
   })
 })
 

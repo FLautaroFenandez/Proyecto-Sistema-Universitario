@@ -1,22 +1,25 @@
 /**
  * @file inscripciones/[id].jsx
- * @description Pantalla 8 — Inscripciones de un hijo (Etapa 4b). La ruta es
- * /inscripciones/<id del alumno>.
+ * @description Pantalla 8 — Inscripciones de un hijo. La ruta es /inscripciones/<id del alumno>.
  *
  * Regla del enunciado: "los padres pueden acceder a… inscripción a deportes, servicio de
- * transporte y comedor" de cada hijo. Es solo consulta: muestra a qué está inscripto,
- * desde cuándo y el precio vigente. Inscribir desde la app (HU-M5) quedó fuera del
- * alcance mínimo.
+ * transporte y comedor" de cada hijo. Muestra a qué está inscripto, desde cuándo, el
+ * precio vigente y, en los deportes, el grupo (días, horario y profesor responsable).
+ *
+ * Versión 1.1 (HU-M5): desde acá se inscribe a un servicio nuevo y se da de baja uno.
  *
  * Un padre ve solo las inscripciones de sus hijos: lo garantiza el RLS de la base.
  */
 
 import { useCallback } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Boton } from '../../src/components/Boton'
 import { Aviso, Carga } from '../../src/components/Carga'
 import { Insignia } from '../../src/components/Insignia'
-import { MAXIMO_DEPORTES, situacionDeInscripcion } from '../../src/domain/situacionInscripcion'
+import {
+  MAXIMO_DEPORTES, admiteBaja, horarioDeGrupo, situacionDeInscripcion,
+} from '../../src/domain/situacionInscripcion'
 import { useCarga } from '../../src/hooks/useCarga'
 import { cobranza } from '../../src/services/cobranza'
 import { colores } from '../../src/tema'
@@ -31,6 +34,7 @@ const SERVICIOS = [
 
 export default function InscripcionesDelHijo() {
   const { id, nombre } = useLocalSearchParams()
+  const router = useRouter()
 
   const cargarInscripciones = useCallback(() => cobranza.inscripcionesDe(id), [id])
   const { datos, cargando, error, recargar } = useCarga(cargarInscripciones)
@@ -47,6 +51,11 @@ export default function InscripcionesDelHijo() {
           contentContainerStyle={estilos.contenido}
           refreshControl={<RefreshControl refreshing={cargando} onRefresh={recargar} />}
         >
+          <Boton
+            texto="Inscribir a un servicio"
+            alTocar={() => router.push({ pathname: '/inscribir/[id]', params: { id, nombre } })}
+          />
+
           {SERVICIOS.map(servicio => {
             const delServicio = inscripciones.filter(i => i.tipo === servicio.tipo)
             return (
@@ -54,15 +63,19 @@ export default function InscripcionesDelHijo() {
                 <Text style={estilos.seccion}>{tituloDe(servicio, delServicio)}</Text>
                 {delServicio.length === 0 && <Aviso texto={servicio.vacio} />}
                 {delServicio.map(inscripcion => (
-                  <TarjetaInscripcion key={inscripcion.id} inscripcion={inscripcion} />
+                  <TarjetaInscripcion
+                    key={inscripcion.id}
+                    inscripcion={inscripcion}
+                    alDarDeBaja={() => router.push({ pathname: '/baja/[id]', params: { id: inscripcion.id, nombre } })}
+                  />
                 ))}
               </View>
             )
           })}
 
           <Text style={estilos.nota}>
-            Para inscribir a tu hijo o darlo de baja de un servicio, consultá en la Administración.
             El importe es el precio vigente por mes; cada factura conserva el precio con el que se emitió.
+            Las altas y las bajas rigen desde el primer mes todavía sin facturar.
           </Text>
         </ScrollView>
       </Carga>
@@ -77,9 +90,9 @@ function tituloDe(servicio, inscripciones) {
   return `${servicio.titulo} · ${ocupados} de ${MAXIMO_DEPORTES}`
 }
 
-/** Una inscripción: servicio, precio por mes, período y situación. */
-function TarjetaInscripcion({ inscripcion }) {
-  const { situacion } = inscripcion
+/** Una inscripción: servicio, precio por mes, grupo, período, situación y la baja. */
+function TarjetaInscripcion({ inscripcion, alDarDeBaja }) {
+  const { situacion, grupo } = inscripcion
   const periodo = inscripcion.hasta
     ? `Del ${fecha(inscripcion.desde)} al ${fecha(inscripcion.hasta)}`
     : `Desde el ${fecha(inscripcion.desde)}`
@@ -89,8 +102,16 @@ function TarjetaInscripcion({ inscripcion }) {
         <Text style={estilos.servicio}>{inscripcion.nombre}</Text>
         <Text style={estilos.importe}>{pesos(inscripcion.importe)}</Text>
       </View>
+      {grupo && <Text style={estilos.horario}>{horarioDeGrupo(grupo)} · {grupo.profesor}</Text>}
       <Text style={estilos.detalle}>{periodo}</Text>
-      <Insignia texto={situacion.etiqueta} color={situacion.color} />
+      <View style={estilos.pie}>
+        <Insignia texto={situacion.etiqueta} color={situacion.color} />
+        {admiteBaja(inscripcion) && (
+          <Pressable onPress={alDarDeBaja} hitSlop={8} accessibilityRole="button">
+            <Text style={estilos.enlace}>Dar de baja</Text>
+          </Pressable>
+        )}
+      </View>
     </View>
   )
 }
@@ -110,5 +131,8 @@ const estilos = StyleSheet.create({
   servicio:  { fontSize: 17, fontWeight: '700', color: colores.texto, flexShrink: 1 },
   importe:   { fontSize: 17, fontWeight: '700', color: colores.texto, fontVariant: ['tabular-nums'] },
   detalle:   { fontSize: 14, color: colores.suave },
+  horario:   { fontSize: 14, color: colores.texto },
+  pie:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12 },
+  enlace:    { fontSize: 14, fontWeight: '600', color: colores.rojo },
   nota:      { fontSize: 14, color: colores.suave, marginTop: 4 },
 })

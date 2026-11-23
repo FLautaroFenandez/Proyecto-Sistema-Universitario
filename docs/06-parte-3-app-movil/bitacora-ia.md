@@ -10,7 +10,10 @@ se trabaja**, no al final. Solo incluye la Parte 3.
 **Prompt utilizado:** el pedido que se le hizo a la IA en ese momento, con el problema que había que resolver. Entre comillas, las frases textuales; sin comillas, el pedido resumido a partir de los mensajes de la conversación.
 
 **Herramientas:** Claude Code (modelo Claude Opus 5.5), integrado en VS Code, con acceso al
-repositorio (registros 1 a 20), y Gemini, para consultas fuera del repositorio (registro 21).
+repositorio (registros 1 a 20, 22 y 23), y Gemini, para consultas fuera del repositorio (registro 21).
+
+> Los registros 22 y 23 son de la versión 1.1 de la app, hecha el 23/11 con la fecha de
+> entrega extendida. No están en la bitácora entregada a la cátedra.
 
 ## Registro
 
@@ -37,9 +40,11 @@ repositorio (registros 1 a 20), y Gemini, para consultas fuera del repositorio (
 | 19 | 17/11 | El equipo no veía en el celular las pantallas nuevas | "Te dejé una pequeña grabación de pantalla, pero no veo estas nuevas pantallas a las que te referís, de cambiar contraseña e inscripciones." ([detalle](#19-pantallas-anunciadas-que-todavía-no-existían)) | Claude Code | Las pantallas no existían: la IA había presentado el diseño detallado para validarlo otra vez, aunque el equipo ya había aprobado la etapa, y no dijo con claridad que todavía no estaban programadas | No | Se programó la etapa a continuación | Corregido: costó una ronda de prueba |
 | 20 | 17/11 | Programar el cambio de contraseña y la consulta de inscripciones | Las pantallas de cambiar contraseña e inscripciones no aparecen en la app (misma grabación): hay que programarlas según el diseño aprobado de la Etapa 4b. | Claude Code | Dos pantallas nuevas, sin cambios en la base. Para verificar la contraseña actual leyó el código de la librería de Supabase instalada (2.119): volver a ingresar con ella la comprueba sin tocar la sesión, y el campo `current_password` solo se valida con una opción del servidor que el proyecto no tiene | Sí | Ninguna | Correcto: 9 pruebas en el celular aprobadas |
 | 21 | 09/11 al 17/11 | Dudas menores sobre el funcionamiento del sistema durante el desarrollo | Consultas puntuales del equipo sobre el funcionamiento del sistema, fuera del repositorio. ([detalle](#21-gemini-como-segunda-herramienta)) | Gemini | Explicaciones generales sobre cómo funcionan las piezas del sistema | Sí | Ninguna: no generó código del proyecto | Correcto: complementó las explicaciones de Claude Code |
+| 22 | 23/11 | Mejorar la app con la fecha de entrega extendida, sin tocar el informe ni la bitácora entregados | "Se me extendió hasta mañana la entrega, pero no puedo modificar los informes ni los trabajos, por lo cual los cambios que puedo hacer son menores. Me interesa cambiar la APK, dejándola un poco mejor, con más funcionalidades y abarcando todo lo requerido." ([detalle](#22-versión-11-de-la-app)) | Claude Code | Comparó el enunciado con la app. Faltaban inscribir y dar de baja (HU-M5), los grupos de cada deporte por nivel y horario con su profesor, el control de conflictos de horario y los avisos del último día hábil y del día 20. Propuso una versión 1.1 en dos partes: A, inscripciones; B, avisos en la app. Dejó fuera recuperar la contraseña, que necesita un servicio de correo | Sí | El equipo aprobó A y B sin la notificación en el teléfono que se ofrecía como opcional, y pidió que los avisos queden preparados para enviarse por correo | Correcto |
+| 23 | 23/11 | Programar la versión 1.1: inscripciones con control de horarios y avisos de cobranza | "Procedamos así con A y B, dejando la posibilidad de hacer escalable para sistema de correo, dependiendo cómo vayamos con el tiempo." ([detalle](#22-versión-11-de-la-app)) | Claude Code | Script `supabase-inscripciones-avisos.sql` (grupos de deportes, control de horarios en el disparador, funciones para inscribir y dar de baja, vista `avisos_cobranza`), 3 pantallas nuevas, horario y profesor en el reporte de la web y 11 pruebas de Vitest ([documento](07-version-1-1/README.md)) | Sí | Ninguna | Correcto: el script corrió y las 11 pruebas en el celular dieron lo esperado, según informó el equipo |
 
 **Herramientas:** Claude Code para el diseño, el código, la documentación y el diagnóstico
-de errores (registros 1 a 20); Gemini para consultas de comprensión (registro 21).
+de errores (registros 1 a 20, 22 y 23); Gemini para consultas de comprensión (registro 21).
 
 ## Detalle de cada registro
 
@@ -301,3 +306,18 @@ de errores (registros 1 a 20); Gemini para consultas de comprensión (registro 2
   respuestas eran generales y no sobre el código del proyecto. Por eso se usó para entender,
   no para producir: ningún archivo del proyecto salió de Gemini.
 - **Evidencia:** el historial de las conversaciones queda en la cuenta del integrante.
+
+### 22. Versión 1.1 de la app
+
+- **Contexto:** la cátedra extendió la entrega al 24/11, pero el informe de IA y la bitácora
+  ya estaban entregados y no se podían cambiar. El equipo quiso aprovechar el día para que
+  la app cubriera todo el enunciado.
+- **Cómo eligió la IA qué hacer:** releyó el enunciado contra lo que la app ya hacía y separó
+  lo que faltaba del pedido de cambios menores. Lo que necesitaba piezas externas, como
+  recuperar la contraseña o mandar correos, quedó fuera o preparado para después.
+- **Preparado para el correo:** los avisos no los arma la app sino la base, en la vista
+  `avisos_cobranza`. La app los muestra hoy, y un envío por correo puede leer la misma vista
+  sin rehacer nada (sección 4 del [documento](07-version-1-1/README.md)).
+- **Cómo se registraron las pruebas:** el equipo informó que el script y las 11 pruebas en
+  el celular salieron bien. Siguiendo el criterio del registro 17, el documento las anota como
+  *informadas por el equipo* y no como comprobadas en el sistema.

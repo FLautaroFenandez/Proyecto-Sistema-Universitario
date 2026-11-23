@@ -9,6 +9,9 @@
  *   HU-M4 · adjuntar la transferencia ... adjuntarTransferencia, enlaceDelArchivo
  *   HU-M3 · historial y deuda ........... cicloVigente, historial
  *   Etapa 4b · consultar servicios ...... inscripcionesDe
+ *   HU-M5 · inscribir y dar de baja ..... serviciosParaInscribir, mesesParaCambiar,
+ *                                         inscribir, inscripcion, darDeBaja
+ *   Avisos de cobranza .................. avisos
  *
  * Regla del enunciado: "un padre solamente puede consultar la información de sus
  * hijos". La aplica la base (función alumnos_a_cargo y políticas RLS de
@@ -22,6 +25,7 @@
 import { File } from 'expo-file-system'
 import { ARCHIVO_COMPROBANTE } from '../config/institucion'
 import { supabase } from '../lib/supabase'
+import { inicioDeMes, sumarMeses } from '../utils/formato'
 import { ejecutar, ErrorDeServicio } from './base'
 
 /** Bucket privado de Supabase Storage donde van las transferencias. */
@@ -29,7 +33,7 @@ const BUCKET = 'comprobantes'
 
 const ALUMNO_CON_CURSO =
   'id, legajo, apellido, nombre, ' +
-  'matriculas(estado, curso:cursos(anio, division, nivel:niveles(nombre), ciclo:ciclos_lectivos(activo)))'
+  'matriculas(estado, curso:cursos(anio, division, nivel_id, nivel:niveles(nombre), ciclo:ciclos_lectivos(activo)))'
 
 /** Curso de la matrícula activa del ciclo vigente: "3.º A · Primario". Vacío si no tiene. */
 function cursoVigente(alumno) {
@@ -273,37 +277,148 @@ export const cobranza = {
     }
   },
 
-  // ── Etapa 4b: a qué servicios está inscripto un hijo ──────────────────────
+  // ── Etapa 4b y versión 1.1: inscripciones a servicios (HU-M5 · REQ-29) ────
 
   /**
-   * Inscripciones de un alumno a deportes, transporte y comedor, con su período y el
-   * precio vigente del servicio. Solo lectura: inscribir es tarea de la Administración.
+   * Inscripciones de un alumno a deportes, transporte y comedor, con su período, el
+   * precio vigente y, en los deportes, el grupo (días, horario y profesor).
    *
    * Regla del enunciado: "los padres pueden acceder a… inscripción a deportes, servicio
    * de transporte y comedor" de cada hijo. La política `insc_servicio_lectura` de la base
    * devuelve únicamente las de los alumnos a cargo.
    *
    * @returns {Promise<Array<{id: string, tipo: 'deporte'|'transporte'|'comedor', nombre: string,
-   *   importe: number, desde: string, hasta: string | null}>>}
+   *   importe: number, desde: string, hasta: string | null, grupo: object | null}>>}
    */
   async inscripcionesDe(alumnoId) {
     const filas = await ejecutar(
       supabase
         .from('inscripciones_servicio')
-        .select('id, desde, hasta, concepto:conceptos(tipo, nombre, importe)')
+        .select(`id, desde, hasta, concepto:conceptos(tipo, nombre, importe), grupo:deporte_grupos(${CAMPOS_DEL_GRUPO})`)
         .eq('alumno_id', alumnoId)
         .order('desde'),
       'cargar las inscripciones',
     )
-    return filas
-      .filter(fila => fila.concepto)
-      .map(fila => ({
-        id: fila.id,
-        tipo: fila.concepto.tipo,
-        nombre: fila.concepto.nombre,
-        importe: fila.concepto.importe,
-        desde: fila.desde,
-        hasta: fila.hasta,
-      }))
+    return filas.filter(fila => fila.concepto).map(aInscripcion)
   },
+
+  /** Una inscripción, para darla de baja. null si no existe o no es de un hijo. */
+  async inscripcion(inscripcionId) {
+    const fila = await ejecutar(
+      supabase
+        .from('inscripciones_servicio')
+        .select(`id, alumno_id, desde, hasta, concepto:conceptos(tipo, nombre, importe), grupo:deporte_grupos(${CAMPOS_DEL_GRUPO})`)
+        .eq('id', inscripcionId)
+        .maybeSingle(),
+      'cargar la inscripción',
+    )
+    return fila?.concepto ? { ...aInscripcion(fila), alumnoId: fila.alumno_id } : null
+  },
+
+  /**
+   * Meses en los que puede empezar o terminar un servicio: desde el primero todavía sin
+   * facturar (lo calcula la base, la misma regla que valida al inscribir) hasta el final
+   * del ciclo lectivo.
+   * @returns {Promise<string[]>} Períodos 'AAAA-MM-01'
+   */
+  async mesesParaCambiar(alumnoId) {
+    const [primero, ciclo] = await Promise.all([
+      ejecutar(supabase.rpc('primer_mes_sin_facturar', { p_alumno: alumnoId }), 'calcular el primer mes disponible'),
+      this.cicloVigente(),
+    ])
+    if (!primero || !ciclo) return []
+    const ultimo = inicioDeMes(ciclo.fecha_fin)
+    const meses = []
+    for (let mes = inicioDeMes(primero); mes <= ultimo; mes = sumarMeses(mes, 1)) meses.push(mes)
+    return meses
+  },
+
+  /**
+   * Lo que se puede contratar para un alumno: deportes con los grupos de su nivel,
+   * recorridos de transporte y comedor, cada uno con su precio vigente.
+   * @returns {Promise<{nivel: string, servicios: Array<object>}>}
+   */
+  async serviciosParaInscribir(alumnoId) {
+    const alumno = await ejecutar(
+      supabase.from('alumnos').select(ALUMNO_CON_CURSO).eq('id', alumnoId).maybeSingle(),
+      'cargar el alumno',
+    )
+    const matricula = (alumno?.matriculas ?? []).find(m => m.estado === 'activa' && m.curso?.ciclo?.activo)
+    if (!matricula) throw new ErrorDeServicio('El alumno no tiene una matrícula activa en el ciclo lectivo.')
+
+    const [conceptos, grupos] = await Promise.all([
+      ejecutar(
+        supabase.from('conceptos').select('id, tipo, nombre, importe')
+          .eq('activo', true).in('tipo', ['deporte', 'transporte', 'comedor']).order('nombre'),
+        'cargar los servicios',
+      ),
+      ejecutar(
+        supabase.from('deporte_grupos').select(`id, concepto_id, ${CAMPOS_DEL_GRUPO}`)
+          .eq('nivel_id', matricula.curso.nivel_id).eq('activo', true).order('hora_inicio'),
+        'cargar los grupos de cada deporte',
+      ),
+    ])
+    return {
+      nivel: matricula.curso.nivel?.nombre ?? '',
+      servicios: conceptos.map(c => ({ ...c, grupos: grupos.filter(g => g.concepto_id === c.id) })),
+    }
+  },
+
+  /**
+   * Inscribe al alumno. La base controla todo: que sea un hijo, dos deportes como máximo,
+   * un solo recorrido, sin duplicados, el nivel del grupo y los conflictos de horario.
+   * Si algo no se cumple, devuelve el motivo y la pantalla lo muestra.
+   */
+  async inscribir({ alumnoId, conceptoId, grupoId, desde }) {
+    return ejecutar(
+      supabase.rpc('inscribir_a_servicio', {
+        p_alumno: alumnoId, p_concepto: conceptoId, p_grupo: grupoId ?? null, p_desde: desde,
+      }),
+      'registrar la inscripción',
+    )
+  },
+
+  /**
+   * Da de baja un servicio a partir de un mes (ese mes ya no se factura).
+   * @returns {Promise<'baja' | 'cancelada'>} 'cancelada' si todavía no había empezado.
+   */
+  async darDeBaja(inscripcionId, desde) {
+    return ejecutar(
+      supabase.rpc('dar_de_baja_servicio', { p_inscripcion: inscripcionId, p_desde: desde }),
+      'registrar la baja',
+    )
+  },
+
+  // ── Versión 1.1: avisos de cobranza (último día hábil y día 20) ───────────
+
+  /**
+   * Avisos de cobranza de los hijos, ordenados por fecha. Los arma la base en la vista
+   * `avisos_cobranza`: la misma que podría leer un envío programado por correo.
+   * @param {string[]} alumnoIds
+   */
+  async avisos(alumnoIds) {
+    if (!alumnoIds?.length) return []
+    return ejecutar(
+      supabase.from('avisos_cobranza')
+        .select('factura_id, numero, alumno_id, periodo, vencimiento, estado, tipo, fecha_envio, importe, detalle')
+        .in('alumno_id', alumnoIds)
+        .order('fecha_envio').order('tipo', { ascending: false }),
+      'cargar los avisos',
+    )
+  },
+}
+
+const CAMPOS_DEL_GRUPO = 'dias, hora_inicio, hora_fin, profesor'
+
+/** Fila de la base → inscripción que usan las pantallas. */
+function aInscripcion(fila) {
+  return {
+    id: fila.id,
+    tipo: fila.concepto.tipo,
+    nombre: fila.concepto.nombre,
+    importe: fila.concepto.importe,
+    desde: fila.desde,
+    hasta: fila.hasta,
+    grupo: fila.grupo ?? null,
+  }
 }
