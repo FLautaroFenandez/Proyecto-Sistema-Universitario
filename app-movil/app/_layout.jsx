@@ -16,7 +16,8 @@
  */
 
 import { useEffect } from 'react'
-import { SplashScreen, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ProveedorSesion, useSesion } from '../src/context/sesion'
@@ -25,6 +26,8 @@ import { colores } from '../src/tema'
 // La pantalla de bienvenida queda visible hasta saber si hay una sesión guardada.
 // Así no se ve el formulario de ingreso por un instante cuando el padre ya ingresó.
 // Si este pedido fallara, la bienvenida simplemente se ocultaría antes: no es un error.
+// Versión 1.1: la bienvenida muestra el logo (configurada en app.json con el plugin de
+// `expo-splash-screen`). Solo se ve en el APK: Expo Go muestra su propia pantalla.
 SplashScreen.preventAutoHideAsync().catch(() => {})
 
 export default function Layout() {
@@ -57,7 +60,8 @@ function Navegacion() {
       }}
     >
       <Stack.Protected guard={!usuario}>
-        <Stack.Screen name="index" options={{ title: 'Educar para Transformar' }} />
+        {/* El ingreso no tiene barra: arriba va el logo de la escuela. */}
+        <Stack.Screen name="index" options={{ title: 'Educar para Transformar', headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!!usuario}>

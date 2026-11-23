@@ -8,18 +8,29 @@
  *
  * La pantalla no habla con Supabase: le pide a la sesión que ingrese y muestra el
  * mensaje que devuelve el servicio.
+ *
+ * Versión 1.1: sin barra superior, con el logo y la franja de la marca. El teclado ya no
+ * tapa los campos (ver `Formulario`), la tecla "Siguiente" pasa del email a la contraseña y
+ * la contraseña se puede mostrar.
  */
 
-import { useState } from 'react'
-import {
-  ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
-} from 'react-native'
+import { useRef, useState } from 'react'
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { StatusBar } from 'expo-status-bar'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { CampoClave } from '../src/components/CampoClave'
+import { Formulario } from '../src/components/Formulario'
+import { FranjaMarca } from '../src/components/Marca'
 import { useSesion } from '../src/context/sesion'
 import { mensajeDeError } from '../src/services/base'
 import { colores } from '../src/tema'
 
+const LOGO = require('../assets/logo.png')
+
 export default function Ingreso() {
   const { ingresar } = useSesion()
+  const margenes = useSafeAreaInsets()
+  const campoClave = useRef(null)
   const [email, setEmail] = useState('')
   const [clave, setClave] = useState('')
   const [error, setError] = useState(null)
@@ -41,8 +52,13 @@ export default function Ingreso() {
   }
 
   return (
-    <KeyboardAvoidingView style={estilos.pantalla} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView contentContainerStyle={estilos.contenido} keyboardShouldPersistTaps="handled">
+    <View style={[estilos.pantalla, { paddingTop: margenes.top }]}>
+      {/* Sin barra superior el fondo es claro: los íconos del sistema van oscuros. */}
+      <StatusBar style="dark" />
+      <FranjaMarca />
+
+      <Formulario estiloContenido={estilos.contenido}>
+        <Image source={LOGO} style={estilos.logo} accessibilityLabel="Educar para Transformar, centro educativo" />
         <Text style={estilos.titulo}>App de familias</Text>
         <Text style={estilos.ayuda}>Ingresá con el mismo email y contraseña que usás en la web.</Text>
 
@@ -59,22 +75,20 @@ export default function Ingreso() {
             placeholder="nombre@ejemplo.com"
             placeholderTextColor={colores.suave}
             editable={!enviando}
+            returnKeyType="next"
+            submitBehavior="submit"
+            onSubmitEditing={() => campoClave.current?.focus()}
           />
         </View>
 
-        <View style={estilos.campo}>
-          <Text style={estilos.etiqueta}>Contraseña</Text>
-          <TextInput
-            style={estilos.entrada}
-            value={clave}
-            onChangeText={setClave}
-            secureTextEntry
-            autoCapitalize="none"
-            textContentType="password"
-            editable={!enviando}
-            onSubmitEditing={incompleto ? undefined : alIngresar}
-          />
-        </View>
+        <CampoClave
+          ref={campoClave}
+          etiqueta="Contraseña"
+          valor={clave}
+          alCambiar={setClave}
+          editable={!enviando}
+          onSubmitEditing={incompleto ? undefined : alIngresar}
+        />
 
         {error && <Text style={estilos.error} accessibilityRole="alert">{error}</Text>}
 
@@ -91,16 +105,17 @@ export default function Ingreso() {
 
         {/* Recuperar la contraseña exige enviar correos; como en la web, lo resuelve la Administración. */}
         <Text style={estilos.olvido}>¿Olvidaste tu contraseña? Consultá en la Administración.</Text>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </Formulario>
+    </View>
   )
 }
 
 const estilos = StyleSheet.create({
-  pantalla:      { flex: 1 },
+  pantalla:      { flex: 1, backgroundColor: colores.tarjeta },
   contenido:     { flexGrow: 1, justifyContent: 'center', gap: 16, padding: 24 },
-  titulo:        { fontSize: 26, fontWeight: '800', color: colores.azul },
-  ayuda:         { fontSize: 15, color: colores.suave },
+  logo:          { width: 170, height: 170, alignSelf: 'center' },
+  titulo:        { fontSize: 26, fontWeight: '800', color: colores.azul, textAlign: 'center' },
+  ayuda:         { fontSize: 15, color: colores.suave, textAlign: 'center' },
   campo:         { gap: 6 },
   etiqueta:      { fontSize: 14, fontWeight: '600', color: colores.texto },
   entrada:       {

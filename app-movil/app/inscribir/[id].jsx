@@ -12,6 +12,10 @@
  *
  * Seguridad en dos capas: la pantalla avisa antes (dos deportes, horario superpuesto) y
  * la base decide al inscribir. Si la base rechaza, se muestra su motivo.
+ *
+ * Cada tipo de servicio lleva su ícono, y lo elegido se marca con su color (los mismos de
+ * la web): todo lo de un deporte se ve en verde, el transporte en violeta y el comedor en
+ * naranja.
  */
 
 import { useCallback, useState } from 'react'
@@ -19,6 +23,7 @@ import { Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { Boton } from '../../src/components/Boton'
 import { Aviso, Carga } from '../../src/components/Carga'
+import { IconoServicio } from '../../src/components/IconoServicio'
 import { SelectorDeMes } from '../../src/components/SelectorDeMes'
 import {
   MAXIMO_DEPORTES, gruposSeSuperponen, horarioDeGrupo, situacionDeInscripcion,
@@ -26,14 +31,10 @@ import {
 import { useCarga } from '../../src/hooks/useCarga'
 import { mensajeDeError } from '../../src/services/base'
 import { cobranza } from '../../src/services/cobranza'
-import { colores } from '../../src/tema'
+import { colores, estiloDeServicio, servicios as ESTILOS } from '../../src/tema'
 import { hoyIso, periodo, pesos } from '../../src/utils/formato'
 
-const TIPOS = [
-  { clave: 'deporte',    etiqueta: 'Deporte' },
-  { clave: 'transporte', etiqueta: 'Transporte' },
-  { clave: 'comedor',    etiqueta: 'Comedor' },
-]
+const TIPOS = ['deporte', 'transporte', 'comedor']
 
 export default function Inscribir() {
   const { id, nombre } = useLocalSearchParams()
@@ -57,6 +58,7 @@ export default function Inscribir() {
   const [errorAlta, setErrorAlta] = useState(null)
 
   const hoy = hoyIso()
+  const color = estiloDeServicio(tipo).borde
   const servicios = (datos?.servicios ?? []).filter(s => s.tipo === tipo)
   const servicio = servicios.find(s => s.id === servicioId) ?? null
   const grupo = servicio?.grupos.find(g => g.id === grupoId) ?? null
@@ -120,9 +122,14 @@ export default function Inscribir() {
         >
           <Text style={estilos.seccion}>1. Tipo de servicio</Text>
           <View style={estilos.chips}>
-            {TIPOS.map(t => (
-              <Opcion key={t.clave} activa={tipo === t.clave} alTocar={() => elegirTipo(t.clave)}>
-                <Text style={[estilos.chipTexto, tipo === t.clave && estilos.chipTextoActivo]}>{t.etiqueta}</Text>
+            {TIPOS.map(clave => (
+              <Opcion key={clave} activa={tipo === clave} color={ESTILOS[clave].borde} alTocar={() => elegirTipo(clave)}>
+                <View style={estilos.chip}>
+                  <IconoServicio tipo={clave} medida={16} />
+                  <Text style={[estilos.chipTexto, tipo === clave && { color: ESTILOS[clave].texto }]}>
+                    {ESTILOS[clave].etiqueta}
+                  </Text>
+                </View>
               </Opcion>
             ))}
           </View>
@@ -136,7 +143,7 @@ export default function Inscribir() {
           {servicios.map(s => {
             const sinGrupos = s.tipo === 'deporte' && s.grupos.length === 0
             return (
-              <Opcion key={s.id} activa={servicioId === s.id} alTocar={() => elegirServicio(s.id)} inactiva={sinGrupos}>
+              <Opcion key={s.id} activa={servicioId === s.id} color={color} alTocar={() => elegirServicio(s.id)} inactiva={sinGrupos}>
                 <View style={estilos.fila}>
                   <Text style={estilos.nombre}>{s.nombre}</Text>
                   <Text style={estilos.importe}>{pesos(s.importe)}</Text>
@@ -150,7 +157,7 @@ export default function Inscribir() {
             <>
               <Text style={estilos.seccion}>3. Grupo · nivel {datos?.nivel}</Text>
               {servicio.grupos.map(g => (
-                <Opcion key={g.id} activa={grupoId === g.id} alTocar={() => { setGrupoId(g.id); setErrorAlta(null) }}>
+                <Opcion key={g.id} activa={grupoId === g.id} color={color} alTocar={() => { setGrupoId(g.id); setErrorAlta(null) }}>
                   <Text style={estilos.nombre}>{horarioDeGrupo(g)}</Text>
                   <Text style={estilos.detalle}>{g.profesor}</Text>
                 </Opcion>
@@ -190,11 +197,11 @@ export default function Inscribir() {
   )
 }
 
-/** Una opción elegible: queda marcada con el borde azul. */
-function Opcion({ activa, inactiva = false, alTocar, children }) {
+/** Una opción elegible: queda marcada con un borde del color del servicio. */
+function Opcion({ activa, inactiva = false, color = colores.azul, alTocar, children }) {
   return (
     <Pressable
-      style={[estilos.opcion, activa && estilos.opcionActiva, inactiva && estilos.opcionInactiva]}
+      style={[estilos.opcion, activa && [estilos.opcionActiva, { borderColor: color }], inactiva && estilos.opcionInactiva]}
       onPress={alTocar}
       disabled={inactiva}
       accessibilityRole="radio"
@@ -212,13 +219,13 @@ const estilos = StyleSheet.create({
     fontSize: 13, fontWeight: '700', color: colores.suave, letterSpacing: 0.8, textTransform: 'uppercase', marginTop: 8,
   },
   chips:           { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip:            { flexDirection: 'row', alignItems: 'center', gap: 8 },
   chipTexto:       { fontSize: 15, fontWeight: '600', color: colores.texto },
-  chipTextoActivo: { color: colores.azul },
   opcion:          {
     backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10,
     paddingVertical: 12, paddingHorizontal: 14, gap: 4,
   },
-  opcionActiva:    { borderColor: colores.azul, borderWidth: 2 },
+  opcionActiva:    { borderWidth: 2 },
   opcionInactiva:  { opacity: 0.5 },
   tarjeta:         {
     backgroundColor: colores.tarjeta, borderColor: colores.borde, borderWidth: 1, borderRadius: 10, padding: 14, gap: 10,
