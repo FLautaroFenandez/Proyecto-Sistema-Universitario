@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import {
   academico, cobranza, ESTADOS_FACTURA, ESTADOS_ITEM, mesesDelCiclo, mensajeDeError,
-  resumirPorAlumno, agruparPorServicio,
+  resumirPorAlumno, agruparPorServicio, horarioDeGrupo,
 } from '@/services'
 import { formatDate, formatMes, formatMesTitulo, hoyISO } from '@/utils/formatDate'
 import { formatPesos } from '@/utils/formatPesos'
@@ -144,7 +144,12 @@ function VistaPorServicio({ items, tipo }) {
                           <td className="pr-3">{formatMesTitulo(i.periodo)}</td>
                           <td className="pr-3 text-right">{formatPesos(i.importe)}</td>
                           <td className="pr-3"><Badge color={estado.color}>{estado.etiqueta}</Badge></td>
-                          {esDeporte && <><td className="pr-3 text-gray-400">Sin registrar</td><td className="text-gray-400">Sin registrar</td></>}
+                          {esDeporte && (
+                            <>
+                              <td className="pr-3">{horarioDeGrupo(i.grupo) || <span className="text-gray-400">Sin grupo</span>}</td>
+                              <td>{i.grupo?.profesor ?? <span className="text-gray-400">Sin grupo</span>}</td>
+                            </>
+                          )}
                         </tr>
                       )
                     })}
@@ -157,8 +162,8 @@ function VistaPorServicio({ items, tipo }) {
       ))}
       {esDeporte && (
         <p className="text-xs text-gray-400">
-          Horario y profesor a cargo: el sistema todavía no registra los grupos de cada deporte por horario y profesor
-          (quedaron fuera del alcance mínimo de la Parte 3). El pago se discrimina por deporte y por nivel.
+          Horario y profesor a cargo: los del grupo en el que estaba inscripto el alumno ese mes. El pago se discrimina
+          por deporte, nivel, horario y profesor.
         </p>
       )}
     </>

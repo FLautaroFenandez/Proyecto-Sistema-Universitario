@@ -21,6 +21,7 @@ export const TABLAS_AUDITADAS = [
   // Parte 3: los disparadores están en docs/supabase-cobranza.sql
   { clave: 'conceptos',      etiqueta: 'Precios de cobranza' },
   { clave: 'comprobantes',   etiqueta: 'Comprobantes de pago' },
+  { clave: 'inscripciones_servicio', etiqueta: 'Inscripciones a servicios' },
 ]
 
 export const ACCIONES = { INSERT: 'Alta', UPDATE: 'Cambio', DELETE: 'Baja' }
@@ -53,6 +54,7 @@ export function resumirDetalle(entrada) {
 const NOMBRE_DEL_REGISTRO = {
   conceptos:    { campos: 'id, nombre', nombrar: c => c.nombre },
   comprobantes: { campos: 'id, numero', nombrar: c => `Comprobante N.º ${c.numero}` },
+  inscripciones_servicio: { campos: 'id, concepto:conceptos(nombre)', nombrar: i => i.concepto?.nombre ?? 'Servicio' },
 }
 
 /** Agrega a cada entrada `registro`: el nombre legible de lo que se cambió, si se conoce. */
