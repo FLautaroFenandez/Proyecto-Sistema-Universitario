@@ -165,7 +165,8 @@ No cambian ninguna funcionalidad.
 
 ### 7.2. Pruebas
 
-Hechas el 23/11/2026 con Expo Go. El equipo informó que todas dieron el resultado esperado.
+Hechas el 23/11/2026: de I1 a I9 con Expo Go y la I10 con el APK instalado. El equipo informó
+que todas dieron el resultado esperado.
 
 | # | Prueba | Resultado esperado | Cómo se comprobó | Resultado |
 |---|---|---|---|---|
@@ -178,7 +179,11 @@ Hechas el 23/11/2026 con Expo Go. El equipo informó que todas dieron el resulta
 | I7 | Inscripciones | Ícono y título de color en cada sección; borde de color en cada tarjeta | Informado por el equipo | ✅ |
 | I8 | Inscribir, sin confirmar | Lo elegido se marca en verde, violeta o naranja según el servicio | Informado por el equipo | ✅ |
 | I9 | Cambiar contraseña, sin cambiarla | Con el teclado abierto, el tercer campo queda a la vista; los tres ojos funcionan | Informado por el equipo | ✅ |
-| I10 | Abrir el APK instalado | La bienvenida muestra el logo sobre fondo blanco | Se prueba al instalar el APK 1.1.0 | ⏳ |
+| I10 | Abrir el APK instalado | La bienvenida muestra el logo sobre fondo blanco | Informado por el equipo, con el APK 1.1.0 | ✅ |
+
+El APK 1.1.0 se compiló con EAS el 23/11/2026 y se instaló en el celular **encima de la
+versión 1.0**, como una actualización, sin desinstalarla (informado por el equipo): mismo
+paquete, misma firma y `versionCode` mayor.
 
 Lint sin avisos, las 52 pruebas automáticas en verde y la app compila para Android.
 `npx expo-doctor` pasa 19 de 20 chequeos: el que falla avisa que seis paquetes que ya estaban
