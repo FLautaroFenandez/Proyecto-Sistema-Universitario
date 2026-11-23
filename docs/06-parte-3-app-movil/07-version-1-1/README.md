@@ -7,7 +7,7 @@ Centro Educativo *"Educar para Transformar"* — **Grupo 4**
 |---|---|
 | Requerimientos | HU-M5 · REQ-29: inscripción a deportes (dos como máximo, con control de horarios), transporte por recorrido y comedor · REQ-30 y REQ-31: avisos del último día hábil y del día 20, adaptados a la app |
 | Script | [`docs/supabase-inscripciones-avisos.sql`](../../supabase-inscripciones-avisos.sql) |
-| Estado | ✅ Diseño validado el 23/11/2026 · Script ejecutado y 11 pruebas en el celular aprobadas el 23/11/2026 |
+| Estado | ✅ Diseño validado el 23/11/2026 · Script ejecutado y 11 pruebas en el celular aprobadas el 23/11/2026 · Ajustes de interfaz aprobados el 23/11/2026 (sección 7) |
 
 > Se hizo después de la entrega del 17/11, con la fecha extendida. El informe de IA y la
 > bitácora entregados no cambian; esta versión se registra en la documentación del
@@ -76,7 +76,9 @@ cambian nada de lo hecho:
 | `src/services/cobranza.js` y `ReporteCobranzaPage.jsx` (web) | Horario y profesor reales en el reporte por deporte |
 | `src/services/auditoria.js` (web) | "Inscripciones a servicios" en el filtro de Auditoría |
 | `app-movil/src/domain/reglas.test.js` *(nuevo)* | 8 pruebas de las reglas de la app, que ahora corren con el Vitest del proyecto |
-| `app-movil/app.json` | Versión 1.1.0 |
+| `app-movil/app.json` | Versión 1.1.0 y, desde la sección 7, la pantalla de bienvenida con el logo |
+| `app-movil/src/tema.js` | Colores del logo y color e ícono de cada tipo de concepto (sección 7) |
+| `app-movil/src/components/Formulario.jsx`, `CampoClave.jsx`, `Marca.jsx`, `IconoServicio.jsx` *(nuevos)* | El marco que evita que el teclado tape los campos, el campo de contraseña con el ojo, la franja y las figuras del logo, y el ícono de cada servicio (sección 7) |
 
 ## 6. Pruebas
 
@@ -121,3 +123,63 @@ cancela. Las tres operaciones quedan en Auditoría, en "Inscripciones a servicio
 app (situación de la inscripción, baja, horario del grupo, horarios que se superponen y que
 solo se tocan, y avisos) y 3 de la web (horario
 y grupo de cada ítem del reporte). La app compila para Android con `npx expo export`.
+
+## 7. Ajustes de interfaz
+
+Los pidió el equipo después de las pruebas, antes de compilar el APK: colores con significado,
+el logo de la escuela y una corrección, porque el teclado tapaba la contraseña en el ingreso.
+No cambian ninguna funcionalidad.
+
+| Qué | Cómo quedó |
+|---|---|
+| Teclado | En Android tapaba los campos del ingreso y de Cambiar contraseña. Las dos pantallas usan ahora un marco común que los corre hacia arriba |
+| Ingreso | Sin barra superior: logo, franja con los cinco colores del logo, la tecla "Siguiente" pasa del email a la contraseña y un ojo para mostrarla |
+| Mis hijos | Las cinco figuras del logo en la barra, la franja debajo y las iniciales de cada hijo en un círculo de color |
+| Colores por servicio | Deportes en verde, transporte en violeta, comedor en naranja y cuota en azul, con su ícono. Se ven en Inscripciones, Inscribir y el detalle de la factura |
+| Cambiar contraseña | Un ojo en cada campo |
+| Pantalla de bienvenida | El logo sobre fondo blanco mientras abre la app. Solo se ve en el APK |
+
+### 7.1. Decisiones
+
+1. **El teclado se resuelve como indica la documentación de Expo.** Desde el SDK 54, en
+   Android la app se dibuja de borde a borde y la ventana ya no se achica con el teclado:
+   *"A view without a `behavior` stays under the keyboard"*. El ingreso solo se corría en
+   iPhone. Ahora `behavior="padding"` vale para los dos sistemas, con el alto de la barra
+   como desplazamiento. No se usa la librería que Expo sugiere para formularios grandes
+   porque no funciona en Expo Go.
+2. **Los colores tienen significado y son los de la web.** Cada servicio tiene el color y
+   el ícono de Precios y facturación. Los estados (Pagada, Pendiente, Vencida) siguen siendo
+   etiquetas con texto, para no confundirlos con el color de un servicio.
+3. **Los cinco colores del logo van juntos**, en la franja y en las iniciales de cada hijo.
+   Las iniciales van en azul sobre un fondo claro: con letras blancas, el verde y el celeste
+   del logo no se leen.
+4. **El logo completo va en el ingreso; en la barra, solo las figuras y solo en Mis hijos.**
+   Achicado al tamaño de la barra, el texto del logo no se lee, y en las demás pantallas ese
+   lugar es de la flecha para volver.
+5. **Íconos de `@react-native-vector-icons/lucide`.** Se había acordado `@expo/vector-icons`,
+   pero la documentación de Expo dice que *"will be deprecated and is not recommended"* y
+   recomienda estos paquetes, que funcionan en Expo Go. Lucide es además la familia de íconos
+   de la web. Se importa la versión que carga la fuente con `expo-font`.
+6. **La pantalla de bienvenida se configura con el plugin de `expo-splash-screen`**, y el
+   marco común la oculta con ese paquete, como en el ejemplo de la documentación.
+
+### 7.2. Pruebas
+
+Hechas el 23/11/2026 con Expo Go. El equipo informó que todas dieron el resultado esperado.
+
+| # | Prueba | Resultado esperado | Cómo se comprobó | Resultado |
+|---|---|---|---|---|
+| I1 | Pantalla de ingreso | Sin barra azul; franja de colores, logo y "App de familias"; los íconos del sistema, oscuros | Informado por el equipo | ✅ |
+| I2 | "Siguiente" en el teclado, desde el email | Pasa a la contraseña | Informado por el equipo | ✅ |
+| I3 | Teclado abierto en la contraseña | El campo y el botón Ingresar quedan a la vista | Informado por el equipo | ✅ |
+| I4 | Ojo de la contraseña | Muestra y oculta la contraseña | Informado por el equipo | ✅ |
+| I5 | Mis hijos | Figuras del logo en la barra, franja e iniciales "YH" en un círculo de color | Informado por el equipo | ✅ |
+| I6 | Detalle de una factura | Cada ítem con su ícono; tildar y pagar funcionan igual | Informado por el equipo | ✅ |
+| I7 | Inscripciones | Ícono y título de color en cada sección; borde de color en cada tarjeta | Informado por el equipo | ✅ |
+| I8 | Inscribir, sin confirmar | Lo elegido se marca en verde, violeta o naranja según el servicio | Informado por el equipo | ✅ |
+| I9 | Cambiar contraseña, sin cambiarla | Con el teclado abierto, el tercer campo queda a la vista; los tres ojos funcionan | Informado por el equipo | ✅ |
+| I10 | Abrir el APK instalado | La bienvenida muestra el logo sobre fondo blanco | Se prueba al instalar el APK 1.1.0 | ⏳ |
+
+Lint sin avisos, las 52 pruebas automáticas en verde y la app compila para Android.
+`npx expo-doctor` pasa 19 de 20 chequeos: el que falla avisa que seis paquetes que ya estaban
+instalados tienen una versión de corrección más nueva. No se actualizan antes de la entrega.

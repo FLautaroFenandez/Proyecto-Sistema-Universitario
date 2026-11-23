@@ -10,9 +10,9 @@ se trabaja**, no al final. Solo incluye la Parte 3.
 **Prompt utilizado:** el pedido que se le hizo a la IA en ese momento, con el problema que había que resolver. Entre comillas, las frases textuales; sin comillas, el pedido resumido a partir de los mensajes de la conversación.
 
 **Herramientas:** Claude Code (modelo Claude Opus 5.5), integrado en VS Code, con acceso al
-repositorio (registros 1 a 20, 22 y 23), y Gemini, para consultas fuera del repositorio (registro 21).
+repositorio (registros 1 a 20 y 22 a 25), y Gemini, para consultas fuera del repositorio (registro 21).
 
-> Los registros 22 y 23 son de la versión 1.1 de la app, hecha el 23/11 con la fecha de
+> Los registros 22 a 25 son de la versión 1.1 de la app, hecha el 23/11 con la fecha de
 > entrega extendida. No están en la bitácora entregada a la cátedra.
 
 ## Registro
@@ -42,9 +42,11 @@ repositorio (registros 1 a 20, 22 y 23), y Gemini, para consultas fuera del repo
 | 21 | 09/11 al 17/11 | Dudas menores sobre el funcionamiento del sistema durante el desarrollo | Consultas puntuales del equipo sobre el funcionamiento del sistema, fuera del repositorio. ([detalle](#21-gemini-como-segunda-herramienta)) | Gemini | Explicaciones generales sobre cómo funcionan las piezas del sistema | Sí | Ninguna: no generó código del proyecto | Correcto: complementó las explicaciones de Claude Code |
 | 22 | 23/11 | Mejorar la app con la fecha de entrega extendida, sin tocar el informe ni la bitácora entregados | "Se me extendió hasta mañana la entrega, pero no puedo modificar los informes ni los trabajos, por lo cual los cambios que puedo hacer son menores. Me interesa cambiar la APK, dejándola un poco mejor, con más funcionalidades y abarcando todo lo requerido." ([detalle](#22-versión-11-de-la-app)) | Claude Code | Comparó el enunciado con la app. Faltaban inscribir y dar de baja (HU-M5), los grupos de cada deporte por nivel y horario con su profesor, el control de conflictos de horario y los avisos del último día hábil y del día 20. Propuso una versión 1.1 en dos partes: A, inscripciones; B, avisos en la app. Dejó fuera recuperar la contraseña, que necesita un servicio de correo | Sí | El equipo aprobó A y B sin la notificación en el teléfono que se ofrecía como opcional, y pidió que los avisos queden preparados para enviarse por correo | Correcto |
 | 23 | 23/11 | Programar la versión 1.1: inscripciones con control de horarios y avisos de cobranza | "Procedamos así con A y B, dejando la posibilidad de hacer escalable para sistema de correo, dependiendo cómo vayamos con el tiempo." ([detalle](#22-versión-11-de-la-app)) | Claude Code | Script `supabase-inscripciones-avisos.sql` (grupos de deportes, control de horarios en el disparador, funciones para inscribir y dar de baja, vista `avisos_cobranza`), 3 pantallas nuevas, horario y profesor en el reporte de la web y 11 pruebas de Vitest ([documento](07-version-1-1/README.md)) | Sí | Ninguna | Correcto: el script corrió y las 11 pruebas en el celular dieron lo esperado, según informó el equipo |
+| 24 | 23/11 | Mejorar la interfaz de la app antes de compilar el APK: colores sin significado, sin el logo y el teclado tapaba la contraseña | "Antes de cerrar la app, me gustaría hacer unas modificaciones. Tal vez podríamos repensar algunos colores, que tenga colores significativos a los del sistema educativo y que en el login tenga el logo (y tal vez adentro de la app, en barra superior). También me pasa que al ingresar la contraseña en el login se me superpone el teclado con el campo de entrada." | Claude Code | Diagnóstico del teclado según la documentación de Expo: en Android la app va de borde a borde y la ventana ya no se achica, y el ingreso solo se corría en iPhone. Propuso los colores de la web para cada servicio y los del logo como firma, el logo en el ingreso, las figuras en la barra y cuatro extras | Sí | El equipo eligió el logo en la barra solo en "Mis hijos", íconos en lugar de emojis y tres de los cuatro extras: mostrar la contraseña, las iniciales de cada hijo y la pantalla de bienvenida | Correcto |
+| 25 | 23/11 | Programar los ajustes de interfaz elegidos | "1. Colores sí, como decidas que quede mejor. 2. Solo en Mis hijos. 3. Vamos con los íconos de Expo. 4. a, b y c." ([detalle](#25-un-paquete-propuesto-de-memoria)) | Claude Code | Un marco común para que el teclado no tape los campos, el campo de contraseña con el ojo, el logo, la franja de colores, las iniciales, el color y el ícono de cada servicio y la pantalla de bienvenida ([documento](07-version-1-1/README.md#7-ajustes-de-interfaz)) | Parcialmente | La IA había propuesto `@expo/vector-icons` de memoria. Al consultar la documentación antes de instalarlo vio que Expo lo da por obsoleto, y usó `@react-native-vector-icons/lucide`, la recomendación de Expo y la misma familia de íconos de la web | Correcto: 9 pruebas en el celular, informadas por el equipo; la pantalla de bienvenida se prueba en el APK |
 
 **Herramientas:** Claude Code para el diseño, el código, la documentación y el diagnóstico
-de errores (registros 1 a 20, 22 y 23); Gemini para consultas de comprensión (registro 21).
+de errores (registros 1 a 20 y 22 a 25); Gemini para consultas de comprensión (registro 21).
 
 ## Detalle de cada registro
 
@@ -321,3 +323,17 @@ de errores (registros 1 a 20, 22 y 23); Gemini para consultas de comprensión (r
 - **Cómo se registraron las pruebas:** el equipo informó que el script y las 11 pruebas en
   el celular salieron bien. Siguiendo el criterio del registro 17, el documento las anota como
   *informadas por el equipo* y no como comprobadas en el sistema.
+
+### 25. Un paquete propuesto de memoria
+
+- **Qué pasó:** para los íconos, la IA ofreció dos opciones: `@expo/vector-icons` o emojis.
+  El equipo eligió los íconos. Antes de instalar, la IA consultó la documentación del SDK 58,
+  como se hace desde la Etapa 2. La guía de íconos de Expo dice que `@expo/vector-icons`
+  *"will be deprecated and is not recommended"*. En su lugar, Expo recomienda los paquetes
+  `@react-native-vector-icons`, que según su blog funcionan en Expo Go.
+- **Qué se hizo:** se usó `@react-native-vector-icons/lucide`. Respeta lo que eligió el equipo
+  (íconos y no emojis), sigue la documentación y además trae la misma familia de íconos que la
+  web. El cambio se le informó al equipo antes de pedirle las pruebas.
+- **Aprendizaje:** la documentación se consultaba antes de instalar, pero no antes de proponer.
+  Una opción que la IA ofrece para elegir también tiene que estar verificada; si no, el equipo
+  decide sobre algo que después cambia.
