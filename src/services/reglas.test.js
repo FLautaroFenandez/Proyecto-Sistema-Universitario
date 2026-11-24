@@ -18,7 +18,7 @@ import { resumirDetalle } from './auditoria'
 import {
   validarImporte, mesesDelCiclo, resumirCobranza,
   estadoDeItem, cursoDelAlumno, resumirPorAlumno, agruparPorServicio,
-  grupoDelItem, horarioDeGrupo,
+  grupoDelItem, horarioDeGrupo, agruparAvisosPorFecha,
 } from './cobranza'
 import { formatDateShort, formatMes, formatMesTitulo } from '@/utils/formatDate'
 
@@ -253,5 +253,24 @@ describe('Auditoría de la cobranza', () => {
   it('un cambio de precio muestra el valor anterior y el nuevo', () => {
     const entrada = { accion: 'UPDATE', detalle: { importe: { antes: 95000, despues: 98000 } } }
     expect(resumirDetalle(entrada)).toBe('importe: 95000 → 98000')
+  })
+})
+
+describe('Avisos por correo (Funcionalidades 1 y 2)', () => {
+  it('agrupa los avisos por fecha de envío, en orden, con cuántos de cada tipo', () => {
+    const avisos = [
+      { fecha_envio: '2027-04-30', tipo: 'recordatorio', importe: 251000 },
+      { fecha_envio: '2027-04-20', tipo: 'deuda', importe: 59000 },
+      { fecha_envio: '2027-04-30', tipo: 'recordatorio', importe: 120000 },
+    ]
+    expect(agruparAvisosPorFecha(avisos)).toEqual([
+      { fecha: '2027-04-20', recordatorio: 0, deuda: 1, importe: 59000 },
+      { fecha: '2027-04-30', recordatorio: 2, deuda: 0, importe: 371000 },
+    ])
+  })
+
+  it('sin avisos no hay fechas', () => {
+    expect(agruparAvisosPorFecha([])).toEqual([])
+    expect(agruparAvisosPorFecha(null)).toEqual([])
   })
 })

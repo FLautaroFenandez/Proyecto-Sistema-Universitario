@@ -59,6 +59,7 @@ const ConstanciaPage         = lazy(() => import('@/pages/documentos/ConstanciaP
 // Parte 3 · Etapa 4 — cobranza
 const CobranzaAdminPage      = lazy(() => import('@/pages/admin/CobranzaAdminPage'))
 const ReporteCobranzaPage    = lazy(() => import('@/pages/admin/ReporteCobranzaPage'))
+const AvisosCorreoPage       = lazy(() => import('@/pages/admin/AvisosCorreoPage'))
 
 // Módulo Profesores (Sprint 2)
 const MisCursosPage      = lazy(() => import('@/pages/docente/MisCursosPage'))
@@ -171,6 +172,7 @@ export default function App() {
               {/* Parte 3 · Etapa 4 — cobranza. La Autoridad entra en modo consulta. */}
               <Route path={ROUTES.ADMIN_COBRANZA}         element={<CobranzaAdminPage />} />
               <Route path={ROUTES.ADMIN_COBRANZA_REPORTE} element={<ReporteCobranzaPage />} />
+              <Route path={ROUTES.ADMIN_COBRANZA_AVISOS}  element={<AvisosCorreoPage />} />
             </Route>
 
             {/* ── 404 ── */}

@@ -43,8 +43,9 @@ cypress/screenshots/
 cypress/downloads/
 cypress.env.json
 
-# supabase
-supabase/
+# supabase: se ignora lo local de la CLI; las Edge Functions sí se versionan (Parte 3 · versión 1.1)
+supabase/*
+!supabase/functions/
 
 images/
 

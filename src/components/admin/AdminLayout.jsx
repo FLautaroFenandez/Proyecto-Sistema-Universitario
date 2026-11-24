@@ -12,7 +12,7 @@ import {
   MessageSquare, Newspaper, Image, ClipboardList,
   Briefcase, Users, LogOut, ExternalLink, Menu, X,
   LayoutDashboard, ChevronRight, Inbox, UserPlus, GraduationCap,
-  IdCard, BarChart3, ShieldCheck, FileText, Wallet, Receipt,
+  IdCard, BarChart3, ShieldCheck, FileText, Wallet, Receipt, Mail,
 } from 'lucide-react'
 import { AuthContext } from '@/components/auth/AuthContext'
 import { ROLES } from '@/types/roles'
@@ -40,6 +40,7 @@ const NAV_SECTIONS = [
     items: [
       { icon: Wallet,  label: 'Precios y facturación', href: ROUTES.ADMIN_COBRANZA },
       { icon: Receipt, label: 'Reporte de cobranza',   href: ROUTES.ADMIN_COBRANZA_REPORTE },
+      { icon: Mail,    label: 'Avisos por correo',     href: ROUTES.ADMIN_COBRANZA_AVISOS },
     ],
   },
   {
