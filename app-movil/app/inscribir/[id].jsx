@@ -26,13 +26,13 @@ import { Aviso, Carga } from '../../src/components/Carga'
 import { IconoServicio } from '../../src/components/IconoServicio'
 import { SelectorDeMes } from '../../src/components/SelectorDeMes'
 import {
-  MAXIMO_DEPORTES, gruposSeSuperponen, horarioDeGrupo, situacionDeInscripcion,
+  MAXIMO_DEPORTES, gruposSeSuperponen, horarioDeGrupo, sigueActivaDesde,
 } from '../../src/domain/situacionInscripcion'
 import { useCarga } from '../../src/hooks/useCarga'
 import { mensajeDeError } from '../../src/services/base'
 import { cobranza } from '../../src/services/cobranza'
 import { colores, estiloDeServicio, servicios as ESTILOS } from '../../src/tema'
-import { hoyIso, periodo, pesos } from '../../src/utils/formato'
+import { periodo, pesos } from '../../src/utils/formato'
 
 const TIPOS = ['deporte', 'transporte', 'comedor']
 
@@ -57,7 +57,6 @@ export default function Inscribir() {
   const [enviando, setEnviando] = useState(false)
   const [errorAlta, setErrorAlta] = useState(null)
 
-  const hoy = hoyIso()
   const color = estiloDeServicio(tipo).borde
   const servicios = (datos?.servicios ?? []).filter(s => s.tipo === tipo)
   const servicio = servicios.find(s => s.id === servicioId) ?? null
@@ -65,9 +64,10 @@ export default function Inscribir() {
   const meses = datos?.meses ?? []
   const mes = meses[Math.min(indiceMes, meses.length - 1)]
 
-  // Deportes que siguen ocupando lugar (vigentes o por empezar): sirven para avisar antes.
+  // Deportes que siguen activos desde el mes elegido: sirven para avisar antes. Se compara
+  // con ese mes y no con hoy, como la base: uno que termina antes ya no ocupa lugar.
   const deportesActuales = (datos?.actuales ?? [])
-    .filter(i => i.tipo === 'deporte' && situacionDeInscripcion(i, hoy).ocupaLugar)
+    .filter(i => i.tipo === 'deporte' && mes && sigueActivaDesde(i, mes))
   const completo = tipo === 'deporte' && deportesActuales.length >= MAXIMO_DEPORTES
   const choque = grupo ? deportesActuales.find(i => gruposSeSuperponen(i.grupo, grupo)) : null
   const listo = servicio && mes && (tipo !== 'deporte' || grupo)

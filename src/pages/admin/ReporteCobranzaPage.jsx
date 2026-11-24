@@ -101,8 +101,8 @@ function VistaPorAlumno({ facturas }) {
 }
 
 /**
- * Pagos de cada deporte o de cada recorrido, por nivel. Horario y profesor a cargo no
- * existen en la base: los grupos de cada deporte no se modelaron (fuera del alcance mínimo).
+ * Pagos de cada deporte o de cada recorrido, por nivel. En los deportes, el horario y el
+ * profesor a cargo salen del grupo de cada inscripción (versión 1.1).
  */
 function VistaPorServicio({ items, tipo }) {
   const grupos = agruparPorServicio(items, tipo)

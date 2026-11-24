@@ -45,4 +45,5 @@ export const ROUTES = {
   // Parte 3 · Etapa 4 — cobranza
   ADMIN_COBRANZA:         '/admin/cobranza',
   ADMIN_COBRANZA_REPORTE: '/admin/cobranza/reporte',
+  ADMIN_COBRANZA_AVISOS:  '/admin/cobranza/avisos',  // versión 1.1 · avisos por correo
 }

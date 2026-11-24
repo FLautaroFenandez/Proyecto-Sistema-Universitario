@@ -197,6 +197,29 @@ export function horarioDeGrupo(grupo) {
   return `${lista} · ${String(grupo.hora_inicio).slice(0, 5)} a ${String(grupo.hora_fin).slice(0, 5)}`
 }
 
+/** Los dos avisos por correo del enunciado (Funcionalidades 1 y 2). */
+export const TIPOS_AVISO = {
+  recordatorio: { etiqueta: 'Recordatorio de pago', cuando: 'último día hábil', color: 'blue' },
+  deuda:        { etiqueta: 'Aviso de deuda',       cuando: 'día 20',          color: 'orange' },
+}
+
+/**
+ * Agrupa los avisos de la vista `avisos_cobranza` por fecha de envío: cuántos
+ * recordatorios y cuántos avisos de deuda salen cada día, y por qué importe.
+ * @param {Array<{fecha_envio: string, tipo: string, importe: number}>} avisos
+ * @returns {Array<{fecha: string, recordatorio: number, deuda: number, importe: number}>} por fecha
+ */
+export function agruparAvisosPorFecha(avisos) {
+  const porFecha = new Map()
+  for (const aviso of avisos ?? []) {
+    const grupo = porFecha.get(aviso.fecha_envio) ?? { fecha: aviso.fecha_envio, recordatorio: 0, deuda: 0, importe: 0 }
+    if (aviso.tipo in TIPOS_AVISO) grupo[aviso.tipo] += 1
+    grupo.importe += Number(aviso.importe ?? 0)
+    porFecha.set(aviso.fecha_envio, grupo)
+  }
+  return [...porFecha.values()].sort((a, b) => a.fecha.localeCompare(b.fecha))
+}
+
 const ALUMNO_DEL_REPORTE =
   'id, legajo, apellido, nombre, ' +
   'matriculas(estado, curso:cursos(anio, division, nivel:niveles(nombre), ciclo:ciclos_lectivos(activo)))'
@@ -299,5 +322,49 @@ export const cobranza = {
         }
       }),
     }
+  },
+
+  // ── Avisos por correo (versión 1.1 · Funcionalidades 1 y 2) ─────────────────
+
+  /** Las fechas en que salen avisos, con cuántos de cada tipo. Salen de la vista de la base. */
+  async avisosPorFecha() {
+    const avisos = await ejecutar(
+      supabase.from('avisos_cobranza').select('fecha_envio, tipo, importe').order('fecha_envio'),
+      'cargar los avisos de cobranza',
+    )
+    return agruparAvisosPorFecha(avisos)
+  },
+
+  /** Los últimos correos enviados (o que fallaron), del más reciente al más viejo. */
+  async enviosDeAvisos() {
+    return ejecutar(
+      supabase.from('envios_avisos')
+        .select('id, tipo, fecha_aviso, destinatario, enviado_a, origen, resultado, detalle, created_at, factura:facturas(numero, periodo)')
+        .order('created_at', { ascending: false })
+        .limit(50),
+      'cargar el historial de envíos',
+    )
+  },
+
+  /**
+   * Envía ya los avisos de una fecha. Lo hace la Edge Function `enviar-avisos`, que
+   * comprueba que quien la llama sea un administrador. Sirve para la demostración:
+   * los avisos del ciclo 2027 todavía no llegaron a su fecha.
+   * @param {string} fecha - 'AAAA-MM-DD'
+   * @returns {Promise<{enviados: number, errores: number, omitidos: number, detalle: object[]}>}
+   */
+  async enviarAvisos(fecha) {
+    const { data, error } = await supabase.functions.invoke('enviar-avisos', { body: { fecha } })
+    if (error) {
+      // El motivo lo redacta la función, en el cuerpo de la respuesta.
+      let cuerpo = null
+      try { cuerpo = await error.context?.json() } catch { /* la respuesta no trae un cuerpo legible */ }
+      console.error('[cobranza] enviar los avisos:', error, cuerpo)
+      throw new ErrorDeServicio(
+        cuerpo?.error ?? 'No se pudieron enviar los avisos. Revisá que la función enviar-avisos esté desplegada.',
+        error,
+      )
+    }
+    return data
   },
 }

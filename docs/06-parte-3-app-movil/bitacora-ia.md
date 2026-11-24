@@ -10,10 +10,10 @@ se trabaja**, no al final. Solo incluye la Parte 3.
 **Prompt utilizado:** el pedido que se le hizo a la IA en ese momento, con el problema que había que resolver. Entre comillas, las frases textuales; sin comillas, el pedido resumido a partir de los mensajes de la conversación.
 
 **Herramientas:** Claude Code (modelo Claude Opus 5.5), integrado en VS Code, con acceso al
-repositorio (registros 1 a 20 y 22 a 25), y Gemini, para consultas fuera del repositorio (registro 21).
+repositorio (registros 1 a 20 y 22 a 27), y Gemini, para consultas fuera del repositorio (registro 21).
 
-> Los registros 22 a 25 son de la versión 1.1 de la app, hecha el 23/11 con la fecha de
-> entrega extendida. No están en la bitácora entregada a la cátedra.
+> Los registros 22 a 27 son de la versión 1.1 de la app, hecha el 23 y el 24/11 con la fecha
+> de entrega extendida. No están en la bitácora entregada a la cátedra.
 
 ## Registro
 
@@ -44,9 +44,11 @@ repositorio (registros 1 a 20 y 22 a 25), y Gemini, para consultas fuera del rep
 | 23 | 23/11 | Programar la versión 1.1: inscripciones con control de horarios y avisos de cobranza | "Procedamos así con A y B, dejando la posibilidad de hacer escalable para sistema de correo, dependiendo cómo vayamos con el tiempo." ([detalle](#22-versión-11-de-la-app)) | Claude Code | Script `supabase-inscripciones-avisos.sql` (grupos de deportes, control de horarios en el disparador, funciones para inscribir y dar de baja, vista `avisos_cobranza`), 3 pantallas nuevas, horario y profesor en el reporte de la web y 11 pruebas de Vitest ([documento](07-version-1-1/README.md)) | Sí | Ninguna | Correcto: el script corrió y las 11 pruebas en el celular dieron lo esperado, según informó el equipo |
 | 24 | 23/11 | Mejorar la interfaz de la app antes de compilar el APK: colores sin significado, sin el logo y el teclado tapaba la contraseña | "Antes de cerrar la app, me gustaría hacer unas modificaciones. Tal vez podríamos repensar algunos colores, que tenga colores significativos a los del sistema educativo y que en el login tenga el logo (y tal vez adentro de la app, en barra superior). También me pasa que al ingresar la contraseña en el login se me superpone el teclado con el campo de entrada." | Claude Code | Diagnóstico del teclado según la documentación de Expo: en Android la app va de borde a borde y la ventana ya no se achica, y el ingreso solo se corría en iPhone. Propuso los colores de la web para cada servicio y los del logo como firma, el logo en el ingreso, las figuras en la barra y cuatro extras | Sí | El equipo eligió el logo en la barra solo en "Mis hijos", íconos en lugar de emojis y tres de los cuatro extras: mostrar la contraseña, las iniciales de cada hijo y la pantalla de bienvenida | Correcto |
 | 25 | 23/11 | Programar los ajustes de interfaz elegidos | "1. Colores sí, como decidas que quede mejor. 2. Solo en Mis hijos. 3. Vamos con los íconos de Expo. 4. a, b y c." ([detalle](#25-un-paquete-propuesto-de-memoria)) | Claude Code | Un marco común para que el teclado no tape los campos, el campo de contraseña con el ojo, el logo, la franja de colores, las iniciales, el color y el ícono de cada servicio y la pantalla de bienvenida ([documento](07-version-1-1/README.md#7-ajustes-de-interfaz)) | Parcialmente | La IA había propuesto `@expo/vector-icons` de memoria. Al consultar la documentación antes de instalarlo vio que Expo lo da por obsoleto, y usó `@react-native-vector-icons/lucide`, la recomendación de Expo y la misma familia de íconos de la web | Correcto: 10 pruebas en el celular, informadas por el equipo, la última con el APK 1.1.0 |
+| 26 | 24/11 | El aviso previo de Inscribir contradecía a la base (código de la versión 1.1, registro 23) | "Con respecto a la planilla de coevaluación de la app, ¿se estarían cumpliendo todos los ítems entonces? ¿O qué faltaría?" ([detalle](#26-un-error-propio-encontrado-al-revisar)) | Claude Code | Cruzó la plantilla con la app: faltaban los correos de las Funcionalidades 1 y 2. Al repasar cómo mostrar las reglas, encontró que el aviso "Ya tiene 2 deportes" se calculaba con las inscripciones de hoy y no con las del mes elegido: desde la prueba V4, la app avisaba y la base aceptaba | No | Se corrigió con `sigueActivaDesde`, la misma comparación de períodos que hace la base, y una prueba automática | Corregido antes de la presentación |
+| 27 | 24/11 | Enviar por correo los avisos del último día hábil y del día 20, con la factura adjunta | "También vamos a incorporar lo de los correos, para acaparar todos los ítems, ya que tengo unas horas hasta presentar." Después: "Te doy permiso para que utilices mi navegador y hagas todo lo posible, dejándome a mí únicamente lo que vos no puedas solucionar." ([detalle](#27-correos-configurados-desde-el-navegador)) | Claude Code | Diseño verificado antes en la documentación de Supabase y de Resend. Script con historial, tarea diaria (`pg_cron`) y clave en Vault; Edge Function que redacta el correo, genera la factura en PDF y la envía con Resend; sección "Avisos por correo" en la web. Con el navegador activó las extensiones, ejecutó el script y desplegó la función ([documento](07-version-1-1/README.md#8-envío-por-correo-funcionalidades-1-y-2)) | Parcialmente | El probador del Dashboard pedía escribir una clave de servicio, y la IA no ingresa claves: la función pasó a aceptar una simulación con la clave de la tarea, que queda en Vault, disparada desde el SQL Editor | Correcto: 4 correos entregados, comprobados en el historial y en Resend |
 
 **Herramientas:** Claude Code para el diseño, el código, la documentación y el diagnóstico
-de errores (registros 1 a 20 y 22 a 25); Gemini para consultas de comprensión (registro 21).
+de errores (registros 1 a 20 y 22 a 27); Gemini para consultas de comprensión (registro 21).
 
 ## Detalle de cada registro
 
@@ -337,3 +339,31 @@ de errores (registros 1 a 20 y 22 a 25); Gemini para consultas de comprensión (
 - **Aprendizaje:** la documentación se consultaba antes de instalar, pero no antes de proponer.
   Una opción que la IA ofrece para elegir también tiene que estar verificada; si no, el equipo
   decide sobre algo que después cambia.
+
+### 26. Un error propio encontrado al revisar
+
+- **Qué pasó:** el equipo preguntó qué faltaba de la plantilla de coevaluación. Para responder,
+  la IA repasó cómo mostrar cada regla en vivo y vio que el aviso previo de Inscribir usaba la
+  situación de cada deporte **hoy**. La base, en cambio, compara los períodos con el mes
+  elegido. Desde la prueba V4, Natación termina en mayo, y un deporte nuevo desde junio
+  mostraba "Ya tiene 2 deportes" aunque la base lo aceptaba.
+- **Por qué no se vio antes:** las pruebas de la versión 1.1 se hicieron antes de dar de baja
+  Natación (V3 va antes que V4), y la prueba automática del aviso no existía: se probaba la
+  superposición de horarios, no con qué fecha se comparaba.
+- **Aprendizaje:** una regla que la app adelanta tiene que usar los mismos datos que la regla
+  de la base. Si no, las dos capas de seguridad dicen cosas distintas, justo frente a un
+  evaluador que prueba los límites.
+
+### 27. Correos configurados desde el navegador
+
+- **Qué hizo la IA en el navegador:** activar `pg_net` y `pg_cron`, ejecutar el script en el
+  SQL Editor con la URL del proyecto, crear y desplegar la Edge Function, desactivar "Verify
+  JWT" y comprobar los envíos en el panel de Resend.
+- **Lo que no hizo:** crear la cuenta de Resend y cargar su clave como secreto, que hizo el
+  equipo; escribir claves en formularios; los commits y el PR.
+- **El cambio en el camino:** para probar el envío, el probador de Edge Functions necesitaba
+  una clave de servicio en un encabezado. En lugar de escribirla, la función acepta la clave de
+  la tarea con una fecha en el cuerpo: el pedido se arma en el SQL Editor leyendo la clave de
+  Vault, sin que nadie la vea, y cuenta como envío manual para no bloquear el envío real.
+- **Cómo se registraron las pruebas:** comprobadas en el sistema (respuesta de la función,
+  historial y Resend), no informadas.

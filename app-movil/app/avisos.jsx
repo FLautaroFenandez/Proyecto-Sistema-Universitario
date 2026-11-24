@@ -9,8 +9,9 @@
  *    pago completo."
  *
  * La base arma cada aviso (vista `avisos_cobranza`): fecha, importe y detalle por ítem. La
- * app los muestra por hijo, y cada uno abre su factura. El envío por correo puede leer la
- * misma vista sin cambiar nada de esto.
+ * app los muestra por hijo, y cada uno abre su factura. Los mismos avisos llegan por
+ * correo, con la factura en PDF: los envía la Edge Function `enviar-avisos`, que lee esta
+ * misma vista (supabase-correos-avisos.sql).
  */
 
 import { useCallback } from 'react'
@@ -51,6 +52,9 @@ export default function Avisos() {
                 <Text style={estilos.detalle}>{t.explicacion}</Text>
               </View>
             ))}
+            <Text style={estilos.detalle}>
+              Cada aviso también te llega por correo, a la dirección de tu cuenta, con la factura en PDF.
+            </Text>
           </View>
 
           {(datos ?? []).length === 0 && <Aviso texto="No tenés alumnos asociados a tu cuenta." />}

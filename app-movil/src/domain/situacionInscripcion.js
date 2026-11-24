@@ -36,6 +36,19 @@ export function situacionDeInscripcion(inscripcion, hoy) {
   return SITUACIONES.vigente
 }
 
+/**
+ * Si una inscripción sigue activa desde un mes: no tiene fecha de fin o termina ese mes o
+ * después. Es como compara la base al inscribir (los períodos se superponen), y la usa la
+ * pantalla Inscribir para avisar antes con el mes elegido, no con el día de hoy.
+ * Ejemplo: Natación hasta el 31/05 ya no ocupa lugar para un deporte que empieza en junio.
+ *
+ * @param {{hasta: string | null}} inscripcion
+ * @param {string} desde - primer día del mes elegido, 'AAAA-MM-01'
+ */
+export function sigueActivaDesde(inscripcion, desde) {
+  return !inscripcion.hasta || inscripcion.hasta >= desde
+}
+
 /** Una inscripción admite baja mientras no tenga fecha de fin. */
 export function admiteBaja(inscripcion) {
   return !inscripcion.hasta
