@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import {
-  admiteBaja, gruposSeSuperponen, horarioDeGrupo, situacionDeInscripcion,
+  admiteBaja, gruposSeSuperponen, horarioDeGrupo, sigueActivaDesde, situacionDeInscripcion,
 } from './situacionInscripcion'
 import { avisosPorHijo, momentoDelAviso } from './avisos'
 
@@ -42,6 +42,13 @@ describe('Inscripciones a servicios (HU-M5)', () => {
 
   it('un horario que empieza cuando termina el otro no choca', () => {
     expect(gruposSeSuperponen(futbol, marciales)).toBe(false)
+  })
+
+  it('un deporte que termina antes del mes elegido ya no ocupa lugar', () => {
+    const natacionHastaMayo = { desde: '2027-04-01', hasta: '2027-05-31' }
+    expect(sigueActivaDesde(natacionHastaMayo, '2027-06-01')).toBe(false)
+    expect(sigueActivaDesde(natacionHastaMayo, '2027-05-01')).toBe(true)
+    expect(sigueActivaDesde({ desde: '2027-03-01', hasta: null }, '2027-06-01')).toBe(true)
   })
 })
 
